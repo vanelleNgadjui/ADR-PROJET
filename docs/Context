@@ -1,0 +1,267 @@
+PROMPT COMPLET – MVP DE “L’AGENDA DU ROYAUME”
+
+🎯 Objectif global MVP
+Développer une plateforme web responsive, mobile-first, qui centralise tous les événements chrétiens (conférences, concerts, retraites, webinaires…) pour permettre aux utilisateurs de :
+Découvrir facilement des événements pertinents.
+S’inscrire ou acheter des billets via un système simple et sécurisé.
+Vivre pleinement ces événements grâce à un espace utilisateur personnalisé.
+La priorité est la simplicité, la rapidité d’accès et la fiabilité des informations.
+
+👥 Profils utilisateurs à implémenter (MVP)
+1. Participant
+Création de compte par email + mot de passe (validation email obligatoire).
+Onboarding simple demandant :
+Localisation (pays, ville).
+Centres d’intérêt (choix parmi des thématiques chrétiennes : conférence, concert, retraite, etc.).
+Fonctionnalités :
+Rechercher, filtrer et consulter les événements (filtres : date, lieu, catégorie).
+Ajouter des événements en favoris (fonction accessible uniquement connecté).
+S’inscrire à un événement gratuitement ou acheter un billet via Stripe (intégration complète).
+Ajouter un événement à son calendrier externe (Google Calendar, Apple Calendar).
+Recevoir un rappel automatique par email 24h avant l’événement.
+Accéder à un calendrier personnel listant ses événements inscrits.
+Commenter un événement après y avoir participé (commentaires publics).
+2. Organisateur
+Création de compte organisateur avec profil public (photo/logo obligatoire).
+Création d’événements via formulaire complet :
+Titre
+Image ou bannière
+Date et heure
+Lieu + adresse complète ( lien visioconférence pour event en ligne)
+Catégorie
+Description détaillée
+Intervenants (nom, rôle)
+Gratuit ou payant (Stripe intégré)
+Statut événement : Brouillon / En attente validation / Publié
+Modifier, archiver ou supprimer un événement tant qu’il n’est pas validé.
+Dashboard personnel simple :
+Liste des événements créés avec statut.
+Statistiques basiques : nombre de vues, participants inscrits, billets vendus.
+Notifications par email lors de la validation ou du refus d’un événement (avec motif en cas de refus).
+3. Staff
+Non implémenté dans le MVP (à prévoir pour V1+).
+4. Administrateur (équipe ADR)
+Back-office complet :
+Gestion des utilisateurs (participants et organisateurs) : suppression, blocage simple.
+Validation manuelle des événements soumis par les organisateurs.
+Modification ou suppression d’événements non conformes.
+Modération des commentaires post-événements (suppression, gestion des signalements).
+Consultation de statistiques globales simples : nombre d’événements validés, utilisateurs actifs.
+
+🔧 Fonctionnalités MVP à développer
+A. Landing Page
+Objectif : séduire, convaincre et convertir.
+Contenu :
+Header avec logo + boutons “Se connecter” / “Créer un compte”.
+Hero :
+Titre : “Tous les événements chrétiens. Au même endroit.”
+Sous-titre : “Créez. Découvrez. Vivez les événements qui nourrissent votre foi.”
+CTA : “Découvrir les événements” (ouvre catalogue en accès partiel) / “Organiser un événement” (redirige vers création compte organisateur).
+Section mission et valeurs.
+Fonctionnalités clés exposées (découverte, billetterie simple, recommandations basiques).
+Section “Top Events” (3 événements mis en avant avec lien “Voir plus” vers catalogue).
+Témoignages utilisateurs / chiffres-clés (exemple : nombre d’événements, utilisateurs actifs).
+CTA final : “Rejoignez la plateforme”.
+Footer : mentions légales, CGU, politique de confidentialité, contact, réseaux sociaux.
+B. Accueil utilisateur (connecté)
+Hero slogan : “Créez. Découvrez. Vivez les événements chrétiens. Au même endroit.”
+Contenu dynamique :
+Icône profil, accès calendrier personnel.
+Barre recherche + filtres simples (date, lieu, catégorie) : ouvre page catalogue.
+Mise en avant de 3 événements (publicité interne limitée au MVP).
+Catégories phares affichées sous forme de cartes cliquables.
+Événements recommandés (selon préférences et localisation).
+Événements à venir.
+Liens “Voir plus” ouvrant catalogue complet.
+C. Catalogue d’événements
+Affichage cartes avec : image, titre, date, lieu.
+Filtres dynamiques basiques : date, lieu (ville/pays), catégorie.
+Barre recherche par mots-clés (titre, organisateur).
+Pagination (scroll infini possible).
+Restrictions pour non-connectés : catalogue partiel (accès limité, pas d’inscription/billet, pas de favoris ni commentaires).
+Liens vers pages événements.
+D. Page événement
+Contenu :
+Image principale.
+Infos organisateur : photo/logo, nom (bouton “Suivre” non implémenté au MVP).
+Statistiques de participation (nombre, miniatures utilisateurs inscrits).
+Détails pratiques : date, heure, lieu (adresse + lien Google Maps si applicable).
+Description complète, intervenants, programme.
+Itinéraire via Google Maps.
+Actions accessibles si connecté :
+S’inscrire / acheter billet (Stripe).
+Ajouter en favoris.
+Ajouter à Google / Apple Calendar.
+Commenter (uniquement post-événement et si participant confirmé).
+Boutons “Modifier / Archiver / Supprimer” non accessibles (réservés admin / organisateur via dashboard).
+E. Création d’événement (organisateur uniquement)
+Formulaire complet avec champs obligatoires :
+Titre
+Bannière/image (upload via Supabase Storage)
+Date + heure
+Lieu (adresse complète ou lien visioconférence)
+Catégorie (choix dans liste prédéfinie)
+Description, programme, intervenants
+Intervenants (texte libre)
+Gratuit ou payant (intégration Stripe obligatoire pour payant)
+Statut événement : Brouillon par défaut, puis passage en “En attente validation” à la soumission finale.
+F. Dashboard organisateur
+Liste de tous ses événements avec statut visible.
+Statistiques basiques : vues, participants inscrits, billets vendus.
+Export emails participants (CSV simple).
+Notification automatique par email en cas de validation ou refus d’événement.
+Pas d’accès premium dans le MVP.
+G. Back-office Admin
+Validation manuelle des événements soumis :
+Interface liste événements en attente.
+Détail événement complet pour validation/refus.
+Motifs de refus à sélectionner / écrire.
+Notification automatique envoyée à l’organisateur.
+Modération commentaires post-événement : suppression / gestion signalements.
+Gestion utilisateurs (suppression / blocage).
+Statistiques globales simplifiées (nombre d’utilisateurs, événements validés, commentaires signalés).
+
+💶 Monétisation (MVP)
+Plateforme gratuite.
+Pas de fonctionnalités premium dans le MVP.
+Intégration Stripe uniquement pour les paiements billets.
+
+🧠 Recommandation intelligente (version MVP simplifiée)
+Algorithme statique simple basé sur :
+Centres d’intérêt choisis à l’inscription.
+Localisation renseignée (géolocalisation à confirmer par utilisateur).
+Historique des événements consultés / favoris.
+Utilisée pour afficher :
+Événements recommandés sur la page d’accueil connectée.
+Tri par pertinence dans le catalogue.
+
+🎨 UI / UX & Design
+Style moderne, chaleureux, professionnel (inspiré Canva).
+Palette de couleurs :
+Bleu foncé #00008B (organisateurs)
+Jaune Orangé #FFA500 (participants)
+Corail #EE6239, Menthe #62BF92 (secondaires)
+Noir / blanc pour le texte et fonds neutres
+Typographie Poppins, tailles adaptées à la lisibilité mobile.
+Icônes claires, intuitives, minimalistes.
+UX fluide, navigation simple et intuitive.
+100 % mobile-first (responsive) avec breakpoints :
+Mobile <768px
+Tablette 768–1024px
+Desktop >1024px
+
+🔐 Sécurité / RGPD
+Authentification sécurisée :
+Validation email obligatoire.
+Mots de passe hashés.
+Token JWT pour sessions persistantes.
+Stockage minimal des données personnelles.
+Politique de confidentialité visible sur toutes les pages.
+Fonction “Supprimer mon compte” accessible dans profil utilisateur, supprimant toutes les données.
+
+🔔 Notifications emails transactionnelles
+Confirmation création compte participant ou organisateur.
+Confirmation achat billet.
+Rappel événement 24h avant (email).
+Notification validation/refus événement organisateur.
+
+🔑 Niveaux d’accès (MVP)
+Landing Page ouverte
+Accessible sans compte.
+Présentation du projet, valeurs, mission.
+CTA vers découverte catalogue partiel et création compte.
+Catalogue partiel (sans compte)
+Liste d’événements limitée.
+Filtres simples.
+Pas d’inscription, pas d’achat, pas de favoris, pas de commentaires.
+Invite à créer un compte pour accéder au catalogue complet.
+Catalogue complet + espace personnalisé (connecté)
+Accès complet à toutes les fonctionnalités du participant.
+Favoris, inscription, achats, calendrier personnel, commentaires.
+
+📦 Livrables attendus pour MVP
+Site web responsive fonctionnel, accessible en ligne.
+Accès back-office admin opérationnel pour validation/modération.
+Comptes test participants + organisateurs pré-créés.
+Base de données pré-remplie avec événements de test.
+Code source complet documenté (README, setup, structure).
+
+
+
+🎨 IDENTITÉ VISUELLE
+🎨 Charte graphique :
+Couleurs principales : Bleu marine (#1e3a8a) + Orange (#f97316)
+Couleurs secondaires :
+- #EE6239 (corail)
+- #62BF92 (vert menthe)
+- Neutres : #000000 (noir), #FFFFFF (blanc)
+Typographie : Poppins (moderne et lisible)
+Style : Minimaliste, élégant, inspiré des meilleures plateformes tech
+Iconographie : Lucide React (cohérence et modernité)
+💫 Expérience utilisateur :
+Design System : Composants réutilisables et cohérents
+Animations : Framer Motion pour des transitions fluides
+Responsive : Mobile-first, parfait sur tous les écrans
+Accessibilité : WCAG 2.1 AA compliant
+Design premium : Interface moderne et intuitive (niveau Apple/Canva)
+
+
+🛠️ ARCHITECTURE TECHNIQUE
+🏗️ Stack moderne et scalable :
+Frontend : React + TypeScript + Vite (performance optimale)
+Backend : Supabase (BaaS complet : Auth, DB, Storage, Edge Functions)
+Styling : Tailwind CSS + Framer Motion (design system cohérent)
+Paiements : Stripe (sécurité et conformité)
+Hosting : Vercel/Netlify (déploiement automatisé)
+🔒 Sécurité et conformité :
+RGPD compliant : Gestion des données personnelles
+Authentification sécurisée : JWT + RLS (Row Level Security)
+Paiements PCI-DSS : Via Stripe, aucune donnée bancaire stockée
+Backup automatique : Supabase + stratégie de sauvegarde
+
+
+Ce prompt est conçu pour guider précisément le développement du MVP avec un focus sur les fonctionnalités clés, la sécurité, la simplicité d’usage et un socle solide pour évoluer vers V1 et V2.
+
+
+Découpage des modules principaux (MVP)
+
+Authentification & Onboarding
+    Inscription/connexion (participant, organisateur)
+    Validation email
+    Onboarding (localisation, centres d’intérêt)
+
+Catalogue d’événements
+    Recherche, filtres, pagination
+    Affichage partiel (non connecté) / complet (connecté)
+    Page détail événement
+
+Gestion des événements
+    Création/modification (organisateur)
+    Statuts (brouillon, en attente, publié)
+    Upload image/bannière
+
+Inscription & Billetterie
+    Inscription gratuite ou achat billet (Stripe)
+    Ajout à calendrier externe
+    Rappel email
+
+Favoris & Recommandations
+    Ajout/suppression favoris
+    Algorithme de recommandation simple
+
+Commentaires post-événement
+    Ajout, modération, suppression 
+
+Dashboard organisateur
+    Liste événements, stats, export emails, notifications
+Back-office admin
+    Validation/refus événements
+    Gestion utilisateurs
+    Modération commentaires
+    Statistiques globales
+
+Notifications emails
+    Création compte, achat billet, rappel, validation/refus
+
+UI/UX & Design System
+    Composants réutilisables, responsive, accessibilité

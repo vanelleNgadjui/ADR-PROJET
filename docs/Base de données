@@ -1,0 +1,362 @@
+Document final détaillé pour génération du schéma SQL de la plateforme « L’Agenda du Royaume »
+
+1. Tables principales
+1.1 Table categories (ou event_categories)
+But : Liste des catégories principales d’événements.
+Exemples : Culte & Adoration, Enseignement & Formation, etc.
+Champs :
+id SERIAL PRIMARY KEY
+nom VARCHAR(100) UNIQUE NOT NULL
+description TEXT
+created_at TIMESTAMP DEFAULT NOW()
+Relations :
+Une catégorie peut avoir plusieurs sous-catégories (1:N vers sous_categories).
+1.2 Table sous_categories (ou event_subcategories)
+But : Sous-catégories liées à une catégorie principale.
+Champs :
+id SERIAL PRIMARY KEY
+categorie_id INT NOT NULL REFERENCES categories(id) ON DELETE RESTRICT
+nom VARCHAR(100) NOT NULL
+description TEXT
+created_at TIMESTAMP DEFAULT NOW()
+Relations :
+Chaque sous-catégorie appartient à une catégorie.
+La table events référence une sous-catégorie.
+1.3 Table events
+But : Stocker les événements avec classification, dates, organisation, etc.
+Champs (exhaustif) :
+id SERIAL PRIMARY KEY,
+
+titre VARCHAR(255) NOT NULL,
+slug VARCHAR(255) UNIQUE NOT NULL, -- URL friendly
+
+description TEXT,
+programme TEXT,
+
+sous_categorie_id INT NOT NULL REFERENCES sous_categories(id) ON DELETE RESTRICT,
+
+format format_enum NOT NULL, -- présentiel, ligne, hybride
+frequence frequence_enum NOT NULL DEFAULT 'ponctuel', -- récurrence
+langue langue_enum NOT NULL DEFAULT 'fr',
+niveau_difficulte niveau_difficulte_enum,
+
+statut statut_evenement_enum NOT NULL DEFAULT 'brouillon',
+
+type_lieu type_lieu_enum,
+lieu VARCHAR(255),
+adresse TEXT,
+
+date_debut TIMESTAMP NOT NULL,
+date_fin TIMESTAMP,
+
+niveau_privacy niveau_privacy_enum NOT NULL DEFAULT 'public',
+groupe_prive_id INT REFERENCES communautes(id) ON DELETE SET NULL,
+
+tarification tarification_enum NOT NULL,
+
+organisateur_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+image_couverture VARCHAR(255),
+capacite_max INT,
+est_accessible BOOLEAN DEFAULT TRUE,
+
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+Relations :
+FK vers sous_categories
+FK vers users (organisateur)
+FK vers communautes (si privé)
+Liens multiples vers tables associatives : audiences, canaux de diffusion, intervenants, etc.
+1.4 Table users
+But : Utilisateurs de la plateforme (participants, organisateurs, admins).
+Champs (complets) :
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+email VARCHAR(255) NOT NULL UNIQUE,
+password_hash VARCHAR(255) NOT NULL,
+nom VARCHAR(100) NOT NULL,
+prenom VARCHAR(100) NOT NULL,
+date_naissance DATE,
+telephone VARCHAR(20),
+
+role role_utilisateur_enum NOT NULL DEFAULT 'participant', -- admin, modérateur, organisateur, participant
+
+statut_compte_enum VARCHAR(50) DEFAULT 'actif', -- actif, suspendu, supprimé
+
+photo_profil_url VARCHAR(255),
+
+date_creation TIMESTAMP DEFAULT NOW(),
+date_dernier_login TIMESTAMP
+Relations :
+Organisateur d’un ou plusieurs événements
+Membre et rôles dans plusieurs communautés
+Participants aux événements
+1.5 Table communautes
+But : Représenter des communautés (églises, groupes, ministères).
+Champs :
+id SERIAL PRIMARY KEY,
+nom VARCHAR(100) NOT NULL,
+description TEXT,
+slug VARCHAR(150) UNIQUE,
+owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+type type_communauté_enum NOT NULL,
+est_publique BOOLEAN DEFAULT FALSE,
+image_couverture VARCHAR(255),
+created_at TIMESTAMP DEFAULT NOW()
+Relations :
+Propriétaire : FK vers users
+Liée à plusieurs utilisateurs via communaute_utilisateurs
+1.6 Table communaute_utilisateurs
+But : Table associative pour membres de communauté avec rôle.
+Champs :
+id SERIAL PRIMARY KEY,
+user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+communaute_id INT NOT NULL REFERENCES communautes(id) ON DELETE CASCADE,
+role role_utilisateur_enum DEFAULT 'participant',
+statut ENUM('en_attente', 'invite', 'accepte', 'refuse') DEFAULT 'en_attente',
+invited_by UUID REFERENCES users(id),
+message_invitation TEXT,
+date_invitation TIMESTAMP DEFAULT NOW(),
+date_reponse TIMESTAMP
+1.7 Tables billetterie
+tickets_categories : catégories de billets personnalisées par événement
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+nom VARCHAR(100) NOT NULL,
+description TEXT,
+ordre INT DEFAULT 0,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+tickets : billets individuels
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+category_id INT REFERENCES tickets_categories(id) ON DELETE SET NULL,
+nom VARCHAR(255) NOT NULL,
+description TEXT,
+prix NUMERIC(10,2) NOT NULL DEFAULT 0,
+quantite INT,
+date_debut_vente TIMESTAMP,
+date_fin_vente TIMESTAMP,
+type_billet VARCHAR(100),
+conditions TEXT,
+is_visible BOOLEAN DEFAULT TRUE,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+1.8 Tables sessions et intervenants
+event_intervenants
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+nom VARCHAR(255) NOT NULL,
+description TEXT,
+email VARCHAR(255),
+photo_url VARCHAR(255),
+role_fonction VARCHAR(100),
+autres_infos JSONB,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+event_sessions
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+titre VARCHAR(255) NOT NULL,
+description TEXT,
+date_debut TIMESTAMP NOT NULL,
+date_fin TIMESTAMP NOT NULL,
+type_session type_session_enum NOT NULL,
+intervenant_id INT REFERENCES event_intervenants(id) ON DELETE SET NULL,
+salle VARCHAR(255),
+ordre INT DEFAULT 0,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+2. ENUM Types
+2.1 format_enum
+CREATE TYPE format_enum AS ENUM (
+  'en_presentiel',
+  'en_ligne',
+  'hybride'
+);
+2.2 tarification_enum
+CREATE TYPE tarification_enum AS ENUM (
+  'gratuit',
+  'payant',
+  'don_libre',
+  'mixte'
+);
+2.3 statut_evenement_enum
+CREATE TYPE statut_evenement_enum AS ENUM (
+  'brouillon',
+  'en_attente_validation',
+  'valide',
+  'publie',
+  'archive',
+  'refuse'
+);
+2.4 frequence_enum
+CREATE TYPE frequence_enum AS ENUM (
+  'ponctuel',
+  'quotidien',
+  'hebdomadaire',
+  'bi_hebdomadaire',
+  'mensuel',
+  'trimestriel',
+  'annuel'
+);
+2.5 langue_enum
+CREATE TYPE langue_enum AS ENUM (
+  'fr',
+  'en',
+  'es',
+  'pt',
+  'ar',
+  'autre'
+);
+2.6 niveau_difficulte_enum
+CREATE TYPE niveau_difficulte_enum AS ENUM (
+  'debutant',
+  'intermediaire',
+  'avance'
+);
+2.7 type_lieu_enum
+CREATE TYPE type_lieu_enum AS ENUM (
+  'en_salle',
+  'en_plein_air',
+  'virtuel'
+);
+2.8 niveau_privacy_enum
+CREATE TYPE niveau_privacy_enum AS ENUM (
+  'public',
+  'prive',
+  'sur_invitation'
+);
+2.9 type_communauté_enum
+CREATE TYPE type_communauté_enum AS ENUM (
+  'eglise',
+  'cellule',
+  'groupe_jeunes',
+  'groupe_femmes',
+  'groupe_hommes',
+  'ministere',
+  'association',
+  'reseau',
+  'autre'
+);
+2.10 type_evenement_specifique_enum (ex. pour étiquettes plus fines)
+CREATE TYPE type_evenement_specifique_enum AS ENUM (
+  'seminaire',
+  'conference',
+  'atelier',
+  'culte',
+  'concert',
+  'retreat',
+  'formation',
+  'webinar'
+);
+2.11 role_utilisateur_enum
+CREATE TYPE role_utilisateur_enum AS ENUM (
+  'participant',
+  'organisateur',
+  'moderateur',
+  'admin'
+);
+2.12 type_session_enum
+CREATE TYPE type_session_enum AS ENUM (
+  'pleniere',
+  'atelier',
+  'table_ronde',
+  'priere',
+  'louange',
+  'pause'
+);
+3. Modèles multi-valeurs et tables associatives
+3.1 Table event_audiences
+But : Associer des audiences cibles à un événement (ex: familles, jeunes, pasteurs).
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+audience audience_enum NOT NULL
+Enum audience_enum : familles, jeunes, pasteurs, étudiants, etc.
+3.2 Table event_canaux_diffusion
+But : Canaux via lesquels l’événement est diffusé (ex : YouTube, Zoom, Instagram Live).
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+canal canal_diffusion_enum NOT NULL
+Enum canal_diffusion_enum : youtube, zoom, instagram_live, facebook_live, site_web
+3.3 Table event_mots_cles
+But : Tags/mots-clés liés à un événement pour recherche.
+id SERIAL PRIMARY KEY,
+event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+mot_cle VARCHAR(100) NOT NULL
+3.4 Table event_intervenants
+Déjà vue en 1.8
+3.5 Table event_sessions
+Déjà vue en 1.8
+4. Fonctions, triggers et règles métier
+4.1 Génération automatique de slug dans events
+Trigger : Avant insertion, transforme le titre en slug (ex: « Culte de Noël » → « culte-de-noel »).
+Règle : Slug unique, si doublon, ajout suffixe numérique.
+4.2 Mise à jour automatique de updated_at dans plusieurs tables
+Trigger avant update pour mettre à jour le champ updated_at.
+4.3 Règles d’intégrité
+Lorsqu’un événement est supprimé, suppression en cascade des billets, sessions, intervenants associés.
+Un utilisateur ne peut être organisateur d’événement que s’il a un rôle organisateur ou admin.
+Un événement privé doit obligatoirement avoir un groupe privé associé (groupe_prive_id non null).
+Une communauté publique ne peut avoir que des événements publics.
+4.4 Indexes à prévoir
+Index sur events.date_debut, events.statut pour recherches rapides.
+Index sur users.email unique.
+Index sur FK pour accélérer les jointures.
+5. Exemple de script simplifié
+-- Exemple simplifié : création table events et enums associées
+
+CREATE TYPE format_enum AS ENUM ('en_presentiel', 'en_ligne', 'hybride');
+CREATE TYPE statut_evenement_enum AS ENUM ('brouillon', 'en_attente_validation', 'valide', 'publie', 'archive', 'refuse');
+
+CREATE TABLE events (
+  id SERIAL PRIMARY KEY,
+  titre VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT,
+  format format_enum NOT NULL,
+  statut statut_evenement_enum NOT NULL DEFAULT 'brouillon',
+  date_debut TIMESTAMP NOT NULL,
+  date_fin TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Triggers, fonctions, etc.
+Conclusion
+
+Ce document décrit l’ensemble du modèle de données pour la plateforme « L’Agenda du Royaume », prêt à être transformé en script SQL complet avec :
+Création des types ENUM
+Création des tables principales et associatives
+Définition des relations FK avec contraintes et règles ON DELETE
+Mise en place de triggers pour slugs et timestamps
+Intégration des règles métier clés
+
+
+erDiagram
+  USERS ||--o{ PROFILES : has
+  USERS ||--o{ EVENTS : organise
+  USERS ||--o{ EVENT_REGISTRATIONS : inscrit
+  USERS ||--o{ EVENT_FAVORITES : fav
+  USERS ||--o{ EVENT_COMMENTS : comment
+  USERS ||--o{ COMMUNAUTE_UTILISATEURS : membre
+  USERS ||--o{ COMMUNAUTES : possede
+
+  CATEGORIES ||--o{ SOUS_CATEGORIES : contient
+  SOUS_CATEGORIES ||--o{ EVENTS : classe
+
+  EVENTS ||--o{ EVENT_REGISTRATIONS : a
+  EVENTS ||--o{ EVENT_FAVORITES : fav
+  EVENTS ||--o{ EVENT_COMMENTS : comment
+  EVENTS ||--o{ TICKETS_CATEGORIES : tickets_cat
+  EVENTS ||--o{ TICKETS : tickets
+  EVENTS ||--o{ EVENT_INTERVENANTS : intervenant
+  EVENTS ||--o{ EVENT_SESSIONS : session
+  EVENTS ||--o{ EVENT_AUDIENCES : audience
+  EVENTS ||--o{ EVENT_CANAUX_DIFFUSION : canal
+  EVENTS ||--o{ EVENT_MOTS_CLES : motcle
+
+  COMMUNAUTES ||--o{ COMMUNAUTE_UTILISATEURS : membres
+  COMMUNAUTES ||--o{ EVENTS : groupe
+
+  TICKETS_CATEGORIES ||--o{ TICKETS : cat
+  EVENT_INTERVENANTS ||--o{ EVENT_SESSIONS : anime
