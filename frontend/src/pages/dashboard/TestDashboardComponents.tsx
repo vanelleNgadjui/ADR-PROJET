@@ -1,6 +1,30 @@
 import React, { useState } from 'react';
 import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, Video, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
 import { Header, UserDropdown, NotificationDropdown } from '../../components/dashboard/header';
+import { 
+  Form, 
+  Label, 
+  Select, 
+  InputField, 
+  DatePicker, 
+  MultiSelect, 
+  Checkbox, 
+  Radio, 
+  TextArea, 
+  FileInput, 
+  Switch, 
+  PhoneInput,
+  ToggleSwitch,
+  TextAreaInput,
+  SelectInputs,
+  RadioButtons,
+  InputStates,
+  InputGroup,
+  FileInputExample,
+  DropZone,
+  DefaultInputs,
+  CheckboxComponents
+} from '../../components/dashboard/form';
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
@@ -141,6 +165,170 @@ const TestDashboardComponents: React.FC = () => {
                 <h4 className="font-medium text-gray-800">John Doe</h4>
                 <p className="text-sm text-gray-600">Organisateur • En ligne</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Form */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Form</h2>
+          
+          <div className="space-y-6">
+            {/* InputField */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">InputField</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="basic-input">Champ de base</Label>
+                  <InputField 
+                    id="basic-input"
+                    placeholder="Entrez votre texte..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email-input">Email</Label>
+                  <InputField 
+                    id="email-input"
+                    type="email"
+                    placeholder="votre@email.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="success-input">Succès</Label>
+                  <InputField 
+                    id="success-input"
+                    placeholder="Champ validé"
+                    success={true}
+                    hint="Champ correctement rempli"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="error-input">Erreur</Label>
+                  <InputField 
+                    id="error-input"
+                    placeholder="Champ avec erreur"
+                    error={true}
+                    hint="Ce champ contient une erreur"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="disabled-input">Désactivé</Label>
+                  <InputField 
+                    id="disabled-input"
+                    placeholder="Champ désactivé"
+                    disabled={true}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password-input">Mot de passe</Label>
+                  <InputField 
+                    id="password-input"
+                    type="password"
+                    placeholder="Votre mot de passe"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Select */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Select</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="basic-select">Sélection de base</Label>
+                  <Select 
+                    options={[
+                      { value: "option1", label: "Option 1" },
+                      { value: "option2", label: "Option 2" },
+                      { value: "option3", label: "Option 3" }
+                    ]}
+                    placeholder="Choisissez une option"
+                    onChange={(value) => console.log('Selected:', value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="role-select">Rôle utilisateur</Label>
+                  <Select 
+                    options={[
+                      { value: "participant", label: "Participant" },
+                      { value: "organisateur", label: "Organisateur" },
+                      { value: "admin", label: "Administrateur" }
+                    ]}
+                    placeholder="Sélectionnez votre rôle"
+                    onChange={(value) => console.log('Role:', value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Form complet */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Form complet</h3>
+              <Form onSubmit={(e) => console.log('Form submitted')}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="form-name">Nom</Label>
+                    <InputField 
+                      id="form-name"
+                      placeholder="Votre nom"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="form-email">Email</Label>
+                    <InputField 
+                      id="form-email"
+                      type="email"
+                      placeholder="votre@email.com"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="form-role">Rôle</Label>
+                    <Select 
+                      options={[
+                        { value: "participant", label: "Participant" },
+                        { value: "organisateur", label: "Organisateur" }
+                      ]}
+                      placeholder="Sélectionnez votre rôle"
+                      onChange={(value) => console.log('Role:', value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="form-phone">Téléphone</Label>
+                    <InputField 
+                      id="form-phone"
+                      type="tel"
+                      placeholder="+33 6 12 34 56 78"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button type="submit" variant="primary">
+                    Envoyer
+                  </Button>
+                </div>
+              </Form>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Les composants form sont utilisés pour créer des formulaires d'inscription, 
+              de connexion, de création d'événements, etc.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <InputField placeholder="Recherche..." />
+              <Select 
+                options={[
+                  { value: "all", label: "Tous les événements" },
+                  { value: "upcoming", label: "À venir" },
+                  { value: "past", label: "Passés" }
+                ]}
+                placeholder="Filtrer par..."
+                onChange={(value) => console.log('Filter:', value)}
+              />
+              <Button variant="primary">Rechercher</Button>
             </div>
           </div>
         </section>
@@ -988,6 +1176,199 @@ const TestDashboardComponents: React.FC = () => {
           </div>
         </section>
 
+        {/* Section Form Components - Tests Rapides */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Form - Tests Rapides</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* DatePicker */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">DatePicker</h3>
+              <DatePicker
+                id="test-date"
+                label="Date de naissance"
+                placeholder="Sélectionner une date"
+                onChange={(date) => console.log('Date sélectionnée:', date)}
+              />
+            </div>
+
+            {/* MultiSelect */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">MultiSelect</h3>
+              <MultiSelect
+                label="Catégories"
+                options={[
+                  { value: "1", text: "Conférence" },
+                  { value: "2", text: "Concert" },
+                  { value: "3", text: "Retraite" },
+                  { value: "4", text: "Formation" }
+                ]}
+                defaultSelected={["1", "3"]}
+                onChange={(values) => console.log('Valeurs sélectionnées:', values)}
+              />
+            </div>
+
+            {/* Checkbox */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Checkbox</h3>
+              <div className="space-y-3">
+                <Checkbox
+                  label="Accepter les conditions"
+                  checked={false}
+                  onChange={(checked) => console.log('Checkbox:', checked)}
+                />
+                <Checkbox
+                  label="Recevoir les notifications"
+                  checked={true}
+                  onChange={(checked) => console.log('Checkbox:', checked)}
+                />
+              </div>
+            </div>
+
+            {/* Radio */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Radio Buttons</h3>
+              <div className="space-y-3">
+                <Radio
+                  id="radio1"
+                  name="test-group"
+                  value="option1"
+                  checked={true}
+                  onChange={(value) => console.log('Radio sélectionné:', value)}
+                  label="Option 1"
+                />
+                <Radio
+                  id="radio2"
+                  name="test-group"
+                  value="option2"
+                  checked={false}
+                  onChange={(value) => console.log('Radio sélectionné:', value)}
+                  label="Option 2"
+                />
+              </div>
+            </div>
+
+            {/* TextArea */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">TextArea</h3>
+              <TextArea
+                placeholder="Décrivez votre événement..."
+                rows={4}
+                onChange={(value) => console.log('TextArea:', value)}
+              />
+            </div>
+
+            {/* FileInput */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">FileInput</h3>
+              <FileInput
+                onChange={(e) => console.log('Fichier sélectionné:', e.target.files?.[0])}
+                accept="image/*"
+              />
+            </div>
+
+            {/* Switch */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Switch</h3>
+              <div className="space-y-3">
+                <Switch
+                  label="Notifications push"
+                  defaultChecked={true}
+                  onChange={(checked) => console.log('Switch:', checked)}
+                />
+                <Switch
+                  label="Mode sombre"
+                  defaultChecked={false}
+                  onChange={(checked) => console.log('Switch:', checked)}
+                  color="gray"
+                />
+              </div>
+            </div>
+
+            {/* PhoneInput */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">PhoneInput</h3>
+              <PhoneInput
+                countries={[
+                  { code: "FR", label: "+33" },
+                  { code: "US", label: "+1" },
+                  { code: "CA", label: "+1" },
+                  { code: "GB", label: "+44" }
+                ]}
+                placeholder="Numéro de téléphone"
+                onChange={(phone) => console.log('Téléphone:', phone)}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Section Form Elements - Composants Complets */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Form Elements - Composants Complets</h2>
+          
+          <div className="space-y-8">
+            {/* ToggleSwitch */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">ToggleSwitch</h3>
+              <ToggleSwitch />
+            </div>
+
+            {/* TextAreaInput */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">TextAreaInput</h3>
+              <TextAreaInput />
+            </div>
+
+            {/* SelectInputs */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">SelectInputs</h3>
+              <SelectInputs />
+            </div>
+
+            {/* RadioButtons */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">RadioButtons</h3>
+              <RadioButtons />
+            </div>
+
+            {/* InputStates */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">InputStates</h3>
+              <InputStates />
+            </div>
+
+            {/* InputGroup */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">InputGroup</h3>
+              <InputGroup />
+            </div>
+
+            {/* FileInputExample */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">FileInputExample</h3>
+              <FileInputExample />
+            </div>
+
+            {/* DropZone */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">DropZone</h3>
+              <DropZone />
+            </div>
+
+            {/* DefaultInputs */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">DefaultInputs</h3>
+              <DefaultInputs />
+            </div>
+
+            {/* CheckboxComponents */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">CheckboxComponents</h3>
+              <CheckboxComponents />
+            </div>
+          </div>
+        </section>
+
         {/* Informations */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="text-lg font-medium text-blue-800 mb-2">Informations</h3>
@@ -1001,6 +1382,7 @@ const TestDashboardComponents: React.FC = () => {
             <li>• <strong>Badge Secondary</strong> : Orange participant avec transparence</li>
             <li>• <strong>Badge Success</strong> : Vert menthe (#62BF92)</li>
             <li>• <strong>Badge Error</strong> : Coral (#EE6239)</li>
+            <li>• <strong>Police</strong> : Poppins (Google Fonts)</li>
           </ul>
         </div>
       </div>

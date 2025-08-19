@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import NotificationDropdown from "./NotificationDropdown";
 import UserDropdown from "./UserDropdown";
-import { MenuIcon, XIcon, SearchIcon } from "lucide-react";
+import { MenuIcon, XIcon, SearchIcon, MoreHorizontalIcon } from "lucide-react";
 
 // Define the interface for the props
 interface HeaderProps {
@@ -48,7 +48,11 @@ const Header: React.FC<HeaderProps> = ({ onClick, onToggle }) => {
             onClick={toggleApplicationMenu}
             className="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
           >
-            <XIcon className="w-5 h-5" />
+            {isApplicationMenuOpen ? (
+              <XIcon className="w-5 h-5" />
+            ) : (
+              <MoreHorizontalIcon className="w-5 h-5" />
+            )}
           </button>
 
           <div className="hidden lg:block">
