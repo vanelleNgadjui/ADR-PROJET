@@ -1,2 +1,3 @@
 // Composants UI du Dashboard
 export { default as Button } from './Button';
+export { default as Badge } from './Badge';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '../../components/dashboard/ui';
-import { PlusIcon, ArrowRightIcon, UserIcon } from 'lucide-react';
+import { Button, Badge } from '../../components/dashboard/ui';
+import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
   return (
@@ -90,17 +90,84 @@ const TestDashboardComponents: React.FC = () => {
           </div>
         </section>
 
+        {/* Section Badge */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composant Badge</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Variants */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Variants Light</h3>
+              <div className="space-y-3">
+                <Badge variant="light" color="primary">Organisateur</Badge>
+                <Badge variant="light" color="secondary">Participant</Badge>
+                <Badge variant="light" color="success">Validé</Badge>
+                <Badge variant="light" color="error">Erreur</Badge>
+                <Badge variant="light" color="warning">En attente</Badge>
+                <Badge variant="light" color="info">Information</Badge>
+              </div>
+            </div>
+
+            {/* Variants Solid */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Variants Solid</h3>
+              <div className="space-y-3">
+                <Badge variant="solid" color="primary">Organisateur</Badge>
+                <Badge variant="solid" color="secondary">Participant</Badge>
+                <Badge variant="solid" color="success">Validé</Badge>
+                <Badge variant="solid" color="error">Erreur</Badge>
+                <Badge variant="solid" color="warning">En attente</Badge>
+                <Badge variant="solid" color="info">Information</Badge>
+              </div>
+            </div>
+
+            {/* Tailles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Tailles</h3>
+              <div className="space-y-3">
+                <Badge size="sm" color="primary">Small</Badge>
+                <Badge size="md" color="primary">Medium (default)</Badge>
+                <Badge size="lg" color="primary">Large</Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <div className="flex flex-wrap gap-4 items-center">
+              <Badge variant="light" color="success" startIcon={<CheckCircleIcon className="w-3 h-3" />}>
+                Événement validé
+              </Badge>
+              <Badge variant="light" color="warning" startIcon={<AlertTriangleIcon className="w-3 h-3" />}>
+                En attente de validation
+              </Badge>
+              <Badge variant="solid" color="primary" startIcon={<UserIcon className="w-3 h-3" />}>
+                Organisateur
+              </Badge>
+              <Badge variant="solid" color="secondary" startIcon={<UserIcon className="w-3 h-3" />}>
+                Participant
+              </Badge>
+              <Badge variant="light" color="info" startIcon={<InfoIcon className="w-3 h-3" />}>
+                Nouveau
+              </Badge>
+            </div>
+          </div>
+        </section>
+
         {/* Informations */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="text-lg font-medium text-blue-800 mb-2">Informations</h3>
           <p className="text-blue-700">
-            Ce composant Button a été adapté du template dashboard avec nos couleurs :
+            Ces composants ont été adaptés du template dashboard avec nos couleurs :
           </p>
           <ul className="mt-2 text-blue-700 space-y-1">
-            <li>• <strong>Primary</strong> : Bleu organisateur (#00008B)</li>
-            <li>• <strong>Secondary</strong> : Orange participant (#FFA500)</li>
-            <li>• <strong>Outline</strong> : Bordure grise avec hover</li>
-            <li>• <strong>Ghost</strong> : Transparent avec bordure bleue</li>
+            <li>• <strong>Button Primary</strong> : Bleu organisateur (#00008B)</li>
+            <li>• <strong>Button Secondary</strong> : Orange participant (#FFA500)</li>
+            <li>• <strong>Badge Primary</strong> : Bleu organisateur avec transparence</li>
+            <li>• <strong>Badge Secondary</strong> : Orange participant avec transparence</li>
+            <li>• <strong>Badge Success</strong> : Vert menthe (#62BF92)</li>
+            <li>• <strong>Badge Error</strong> : Coral (#EE6239)</li>
           </ul>
         </div>
       </div>

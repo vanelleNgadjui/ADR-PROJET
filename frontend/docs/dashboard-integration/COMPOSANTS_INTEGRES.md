@@ -23,15 +23,15 @@ Suivre l'intégration de chaque composant du template dans notre application.
 - **Tests** : [x] Variants, [x] Tailles, [x] Icônes, [x] Responsive
 - **Date d'intégration** : $(date)
 
-### **2. Badge** ⏳
+### **2. Badge** ✅
 - **Fichier source** : `free-react-tailwind-admin-dashboard-main/src/components/ui/badge/Badge.tsx`
 - **Fichier destination** : `src/components/dashboard/ui/Badge.tsx`
-- **Statut** : ⏳ En attente
+- **Statut** : ✅ Terminé
 - **Adaptations nécessaires** :
-  - [ ] Adapter les couleurs à notre palette
-  - [ ] Créer des variants spécifiques aux rôles
-- **Tests** : [ ] Couleurs, [ ] Variants, [ ] Tailles
-- **Date d'intégration** : -
+  - [x] Adapter les couleurs à notre palette
+  - [x] Créer des variants spécifiques aux rôles
+- **Tests** : [x] Couleurs, [x] Variants, [x] Tailles
+- **Date d'intégration** : $(date)
 
 ### **3. Dropdown** ⏳
 - **Fichier source** : `free-react-tailwind-admin-dashboard-main/src/components/ui/dropdown/Dropdown.tsx`
@@ -180,18 +180,18 @@ Suivre l'intégration de chaque composant du template dans notre application.
 ## 📈 **Métriques de Progression**
 
 ### **Par Phase**
-- **Phase 1** : 1/6 (17%)
+- **Phase 1** : 2/6 (33%)
 - **Phase 2** : 0/4 (0%)
 - **Phase 3** : 0/4 (0%)
 - **Phase 4** : 0/1 (0%)
 
 ### **Global**
-- **Total intégré** : 1/15 (7%)
+- **Total intégré** : 2/15 (13%)
 - **En cours** : 0
-- **En attente** : 14
-- **Terminé** : 1
+- **En attente** : 13
+- **Terminé** : 2
 
 ---
 
 **Dernière mise à jour :** $(date)
-**Prochaine action :** Intégration du composant Badge
+**Prochaine action :** Intégration du composant Dropdown
