@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, Video, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
+import { Header, UserDropdown, NotificationDropdown } from '../../components/dashboard/header';
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
@@ -140,6 +141,59 @@ const TestDashboardComponents: React.FC = () => {
                 <h4 className="font-medium text-gray-800">John Doe</h4>
                 <p className="text-sm text-gray-600">Organisateur • En ligne</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Header */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Header</h2>
+          
+          <div className="space-y-6">
+            {/* Header complet */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Header complet</h3>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Header 
+                  onToggle={() => console.log('Toggle sidebar')}
+                  onClick={() => console.log('Toggle menu')}
+                />
+              </div>
+            </div>
+
+            {/* UserDropdown isolé */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">UserDropdown isolé</h3>
+              <div className="flex justify-center">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-2">UserDropdown avec gestion d'authentification</p>
+                  <UserDropdown />
+                </div>
+              </div>
+            </div>
+
+            {/* NotificationDropdown isolé */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">NotificationDropdown isolé</h3>
+              <div className="flex justify-center">
+                <NotificationDropdown />
+              </div>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Les composants header sont utilisés dans tous les dashboards pour la navigation, 
+              les notifications et la gestion du profil utilisateur.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-2">UserDropdown (gère l'auth)</p>
+                <UserDropdown />
+              </div>
+              <NotificationDropdown />
             </div>
           </div>
         </section>
