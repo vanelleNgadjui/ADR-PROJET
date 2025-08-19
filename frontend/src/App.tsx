@@ -1,38 +1,19 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import UiKit from './pages/UiKit';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import ChoixRole from './pages/auth/ChoixRole';
-import Inscription from './pages/auth/Inscription';
-import Connexion from './pages/auth/Connexion';
-import AuthCallback from './pages/auth/AuthCallback';
-import Onboarding from './pages/auth/Onboarding';
+import UiKit from './pages/UiKit';
 import TestDashboardComponents from './pages/dashboard/TestDashboardComponents';
-import { useUserSync } from './hooks/useUserSync';
+import './App.css';
 
 function App() {
-  // Synchroniser automatiquement les utilisateurs
-  useUserSync();
-  
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/uikit" element={<UiKit />} />
-        
-        {/* Routes d'authentification */}
-        <Route path="/auth/choix-role" element={<ChoixRole />} />
-        <Route path="/auth/inscription/:role" element={<Inscription />} />
-        <Route path="/auth/connexion" element={<Connexion />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/auth/onboarding/:role" element={<Onboarding />} />
-
-        {/* Routes de test dashboard */}
+        <Route path="/ui-kit" element={<UiKit />} />
         <Route path="/test-dashboard" element={<TestDashboardComponents />} />
-        
-        {/* Redirige toute autre route vers / */}
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

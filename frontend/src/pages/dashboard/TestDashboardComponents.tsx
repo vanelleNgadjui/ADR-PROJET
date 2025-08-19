@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, Video, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
 import { Header, UserDropdown, NotificationDropdown } from '../../components/dashboard/header';
 import { 
+  ThemeToggleButton, 
+  ThemeTogglerTwo,
+  ComponentCard, 
+  PageBreadcrumb, 
+  ScrollToTop, 
+  PageMeta, 
+  GridShape, 
+  ChartTab 
+} from '../../components/dashboard/common';
+import { useTheme, useSidebar } from '../../context/dashboard';
+import { 
   Form, 
   Label, 
   Select, 
@@ -28,6 +39,9 @@ import {
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
+  const { theme, toggleTheme } = useTheme();
+  const { isExpanded, isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  
   const [dropdown1Open, setDropdown1Open] = useState(false);
   const [dropdown2Open, setDropdown2Open] = useState(false);
   const [dropdown3Open, setDropdown3Open] = useState(false);
@@ -69,6 +83,12 @@ const TestDashboardComponents: React.FC = () => {
                 <DropdownItem onClick={() => console.log('Action 1')}>Action 1</DropdownItem>
                 <DropdownItem onClick={() => console.log('Action 2')}>Action 2</DropdownItem>
               </Dropdown>
+            </div>
+
+            {/* Test Contextes */}
+            <div className="flex items-center gap-2">
+              <ThemeToggleButton />
+              <span className="text-sm text-gray-600">Thème: {theme}</span>
             </div>
           </div>
         </div>
@@ -1298,6 +1318,58 @@ const TestDashboardComponents: React.FC = () => {
                 placeholder="Numéro de téléphone"
                 onChange={(phone) => console.log('Téléphone:', phone)}
               />
+            </div>
+          </div>
+        </section>
+
+        {/* Section Common Components */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Common Components</h2>
+          
+          <div className="space-y-8">
+            {/* PageBreadcrumb */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">PageBreadcrumb</h3>
+              <PageBreadcrumb pageTitle="Test Dashboard" />
+            </div>
+
+            {/* ComponentCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">ComponentCard</h3>
+              <ComponentCard 
+                title="Exemple de carte" 
+                desc="Description de la carte avec des exemples de contenu"
+              >
+                <div className="space-y-4">
+                  <p className="text-gray-600">Contenu de la carte</p>
+                  <Button variant="primary">Bouton dans la carte</Button>
+                </div>
+              </ComponentCard>
+            </div>
+
+            {/* ChartTab */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">ChartTab</h3>
+              <ChartTab 
+                options={["Mensuel", "Trimestriel", "Annuel"]}
+                defaultSelected="Mensuel"
+                onChange={(selected) => console.log('Sélectionné:', selected)}
+              />
+            </div>
+
+            {/* ThemeTogglerTwo */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">ThemeTogglerTwo</h3>
+              <ThemeTogglerTwo />
+            </div>
+
+            {/* GridShape */}
+            <div className="relative h-32 bg-gray-50 rounded-lg overflow-hidden">
+              <h3 className="text-lg font-medium text-gray-700 mb-4">GridShape</h3>
+              <GridShape />
+              <div className="relative z-10 p-4">
+                <p className="text-gray-600">Contenu avec formes en arrière-plan</p>
+              </div>
             </div>
           </div>
         </section>

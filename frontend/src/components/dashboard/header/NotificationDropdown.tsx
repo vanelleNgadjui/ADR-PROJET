@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Dropdown } from "../ui/Dropdown";
 import { DropdownItem } from "../ui/DropdownItem";
 import { Link } from "react-router-dom";
-import Avatar from "../ui/Avatar";
 import { BellIcon, XIcon } from "lucide-react";
+import { Avatar } from "../ui/Avatar";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,46 +22,6 @@ export default function NotificationDropdown() {
     setNotifying(false);
   };
 
-  // Exemples de notifications (à adapter selon notre système)
-  const notifications = [
-    {
-      id: 1,
-      user: {
-        name: "Marie Dupont",
-        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face",
-        status: "online"
-      },
-      message: "s'est inscrite à votre événement",
-      event: "Conférence sur l'évangélisation",
-      time: "Il y a 2h",
-      type: "inscription"
-    },
-    {
-      id: 2,
-      user: {
-        name: "Jean Martin",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
-        status: "offline"
-      },
-      message: "a commenté votre événement",
-      event: "Retraite spirituelle",
-      time: "Il y a 4h",
-      type: "commentaire"
-    },
-    {
-      id: 3,
-      user: {
-        name: "Sophie Bernard",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face",
-        status: "online"
-      },
-      message: "a partagé votre événement",
-      event: "Concert Gospel",
-      time: "Il y a 6h",
-      type: "partage"
-    }
-  ];
-
   return (
     <div className="relative">
       <button
@@ -75,7 +35,7 @@ export default function NotificationDropdown() {
         >
           <span className="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 animate-ping"></span>
         </span>
-        <BellIcon className="w-5 h-5 text-current" />
+        <BellIcon className="w-5 h-5" />
       </button>
       
       <Dropdown
@@ -96,43 +56,87 @@ export default function NotificationDropdown() {
         </div>
         
         <ul className="flex flex-col h-auto overflow-y-auto custom-scrollbar">
-          {notifications.map((notification) => (
-            <li key={notification.id}>
-              <DropdownItem
-                onItemClick={closeDropdown}
-                className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
-              >
-                <Avatar
-                  src={notification.user.avatar}
-                  alt={notification.user.name}
-                  size="small"
-                  status={notification.user.status as "online" | "offline" | "busy" | "none"}
-                />
-
-                <span className="block">
-                  <span className="mb-1.5 block text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-medium text-gray-800 dark:text-white/90">
-                      {notification.user.name}
-                    </span>
-                    {" "}{notification.message}
+          {/* Example notification items */}
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+            >
+              <Avatar 
+                src="/images/user/user-02.jpg" 
+                alt="User" 
+                size="small"
+                status="online"
+              />
+              <span className="block">
+                <span className="mb-1.5 block text-sm text-gray-500 dark:text-gray-400 space-x-1">
+                  <span className="font-medium text-gray-800 dark:text-white/90">
+                    Terry Franci
                   </span>
-                  <span className="block text-xs text-gray-500 dark:text-gray-400">
-                    {notification.event}
-                  </span>
-                  <span className="block text-xs text-gray-400 dark:text-gray-500">
-                    {notification.time}
-                  </span>
+                  <span>a commenté votre événement</span>
                 </span>
-              </DropdownItem>
-            </li>
-          ))}
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Il y a 2 heures
+                </span>
+              </span>
+            </DropdownItem>
+          </li>
+          
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+            >
+              <Avatar 
+                src="/images/user/user-03.jpg" 
+                alt="User" 
+                size="small"
+                status="offline"
+              />
+              <span className="block">
+                <span className="mb-1.5 block text-sm text-gray-500 dark:text-gray-400 space-x-1">
+                  <span className="font-medium text-gray-800 dark:text-white/90">
+                    Sarah Wilson
+                  </span>
+                  <span>s'est inscrite à votre événement</span>
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Il y a 4 heures
+                </span>
+              </span>
+            </DropdownItem>
+          </li>
+          
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+            >
+              <Avatar 
+                src="/images/user/user-04.jpg" 
+                alt="User" 
+                size="small"
+                status="online"
+              />
+              <span className="block">
+                <span className="mb-1.5 block text-sm text-gray-500 dark:text-gray-400 space-x-1">
+                  <span className="font-medium text-gray-800 dark:text-white/90">
+                    Mike Johnson
+                  </span>
+                  <span>a partagé votre événement</span>
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Il y a 6 heures
+                </span>
+              </span>
+            </DropdownItem>
+          </li>
         </ul>
-
-        <div className="pt-3 mt-auto border-t border-gray-100 dark:border-gray-700">
+        
+        <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
           <Link
             to="/notifications"
-            className="block w-full px-3 py-2 text-sm font-medium text-center text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
-            onClick={closeDropdown}
+            className="block w-full text-center text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
           >
             Voir toutes les notifications
           </Link>
