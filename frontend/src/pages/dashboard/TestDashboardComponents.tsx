@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert } from '../../components/dashboard/ui';
+import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell } from '../../components/dashboard/ui';
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
@@ -139,6 +139,222 @@ const TestDashboardComponents: React.FC = () => {
               <div>
                 <h4 className="font-medium text-gray-800">John Doe</h4>
                 <p className="text-sm text-gray-600">Organisateur • En ligne</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Table */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composant Table</h2>
+          
+          <div className="space-y-6">
+            {/* Table style template */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Table style template</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableCell isHeader>Utilisateur</TableCell>
+                    <TableCell isHeader>Projet</TableCell>
+                    <TableCell isHeader>Équipe</TableCell>
+                    <TableCell isHeader>Statut</TableCell>
+                    <TableCell isHeader>Budget</TableCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="px-5 py-4 sm:px-6">
+                      <div className="flex items-center gap-3">
+                        <Avatar 
+                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                          alt="John Doe" 
+                          size="small"
+                          role="organisateur"
+                        />
+                        <div>
+                          <span className="block font-medium text-gray-800 text-sm dark:text-white/90">
+                            John Doe
+                          </span>
+                          <span className="block text-gray-500 text-xs dark:text-gray-400">
+                            Organisateur
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>Conférence Évangélique</TableCell>
+                    <TableCell>
+                      <div className="flex -space-x-2">
+                        <Avatar 
+                          src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=24&h=24&fit=crop&crop=face" 
+                          alt="Team 1" 
+                          size="xsmall"
+                          className="border-2 border-white dark:border-gray-900"
+                        />
+                        <Avatar 
+                          src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=24&h=24&fit=crop&crop=face" 
+                          alt="Team 2" 
+                          size="xsmall"
+                          className="border-2 border-white dark:border-gray-900"
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="light" color="success" size="sm">Actif</Badge>
+                    </TableCell>
+                    <TableCell>3.9K €</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="px-5 py-4 sm:px-6">
+                      <div className="flex items-center gap-3">
+                        <Avatar 
+                          src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                          alt="Marie Dupont" 
+                          size="small"
+                          role="participant"
+                        />
+                        <div>
+                          <span className="block font-medium text-gray-800 text-sm dark:text-white/90">
+                            Marie Dupont
+                          </span>
+                          <span className="block text-gray-500 text-xs dark:text-gray-400">
+                            Participant
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>Retraite Spirituelle</TableCell>
+                    <TableCell>
+                      <div className="flex -space-x-2">
+                        <Avatar 
+                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
+                          alt="Team 1" 
+                          size="xsmall"
+                          className="border-2 border-white dark:border-gray-900"
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="light" color="warning" size="sm">En attente</Badge>
+                    </TableCell>
+                    <TableCell>24.9K €</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Table variant card */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Table variant card (Recent Orders)</h3>
+              <Table 
+                variant="card" 
+                title="Événements Récents"
+                actions={
+                  <>
+                    <Button variant="outline" size="sm" startIcon={<SettingsIcon className="w-4 h-4" />}>
+                      Filtrer
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Voir tout
+                    </Button>
+                  </>
+                }
+              >
+                <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
+                  <TableRow>
+                    <TableCell isHeader className="py-3">Événements</TableCell>
+                    <TableCell isHeader className="py-3">Catégorie</TableCell>
+                    <TableCell isHeader className="py-3">Prix</TableCell>
+                    <TableCell isHeader className="py-3">Statut</TableCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  <TableRow>
+                    <TableCell className="py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-[50px] w-[50px] overflow-hidden rounded-md bg-gray-200 flex items-center justify-center">
+                          <UserIcon className="w-6 h-6 text-gray-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800 text-sm dark:text-white/90">
+                            Conférence Évangélique
+                          </p>
+                          <span className="text-gray-500 text-xs dark:text-gray-400">
+                            2 Variantes
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3">Conférence</TableCell>
+                    <TableCell className="py-3">25.00 €</TableCell>
+                    <TableCell className="py-3">
+                      <Badge variant="light" color="success" size="sm">Livré</Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-[50px] w-[50px] overflow-hidden rounded-md bg-gray-200 flex items-center justify-center">
+                          <UserIcon className="w-6 h-6 text-gray-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800 text-sm dark:text-white/90">
+                            Retraite Spirituelle
+                          </p>
+                          <span className="text-gray-500 text-xs dark:text-gray-400">
+                            1 Variante
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3">Retraite</TableCell>
+                    <TableCell className="py-3">45.00 €</TableCell>
+                    <TableCell className="py-3">
+                      <Badge variant="light" color="warning" size="sm">En attente</Badge>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-[50px] w-[50px] overflow-hidden rounded-md bg-gray-200 flex items-center justify-center">
+                          <UserIcon className="w-6 h-6 text-gray-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800 text-sm dark:text-white/90">
+                            Concert Gospel
+                          </p>
+                          <span className="text-gray-500 text-xs dark:text-gray-400">
+                            3 Variantes
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3">Concert</TableCell>
+                    <TableCell className="py-3">15.00 €</TableCell>
+                    <TableCell className="py-3">
+                      <Badge variant="light" color="error" size="sm">Annulé</Badge>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Les tables sont parfaites pour afficher des données structurées comme les listes d'événements, 
+                participants, transactions, etc.
+              </p>
+              <div className="flex gap-4">
+                <Button variant="primary" startIcon={<PlusIcon className="w-4 h-4" />}>
+                  Ajouter un événement
+                </Button>
+                <Button variant="outline" startIcon={<ArrowRightIcon className="w-4 h-4" />}>
+                  Exporter les données
+                </Button>
               </div>
             </div>
           </div>

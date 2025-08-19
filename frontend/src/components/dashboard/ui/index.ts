@@ -6,3 +6,4 @@ export { DropdownItem } from './DropdownItem';
 export { Modal } from './Modal';
 export { default as Avatar } from './Avatar';
 export { default as Alert } from './Alert';
+export { Table, TableHeader, TableBody, TableRow, TableCell } from './Table';
