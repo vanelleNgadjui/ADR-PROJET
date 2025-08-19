@@ -6,6 +6,7 @@ import Inscription from './pages/auth/Inscription';
 import Connexion from './pages/auth/Connexion';
 import AuthCallback from './pages/auth/AuthCallback';
 import Onboarding from './pages/auth/Onboarding';
+import TestDashboardComponents from './pages/dashboard/TestDashboardComponents';
 import { useUserSync } from './hooks/useUserSync';
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/auth/onboarding/:role" element={<Onboarding />} />
 
+        {/* Routes de test dashboard */}
+        <Route path="/test-dashboard" element={<TestDashboardComponents />} />
         
         {/* Redirige toute autre route vers / */}
         <Route path="*" element={<Navigate to="/" replace />} />
