@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell } from '../../components/dashboard/ui';
+import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, Video, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
@@ -140,6 +140,144 @@ const TestDashboardComponents: React.FC = () => {
                 <h4 className="font-medium text-gray-800">John Doe</h4>
                 <p className="text-sm text-gray-600">Organisateur • En ligne</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Images */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Images</h2>
+          
+          <div className="space-y-6">
+            {/* Image responsive */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Image responsive</h3>
+              <ResponsiveImage 
+                src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop"
+                alt="Paysage"
+              />
+            </div>
+
+            {/* Grille 2 colonnes */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Grille 2 colonnes</h3>
+              <ImageGrid 
+                columns={2}
+                images={[
+                  {
+                    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+                    alt: "Nature 1"
+                  },
+                  {
+                    src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop", 
+                    alt: "Nature 2"
+                  }
+                ]}
+              />
+            </div>
+
+            {/* Grille 3 colonnes */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Grille 3 colonnes</h3>
+              <ImageGrid 
+                columns={3}
+                images={[
+                  {
+                    src: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=300&fit=crop",
+                    alt: "Événement 1"
+                  },
+                  {
+                    src: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=300&fit=crop",
+                    alt: "Événement 2"
+                  },
+                  {
+                    src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+                    alt: "Événement 3"
+                  }
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Les grilles d'images sont parfaites pour afficher des galeries d'événements, des photos de participants, 
+              ou des visuels promotionnels.
+            </p>
+            <ImageGrid 
+              columns={2}
+              images={[
+                {
+                  src: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=400&h=250&fit=crop",
+                  alt: "Conférence"
+                },
+                {
+                  src: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400&h=250&fit=crop",
+                  alt: "Événement"
+                }
+              ]}
+            />
+          </div>
+        </section>
+
+        {/* Section Videos */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Videos</h2>
+          
+          <div className="space-y-6">
+            {/* Vidéos avec différents ratios */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-medium text-gray-700 mb-4">16:9 (Standard)</h3>
+                <VideoSixteenToNine 
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="Vidéo 16:9"
+                />
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium text-gray-700 mb-4">4:3 (Classique)</h3>
+                <VideoFourToThree 
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="Vidéo 4:3"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-medium text-gray-700 mb-4">1:1 (Carré)</h3>
+                <VideoOneToOne 
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="Vidéo carrée"
+                />
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium text-gray-700 mb-4">21:9 (Ultra-large)</h3>
+                <VideoTwentyOneToNine 
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="Vidéo 21:9"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Les composants vidéo permettent d'intégrer facilement du contenu multimédia dans les dashboards,
+                parfait pour les témoignages, présentations d'événements, ou formations.
+              </p>
+              <IframeVideo 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                title="Présentation événement"
+                aspectRatio="16/9"
+              />
             </div>
           </div>
         </section>
