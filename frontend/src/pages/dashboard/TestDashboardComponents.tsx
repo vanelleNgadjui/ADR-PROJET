@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Badge, Dropdown, DropdownItem, Modal } from '../../components/dashboard/ui';
+import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert } from '../../components/dashboard/ui';
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
@@ -10,6 +10,11 @@ const TestDashboardComponents: React.FC = () => {
   const [modal2Open, setModal2Open] = useState(false);
   const [modal3Open, setModal3Open] = useState(false);
   const [modal4Open, setModal4Open] = useState(false);
+  const [showAlert1, setShowAlert1] = useState(true);
+  const [showAlert2, setShowAlert2] = useState(true);
+  const [showAlert3, setShowAlert3] = useState(true);
+  const [showAlert4, setShowAlert4] = useState(true);
+  const [showAlert5, setShowAlert5] = useState(true);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -42,6 +47,192 @@ const TestDashboardComponents: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Section Avatar */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composant Avatar</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Tailles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Tailles</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="xsmall" />
+                  <span className="text-sm text-gray-600">xsmall</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="small" />
+                  <span className="text-sm text-gray-600">small</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="medium" />
+                  <span className="text-sm text-gray-600">medium (default)</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="large" />
+                  <span className="text-sm text-gray-600">large</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="xlarge" />
+                  <span className="text-sm text-gray-600">xlarge</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="xxlarge" />
+                  <span className="text-sm text-gray-600">xxlarge</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Statuts */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Statuts</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="online" />
+                  <span className="text-sm text-gray-600">En ligne</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="offline" />
+                  <span className="text-sm text-gray-600">Hors ligne</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="busy" />
+                  <span className="text-sm text-gray-600">Occupé</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="none" />
+                  <span className="text-sm text-gray-600">Aucun statut</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Fallback par rôle */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Fallback par rôle</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <Avatar src="invalid-url" alt="John Doe" role="participant" fallback="JD" />
+                  <span className="text-sm text-gray-600">Participant (Orange)</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="invalid-url" alt="Marie Dupont" role="organisateur" fallback="MD" />
+                  <span className="text-sm text-gray-600">Organisateur (Bleu)</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="invalid-url" alt="Admin User" role="admin" fallback="AU" />
+                  <span className="text-sm text-gray-600">Admin (Gris)</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar src="invalid-url" alt="John Doe" />
+                  <span className="text-sm text-gray-600">Sans rôle (Orange par défaut)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <div className="flex flex-wrap gap-4 items-center">
+              <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="large" status="online" role="organisateur" />
+              <div>
+                <h4 className="font-medium text-gray-800">John Doe</h4>
+                <p className="text-sm text-gray-600">Organisateur • En ligne</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Alert */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composant Alert</h2>
+          
+          <div className="space-y-4">
+            {/* Types d'alertes */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Types d'alertes</h3>
+              
+              {showAlert1 && (
+                <Alert
+                  variant="success"
+                  title="Succès !"
+                  message="Votre événement a été créé avec succès. Vous pouvez maintenant le gérer depuis votre tableau de bord."
+                  showLink={true}
+                  linkHref="/dashboard/events"
+                  linkText="Voir mes événements"
+                  onClose={() => setShowAlert1(false)}
+                />
+              )}
+
+              {showAlert2 && (
+                <Alert
+                  variant="error"
+                  title="Erreur !"
+                  message="Impossible de créer l'événement. Veuillez vérifier vos informations et réessayer."
+                  showLink={true}
+                  linkHref="/help"
+                  linkText="Besoin d'aide ?"
+                  onClose={() => setShowAlert2(false)}
+                />
+              )}
+
+              {showAlert3 && (
+                <Alert
+                  variant="warning"
+                  title="Attention !"
+                  message="Votre événement se termine dans 24h. N'oubliez pas de finaliser les préparatifs."
+                  onClose={() => setShowAlert3(false)}
+                />
+              )}
+
+              {showAlert4 && (
+                <Alert
+                  variant="info"
+                  title="Information"
+                  message="Nouvelle fonctionnalité disponible : vous pouvez maintenant exporter vos données d'événement."
+                  showLink={true}
+                  linkHref="/features"
+                  linkText="Découvrir"
+                  onClose={() => setShowAlert4(false)}
+                />
+              )}
+
+              {showAlert5 && (
+                <Alert
+                  variant="gray"
+                  title="Note importante"
+                  message="Cette fonctionnalité est en cours de développement. Certaines options peuvent ne pas être disponibles."
+                  onClose={() => setShowAlert5(false)}
+                />
+              )}
+            </div>
+
+            {/* Exemples d'usage */}
+            <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+              <div className="space-y-4">
+                <Alert
+                  variant="success"
+                  title="Inscription réussie"
+                  message="Votre compte a été créé avec succès. Bienvenue sur Agenda du Royaume !"
+                />
+                <Alert
+                  variant="info"
+                  title="Mise à jour disponible"
+                  message="Une nouvelle version de l'application est disponible."
+                  showLink={true}
+                  linkText="Mettre à jour"
+                />
+                <Alert
+                  variant="gray"
+                  title="Informations générales"
+                  message="Cette section vous permet de gérer vos préférences et paramètres de compte."
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Section Modal */}
         <section className="mb-12">
