@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Button, Badge, Dropdown, DropdownItem } from '../../components/dashboard/ui';
-import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon } from 'lucide-react';
+import { Button, Badge, Dropdown, DropdownItem, Modal } from '../../components/dashboard/ui';
+import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
   const [dropdown1Open, setDropdown1Open] = useState(false);
   const [dropdown2Open, setDropdown2Open] = useState(false);
   const [dropdown3Open, setDropdown3Open] = useState(false);
+  const [modal1Open, setModal1Open] = useState(false);
+  const [modal2Open, setModal2Open] = useState(false);
+  const [modal3Open, setModal3Open] = useState(false);
+  const [modal4Open, setModal4Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -38,6 +42,80 @@ const TestDashboardComponents: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Section Modal */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composant Modal</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Tailles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Tailles</h3>
+              <div className="space-y-3">
+                <Button variant="primary" onClick={() => setModal1Open(true)}>
+                  Modal Small
+                </Button>
+                <Button variant="primary" onClick={() => setModal2Open(true)}>
+                  Modal Medium
+                </Button>
+                <Button variant="primary" onClick={() => setModal3Open(true)}>
+                  Modal Large
+                </Button>
+                <Button variant="primary" onClick={() => setModal4Open(true)}>
+                  Modal XL
+                </Button>
+              </div>
+            </div>
+
+            {/* Types */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Types</h3>
+              <div className="space-y-3">
+                <Button variant="secondary" onClick={() => setModal1Open(true)}>
+                  Avec bouton fermer
+                </Button>
+                <Button variant="outline" onClick={() => setModal2Open(true)}>
+                  Sans bouton fermer
+                </Button>
+                <Button variant="ghost" onClick={() => setModal3Open(true)}>
+                  Modal plein écran
+                </Button>
+              </div>
+            </div>
+
+            {/* Exemples */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">Exemples</h3>
+              <div className="space-y-3">
+                <Button variant="primary" startIcon={<PlusIcon className="w-4 h-4" />} onClick={() => setModal1Open(true)}>
+                  Créer un événement
+                </Button>
+                <Button variant="secondary" startIcon={<UserIcon className="w-4 h-4" />} onClick={() => setModal2Open(true)}>
+                  Modifier le profil
+                </Button>
+                <Button variant="outline" startIcon={<SettingsIcon className="w-4 h-4" />} onClick={() => setModal3Open(true)}>
+                  Paramètres
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemples d'usage */}
+          <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
+            <div className="flex flex-wrap gap-4">
+              <Button variant="primary" onClick={() => setModal1Open(true)}>
+                Confirmation
+              </Button>
+              <Button variant="secondary" onClick={() => setModal2Open(true)}>
+                Formulaire
+              </Button>
+              <Button variant="outline" onClick={() => setModal3Open(true)}>
+                Détails
+              </Button>
+            </div>
+          </div>
+        </section>
 
         {/* Section Button */}
         <section className="mb-12">
@@ -327,6 +405,67 @@ const TestDashboardComponents: React.FC = () => {
           </ul>
         </div>
       </div>
+
+      {/* Modals */}
+      <Modal isOpen={modal1Open} onClose={() => setModal1Open(false)} size="sm">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Modal Small</h3>
+          <p className="text-gray-600 mb-6">Ceci est un exemple de modal de petite taille.</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => setModal1Open(false)}>
+              Annuler
+            </Button>
+            <Button variant="primary" onClick={() => setModal1Open(false)}>
+              Confirmer
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={modal2Open} onClose={() => setModal2Open(false)} size="md" showCloseButton={false}>
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Modal Medium</h3>
+          <p className="text-gray-600 mb-6">Ceci est un exemple de modal de taille moyenne sans bouton de fermeture.</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => setModal2Open(false)}>
+              Annuler
+            </Button>
+            <Button variant="primary" onClick={() => setModal2Open(false)}>
+              Confirmer
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={modal3Open} onClose={() => setModal3Open(false)} size="lg" isFullscreen>
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Modal Large (Plein écran)</h3>
+          <p className="text-gray-600 mb-6">Ceci est un exemple de modal en plein écran.</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => setModal3Open(false)}>
+              Annuler
+            </Button>
+            <Button variant="primary" onClick={() => setModal3Open(false)}>
+              Confirmer
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={modal4Open} onClose={() => setModal4Open(false)} size="xl">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Modal XL</h3>
+          <p className="text-gray-600 mb-6">Ceci est un exemple de modal de très grande taille.</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => setModal4Open(false)}>
+              Annuler
+            </Button>
+            <Button variant="primary" onClick={() => setModal4Open(false)}>
+              Confirmer
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
