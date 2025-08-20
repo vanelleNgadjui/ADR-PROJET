@@ -12,6 +12,16 @@ import {
 } from '../../components/dashboard/common';
 import { LineChartOne, BarChartOne } from '../../components/dashboard/charts';
 import { BasicTableOne } from '../../components/dashboard/tables';
+import { UserAddressCard, UserInfoCard, UserMetaCard } from '../../components/dashboard/UserProfile';
+import { 
+  CountryMap, 
+  DemographicCard, 
+  EcommerceMetrics, 
+  MonthlySalesChart, 
+  MonthlyTarget, 
+  RecentOrders, 
+  StatisticsChart 
+} from '../../components/dashboard/ ecommerce';
 import { useTheme } from '../../context/dashboard';
 import { 
   Form, 
@@ -57,7 +67,7 @@ const TestDashboardComponents: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto">
         <div className="bg-green-100 p-4 mb-4 rounded border-2 border-green-500">
           <h1 className="text-2xl font-bold text-green-800">✅ PAGE DE TEST FONCTIONNE</h1>
           <p className="text-green-700">Si vous voyez ce message, la page se charge correctement</p>
@@ -135,27 +145,46 @@ const TestDashboardComponents: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-700">Tailles</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="xsmall" />
+                  <Avatar src="" alt="John Doe" size="xsmall" role="participant" />
                   <span className="text-sm text-gray-600">xsmall</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="small" />
+                  <Avatar src="" alt="John Doe" size="small" role="participant" />
                   <span className="text-sm text-gray-600">small</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="medium" />
+                  <Avatar src="" alt="John Doe" size="medium" role="participant" />
                   <span className="text-sm text-gray-600">medium (default)</span>
                 </div>
+                
+                {/* Test des fallbacks */}
+                <div className="mt-6">
+                  <h4 className="text-md font-medium text-gray-700 mb-3">Tests Fallback Automatique</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-4">
+                      <Avatar src="" alt="Vanelle Ngadj" size="medium" role="participant" />
+                      <span className="text-sm text-gray-600">Sans image (Participant) - Auto: "VN"</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Avatar src="invalid-url" alt="Organisateur Test" size="medium" role="organisateur" />
+                      <span className="text-sm text-gray-600">URL invalide (Organisateur) - Auto: "OT"</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Avatar src={undefined} alt="Admin User" size="medium" role="admin" />
+                      <span className="text-sm text-gray-600">Undefined (Admin) - Auto: "AU"</span>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="large" />
+                  <Avatar src="" alt="John Doe" size="large" role="participant" />
                   <span className="text-sm text-gray-600">large</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="xlarge" />
+                  <Avatar src="" alt="John Doe" size="xlarge" role="participant" />
                   <span className="text-sm text-gray-600">xlarge</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="xxlarge" />
+                  <Avatar src="" alt="John Doe" size="xxlarge" role="participant" />
                   <span className="text-sm text-gray-600">xxlarge</span>
                 </div>
               </div>
@@ -166,19 +195,19 @@ const TestDashboardComponents: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-700">Statuts</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="online" />
+                  <Avatar src="" alt="John Doe" status="online" role="participant" />
                   <span className="text-sm text-gray-600">En ligne</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="offline" />
+                  <Avatar src="" alt="John Doe" status="offline" role="participant" />
                   <span className="text-sm text-gray-600">Hors ligne</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="busy" />
+                  <Avatar src="" alt="John Doe" status="busy" role="participant" />
                   <span className="text-sm text-gray-600">Occupé</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" status="none" />
+                  <Avatar src="" alt="John Doe" status="none" role="participant" />
                   <span className="text-sm text-gray-600">Aucun statut</span>
                 </div>
               </div>
@@ -186,18 +215,18 @@ const TestDashboardComponents: React.FC = () => {
 
             {/* Fallback par rôle */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-700">Fallback par rôle</h3>
+                              <h3 className="text-lg font-medium text-gray-700">Fallback Automatique par Rôle</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
-                  <Avatar src="invalid-url" alt="John Doe" role="participant" fallback="JD" />
+                  <Avatar src="invalid-url" alt="John Doe" role="participant" />
                   <span className="text-sm text-gray-600">Participant (Orange)</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="invalid-url" alt="Marie Dupont" role="organisateur" fallback="MD" />
+                  <Avatar src="invalid-url" alt="Marie Dupont" role="organisateur" />
                   <span className="text-sm text-gray-600">Organisateur (Bleu)</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Avatar src="invalid-url" alt="Admin User" role="admin" fallback="AU" />
+                  <Avatar src="invalid-url" alt="Admin User" role="admin" />
                   <span className="text-sm text-gray-600">Admin (Gris)</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -212,7 +241,7 @@ const TestDashboardComponents: React.FC = () => {
           <div className="mt-8 p-6 bg-white rounded-lg shadow-card">
             <h3 className="text-lg font-medium text-gray-700 mb-4">Exemples d'usage</h3>
             <div className="flex flex-wrap gap-4 items-center">
-              <Avatar src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe" size="large" status="online" role="organisateur" />
+              <Avatar src="" alt="John Doe" size="large" status="online" role="organisateur" />
               <div>
                 <h4 className="font-medium text-gray-800">John Doe</h4>
                 <p className="text-sm text-gray-600">Organisateur • En ligne</p>
@@ -618,15 +647,19 @@ const TestDashboardComponents: React.FC = () => {
                     <TableCell>
                       <div className="flex -space-x-2">
                         <Avatar 
-                          src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=24&h=24&fit=crop&crop=face" 
+                          src="" 
                           alt="Team 1" 
                           size="xsmall"
+                          role="participant"
+                         
                           className="border-2 border-white dark:border-gray-900"
                         />
                         <Avatar 
-                          src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=24&h=24&fit=crop&crop=face" 
+                          src="" 
                           alt="Team 2" 
                           size="xsmall"
+                          role="organisateur"
+                         
                           className="border-2 border-white dark:border-gray-900"
                         />
                       </div>
@@ -640,10 +673,11 @@ const TestDashboardComponents: React.FC = () => {
                     <TableCell className="px-5 py-4 sm:px-6">
                       <div className="flex items-center gap-3">
                         <Avatar 
-                          src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                          src="" 
                           alt="Marie Dupont" 
                           size="small"
                           role="participant"
+                         
                         />
                         <div>
                           <span className="block font-medium text-gray-800 text-sm dark:text-white/90">
@@ -659,9 +693,11 @@ const TestDashboardComponents: React.FC = () => {
                     <TableCell>
                       <div className="flex -space-x-2">
                         <Avatar 
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
+                          src="" 
                           alt="Team 1" 
                           size="xsmall"
+                          role="admin"
+                         
                           className="border-2 border-white dark:border-gray-900"
                         />
                       </div>
@@ -1475,6 +1511,78 @@ const TestDashboardComponents: React.FC = () => {
             <div>
               <h3 className="text-lg font-medium text-gray-700 mb-4">CheckboxComponents</h3>
               <CheckboxComponents />
+            </div>
+          </div>
+        </section>
+
+        {/* UserProfile Components */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">UserProfile Components</h2>
+          <div className="space-y-6">
+            {/* UserMetaCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">UserMetaCard</h3>
+              <UserMetaCard />
+            </div>
+
+            {/* UserInfoCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">UserInfoCard</h3>
+              <UserInfoCard />
+            </div>
+
+            {/* UserAddressCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">UserAddressCard</h3>
+              <UserAddressCard />
+            </div>
+          </div>
+        </section>
+
+        {/* Ecommerce Components */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Ecommerce Components</h2>
+          <div className="space-y-6">
+            {/* CountryMap */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">CountryMap</h3>
+              <CountryMap />
+            </div>
+
+            {/* DemographicCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">DemographicCard</h3>
+              <DemographicCard />
+            </div>
+
+            {/* EcommerceMetrics */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">EcommerceMetrics</h3>
+              <EcommerceMetrics />
+            </div>
+
+            {/* MonthlySalesChart */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">MonthlySalesChart</h3>
+              <MonthlySalesChart />
+            </div>
+
+            {/* MonthlyTarget */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">MonthlyTarget</h3>
+              <MonthlyTarget />
+            </div>
+
+            {/* RecentOrders */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">RecentOrders</h3>
+              <RecentOrders />
+            </div>
+
+            {/* StatisticsChart */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">StatisticsChart</h3>
+              <StatisticsChart />
             </div>
           </div>
         </section>

@@ -1,11 +1,10 @@
 import React from "react";
 
 interface AvatarProps {
-  src: string; // URL of the avatar image
+  src?: string; // URL of the avatar image (optional)
   alt?: string; // Alt text for the avatar
   size?: "xsmall" | "small" | "medium" | "large" | "xlarge" | "xxlarge"; // Avatar size
   status?: "online" | "offline" | "busy" | "none"; // Status indicator
-  fallback?: string; // Fallback text if image fails to load
   role?: "participant" | "organisateur" | "admin"; // User role for color theming
   className?: string; // Additional classes
 }
@@ -17,6 +16,15 @@ const sizeClasses = {
   large: "h-12 w-12 max-w-12",
   xlarge: "h-14 w-14 max-w-14",
   xxlarge: "h-16 w-16 max-w-16",
+};
+
+const fallbackTextClasses = {
+  xsmall: "text-xs",
+  small: "text-xs",
+  medium: "text-sm",
+  large: "text-base",
+  xlarge: "text-lg",
+  xxlarge: "text-xl",
 };
 
 const statusSizeClasses = {
@@ -39,7 +47,6 @@ const Avatar: React.FC<AvatarProps> = ({
   alt = "User Avatar",
   size = "medium",
   status = "none",
-  fallback,
   role,
   className = "",
 }) => {
@@ -49,9 +56,26 @@ const Avatar: React.FC<AvatarProps> = ({
     setImageError(true);
   };
 
+  // Validation de l'URL de l'image
+  const isValidImageUrl = (url: string) => {
+    if (!url || url.trim() === '') return false;
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const getFallbackText = () => {
-    if (fallback) return fallback;
-    if (alt) return alt.charAt(0).toUpperCase();
+    if (alt) {
+      // Extraire les initiales du nom complet
+      const nameParts = alt.trim().split(' ');
+      if (nameParts.length >= 2) {
+        return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+      }
+      return alt.charAt(0).toUpperCase();
+    }
     return "U";
   };
 
@@ -71,7 +95,7 @@ const Avatar: React.FC<AvatarProps> = ({
   return (
     <div className={`relative rounded-full ${sizeClasses[size]} ${className}`}>
       {/* Avatar Image or Fallback */}
-      {!imageError ? (
+      {src && isValidImageUrl(src) && !imageError ? (
         <img 
           src={src} 
           alt={alt} 
@@ -79,7 +103,7 @@ const Avatar: React.FC<AvatarProps> = ({
           onError={handleImageError}
         />
       ) : (
-        <div className={`w-full h-full rounded-full ${getFallbackColor()} flex items-center justify-center font-semibold text-sm`}>
+        <div className={`w-full h-full rounded-full ${getFallbackColor()} flex items-center justify-center font-semibold ${fallbackTextClasses[size]}`}>
           {getFallbackText()}
         </div>
       )}

@@ -3,6 +3,7 @@ import { DropdownItem } from "../ui/DropdownItem";
 import { Dropdown } from "../ui/Dropdown";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
+import { useProfilePhoto } from "../../../hooks/useProfilePhoto";
 import Avatar from "../ui/Avatar";
 import { 
   UserIcon, 
@@ -15,6 +16,13 @@ import {
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
+
+  // Utiliser le hook de gestion des photos de profil
+  const { getOptimizedUrl } = useProfilePhoto({
+    userId: user?.id || '',
+    userName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Utilisateur',
+    initialPhotoUrl: user?.user_metadata?.avatar_url || ''
+  });
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -65,7 +73,7 @@ export default function UserDropdown() {
                   'Utilisateur';
   const userEmail = user?.email || '';
   const userRole = user?.user_metadata?.role || 'participant';
-  const userAvatar = user?.user_metadata?.avatar_url || undefined;
+  const userAvatar = getOptimizedUrl();
 
   return (
     <div className="relative">
@@ -74,11 +82,12 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
       >
         <Avatar 
-          src={userAvatar}
+          src={userAvatar || ''}
           alt={userName}
           size="medium"
           status="online"
           role={userRole}
+         
           className="mr-3 flex-shrink-0"
         />
 
