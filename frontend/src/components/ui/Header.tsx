@@ -41,7 +41,7 @@ const Header: React.FC = () => {
       {/* Logo à gauche (mobile : caché si menuOpen) */}
       <div className={`flex items-center h-full ${menuOpen ? 'hidden' : ''} md:flex`}>
         <Link to="/">
-          <img src={logo} alt="Logo Agenda du Royaume" className="h-12 max-h-full w-auto rounded-md object-contain cursor-pointer hover:opacity-80 transition-opacity" />
+          <img src={logo} alt="Logo Agenda du Royaume" className="h-8 max-h-full w-auto rounded-md object-contain cursor-pointer hover:opacity-80 transition-opacity" />
         </Link>
       </div>
       {/* Desktop actions */}

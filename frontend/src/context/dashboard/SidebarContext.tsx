@@ -51,6 +51,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const toggleSidebar = () => {
+    console.log('toggleSidebar called, current isExpanded:', isExpanded);
     setIsExpanded((prev) => !prev);
   };
 
@@ -65,7 +66,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <SidebarContext.Provider
       value={{
-        isExpanded: isMobile ? false : isExpanded,
+        isExpanded: isExpanded,
         isMobileOpen,
         isHovered,
         activeItem,
