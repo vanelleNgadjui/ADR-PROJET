@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, Video, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
+import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
 import { Header, UserDropdown, NotificationDropdown } from '../../components/dashboard/header';
 import { 
   ThemeToggleButton, 
   ThemeTogglerTwo,
   ComponentCard, 
   PageBreadcrumb, 
-  ScrollToTop, 
-  PageMeta, 
+ 
   GridShape, 
   ChartTab 
 } from '../../components/dashboard/common';
-import { useTheme, useSidebar } from '../../context/dashboard';
+import { LineChartOne, BarChartOne } from '../../components/dashboard/charts';
+import { BasicTableOne } from '../../components/dashboard/tables';
+import { useTheme } from '../../context/dashboard';
 import { 
   Form, 
   Label, 
@@ -36,11 +37,10 @@ import {
   DefaultInputs,
   CheckboxComponents
 } from '../../components/dashboard/form';
-import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon, XIcon } from 'lucide-react';
+import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
-  const { isExpanded, isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  const { theme } = useTheme();
   
   const [dropdown1Open, setDropdown1Open] = useState(false);
   const [dropdown2Open, setDropdown2Open] = useState(false);
@@ -58,6 +58,11 @@ const TestDashboardComponents: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
+        <div className="bg-green-100 p-4 mb-4 rounded border-2 border-green-500">
+          <h1 className="text-2xl font-bold text-green-800">✅ PAGE DE TEST FONCTIONNE</h1>
+          <p className="text-green-700">Si vous voyez ce message, la page se charge correctement</p>
+        </div>
+        
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Test des Composants Dashboard
         </h1>
@@ -92,6 +97,33 @@ const TestDashboardComponents: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Section Charts */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Charts</h2>
+          
+          <div className="bg-red-100 p-4 mb-4 rounded">
+            <p className="text-red-800 font-bold">DEBUG: Cette section devrait être visible</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">LineChartOne</h3>
+              <div className="bg-yellow-100 p-4 rounded border-2 border-yellow-500">
+                <p className="text-yellow-800 font-bold">TEST: LineChartOne devrait s'afficher ici</p>
+              </div>
+              <LineChartOne />
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-card">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">BarChartOne</h3>
+              <div className="bg-yellow-100 p-4 rounded border-2 border-yellow-500">
+                <p className="text-yellow-800 font-bold">TEST: BarChartOne devrait s'afficher ici</p>
+              </div>
+              <BarChartOne />
+            </div>
+          </div>
+        </section>
 
         {/* Section Avatar */}
         <section className="mb-12">
@@ -284,7 +316,7 @@ const TestDashboardComponents: React.FC = () => {
             {/* Form complet */}
             <div>
               <h3 className="text-lg font-medium text-gray-700 mb-4">Form complet</h3>
-              <Form onSubmit={(e) => console.log('Form submitted')}>
+              <Form onSubmit={() => console.log('Form submitted')}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="form-name">Nom</Label>
@@ -322,7 +354,7 @@ const TestDashboardComponents: React.FC = () => {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <Button type="submit" variant="primary">
+                  <Button variant="primary">
                     Envoyer
                   </Button>
                 </div>
@@ -1322,6 +1354,16 @@ const TestDashboardComponents: React.FC = () => {
           </div>
         </section>
 
+        {/* Section Tables */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Composants Tables</h2>
+          
+          <div className="bg-white p-6 rounded-lg shadow-card">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">BasicTableOne</h3>
+            <BasicTableOne />
+          </div>
+        </section>
+
         {/* Section Common Components */}
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Common Components</h2>
@@ -1350,11 +1392,7 @@ const TestDashboardComponents: React.FC = () => {
             {/* ChartTab */}
             <div>
               <h3 className="text-lg font-medium text-gray-700 mb-4">ChartTab</h3>
-              <ChartTab 
-                options={["Mensuel", "Trimestriel", "Annuel"]}
-                defaultSelected="Mensuel"
-                onChange={(selected) => console.log('Sélectionné:', selected)}
-              />
+              <ChartTab />
             </div>
 
             {/* ThemeTogglerTwo */}

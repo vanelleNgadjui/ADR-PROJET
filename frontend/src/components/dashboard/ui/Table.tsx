@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+import React from "react";
+import type { ReactNode } from "react";
 
 // Props for Table
 interface TableProps {
@@ -74,7 +75,7 @@ const Table: React.FC<TableProps> = ({
           <table className={`min-w-full ${className}`}>
             {React.Children.map(children, (child) => {
               if (React.isValidElement(child)) {
-                return React.cloneElement(child, { striped, hover, bordered, variant });
+                return React.cloneElement(child, { striped, hover, bordered, variant } as any);
               }
               return child;
             })}
@@ -90,7 +91,7 @@ const Table: React.FC<TableProps> = ({
         <table className={`min-w-full ${className}`}>
           {React.Children.map(children, (child) => {
             if (React.isValidElement(child)) {
-              return React.cloneElement(child, { striped, hover, bordered, variant });
+              return React.cloneElement(child, { striped, hover, bordered, variant } as any);
             }
             return child;
           })}
