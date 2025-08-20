@@ -4,9 +4,11 @@ import { Modal } from "../ui/Modal";
 import Button from "../ui/Button";
 import InputField from "../form/input/InputField";
 import Label from "../form/Label";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function UserInfoCard() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
   
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -31,7 +33,7 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {user?.user_metadata?.prenom || user?.email?.split('@')[0] || 'Non défini'}
               </p>
             </div>
 
@@ -40,7 +42,7 @@ export default function UserInfoCard() {
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {user?.user_metadata?.nom || 'Non défini'}
               </p>
             </div>
 
@@ -49,7 +51,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {user?.email || 'Non défini'}
               </p>
             </div>
 
@@ -58,16 +60,17 @@ export default function UserInfoCard() {
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {user?.user_metadata?.telephone || 'Non défini'}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
+                Role
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {user?.user_metadata?.role === 'organisateur' ? 'Organisateur' : 
+                 user?.user_metadata?.role === 'admin' ? 'Administrateur' : 'Participant'}
               </p>
             </div>
           </div>

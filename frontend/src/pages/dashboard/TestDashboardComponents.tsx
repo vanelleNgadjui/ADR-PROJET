@@ -13,6 +13,8 @@ import {
 import { LineChartOne, BarChartOne } from '../../components/dashboard/charts';
 import { BasicTableOne } from '../../components/dashboard/tables';
 import { UserAddressCard, UserInfoCard, UserMetaCard } from '../../components/dashboard/UserProfile';
+import EventsCard from '../../components/dashboard/EventsCard';
+import CommunitiesCard from '../../components/dashboard/CommunitiesCard';
 import { 
   CountryMap, 
   DemographicCard, 
@@ -1535,6 +1537,24 @@ const TestDashboardComponents: React.FC = () => {
             <div>
               <h3 className="text-lg font-medium text-gray-700 mb-4">UserAddressCard</h3>
               <UserAddressCard />
+            </div>
+          </div>
+        </section>
+
+        {/* Real Data Components */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Real Data Components</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* EventsCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">EventsCard</h3>
+              <EventsCard />
+            </div>
+
+            {/* CommunitiesCard */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">CommunitiesCard</h3>
+              <CommunitiesCard />
             </div>
           </div>
         </section>

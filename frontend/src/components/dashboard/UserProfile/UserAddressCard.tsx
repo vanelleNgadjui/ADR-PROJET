@@ -4,9 +4,11 @@ import { Modal } from "../ui/Modal";
 import Button from "../ui/Button";
 import InputField from "../form/input/InputField";
 import Label from "../form/Label";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function UserAddressCard() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
   
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -29,37 +31,39 @@ export default function UserAddressCard() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Country
+                  Localisation
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  United States.
+                  {user?.user_metadata?.location || 'Non définie'}
                 </p>
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  City/State
+                  Coordonnées GPS
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
+                  {user?.user_metadata?.latitude && user?.user_metadata?.longitude 
+                    ? `${user.user_metadata.latitude}, ${user.user_metadata.longitude}`
+                    : 'Non définies'}
                 </p>
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Postal Code
+                  Mission
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  ERT 2489
+                  {user?.user_metadata?.mission || 'Non définie'}
                 </p>
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  TAX ID
+                  Genre
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  AS4568384
+                  {user?.user_metadata?.genre || 'Non défini'}
                 </p>
               </div>
             </div>
