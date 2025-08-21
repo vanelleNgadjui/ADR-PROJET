@@ -1,6 +1,6 @@
 import React from 'react';
-import { EventFormData } from '../EventWizard';
-import { MapPinIcon, VideoCameraIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import type { EventFormData } from '../EventWizard';
+import { MapPin, Video, Globe } from 'lucide-react';
 
 interface Step3LocationProps {
   formData: EventFormData;
@@ -20,7 +20,7 @@ const Step3Location: React.FC<Step3LocationProps> = ({
       value: 'presentiel',
       label: 'Présentiel',
       description: 'Événement en personne',
-      icon: MapPinIcon,
+      icon: MapPin,
       color: 'bg-green-100 text-green-800 border-green-200',
       activeColor: 'bg-green-500 text-white border-green-500',
     },
@@ -28,7 +28,7 @@ const Step3Location: React.FC<Step3LocationProps> = ({
       value: 'virtuel',
       label: 'Virtuel',
       description: 'Événement en ligne',
-      icon: VideoCameraIcon,
+      icon: Video,
       color: 'bg-blue-100 text-blue-800 border-blue-200',
       activeColor: 'bg-blue-500 text-white border-blue-500',
     },
@@ -36,7 +36,7 @@ const Step3Location: React.FC<Step3LocationProps> = ({
       value: 'hybride',
       label: 'Hybride',
       description: 'Présentiel + en ligne',
-      icon: GlobeAltIcon,
+      icon: Globe,
       color: 'bg-purple-100 text-purple-800 border-purple-200',
       activeColor: 'bg-purple-500 text-white border-purple-500',
     },
@@ -45,7 +45,6 @@ const Step3Location: React.FC<Step3LocationProps> = ({
   const handleFormatChange = (format: 'presentiel' | 'virtuel' | 'hybride') => {
     onFormDataChange({ 
       format,
-      type_lieu: format === 'presentiel' ? 'adresse' : 'lien_video',
       lieu: '',
       adresse: ''
     });
@@ -55,7 +54,7 @@ const Step3Location: React.FC<Step3LocationProps> = ({
   return (
     <div className="space-y-6">
       {/* En-tête de l'étape */}
-      <div className="text-center">
+      <div className="text-left lg:text-center">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Lieu et format de l'événement
         </h3>

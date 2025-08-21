@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { EventFormData, SpeakerData } from '../EventWizard';
-import { PlusIcon, TrashIcon, UserIcon } from '@heroicons/react/24/outline';
+import type { EventFormData } from '../EventWizard';
+import type { EventIntervenant, NiveauDifficulteEnum, FrequenceEnum } from '../../../../types/database';
+import { Plus, Trash2, User } from 'lucide-react';
 
 interface Step5EnrichmentProps {
   formData: EventFormData;
@@ -40,7 +41,7 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
   ];
 
   const addSpeaker = () => {
-    const newSpeaker: SpeakerData = {
+    const newSpeaker: Partial<EventIntervenant> = {
       nom: '',
       description: '',
       email: '',
@@ -50,13 +51,13 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
     };
 
     onFormDataChange({
-      intervenants: [...formData.intervenants, newSpeaker]
+      intervenants: [...formData.intervenants, newSpeaker as EventIntervenant]
     });
     setEditingSpeakerIndex(formData.intervenants.length);
     setShowSpeakerForm(true);
   };
 
-  const updateSpeaker = (index: number, updates: Partial<SpeakerData>) => {
+  const updateSpeaker = (index: number, updates: Partial<EventIntervenant>) => {
     const updatedSpeakers = [...formData.intervenants];
     updatedSpeakers[index] = { ...updatedSpeakers[index], ...updates };
     onFormDataChange({ intervenants: updatedSpeakers });
@@ -84,7 +85,7 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
   return (
     <div className="space-y-6">
       {/* En-tête de l'étape */}
-      <div className="text-center">
+      <div className="text-left lg:text-center">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Enrichissement (optionnel)
         </h3>
@@ -117,7 +118,7 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
         </label>
         <select
           value={formData.niveau_difficulte || ''}
-          onChange={(e) => onFormDataChange({ niveau_difficulte: e.target.value || null })}
+          onChange={(e) => onFormDataChange({ niveau_difficulte: e.target.value as NiveauDifficulteEnum || undefined })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">Sélectionnez un niveau</option>
@@ -154,7 +155,7 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
         </label>
         <select
           value={formData.frequence || ''}
-          onChange={(e) => onFormDataChange({ frequence: e.target.value || null })}
+          onChange={(e) => onFormDataChange({ frequence: e.target.value as FrequenceEnum || undefined })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">Sélectionnez une fréquence</option>
@@ -172,13 +173,13 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
           <label className="block text-sm font-medium text-gray-700">
             Intervenants
           </label>
-          <button
-            onClick={addSpeaker}
-            className="flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Ajouter un intervenant
-          </button>
+                     <button
+             onClick={addSpeaker}
+             className="flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+           >
+             <Plus className="w-4 h-4" />
+             Ajouter un intervenant
+           </button>
         </div>
 
         {formData.intervenants.length > 0 ? (
@@ -186,8 +187,8 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
             {formData.intervenants.map((speaker, index) => (
               <div key={index} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <UserIcon className="w-6 h-6 text-gray-400" />
+                                     <div className="flex items-center gap-3">
+                     <User className="w-6 h-6 text-gray-400" />
                     <div>
                       <h4 className="font-medium text-gray-900">
                         {speaker.nom || 'Intervenant sans nom'}
@@ -207,12 +208,12 @@ const Step5Enrichment: React.FC<Step5EnrichmentProps> = ({
                     >
                       ✏️
                     </button>
-                    <button
-                      onClick={() => removeSpeaker(index)}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
+                                         <button
+                       onClick={() => removeSpeaker(index)}
+                       className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                     >
+                       <Trash2 className="w-4 h-4" />
+                     </button>
                   </div>
                 </div>
                 {speaker.description && (

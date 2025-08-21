@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface WizardNavigationProps {
   currentStep: number;
@@ -33,12 +33,12 @@ const WizardNavigation: React.FC<WizardNavigationProps> = ({
             : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400'
         }`}
       >
-        <ChevronLeftIcon className="w-5 h-5" />
+        <ChevronLeft className="w-5 h-5" />
         Précédent
       </button>
 
-      {/* Indicateur de progression */}
-      <div className="text-center">
+      {/* Indicateur de progression - caché sur mobile */}
+      <div className="text-center hidden lg:block">
         <p className="text-sm text-gray-600">
           Étape {currentStep} sur {totalSteps}
         </p>
@@ -65,7 +65,7 @@ const WizardNavigation: React.FC<WizardNavigationProps> = ({
         ) : (
           <>
             {isLastStep ? 'Terminer' : 'Suivant'}
-            {!isLastStep && <ChevronRightIcon className="w-5 h-5" />}
+            {!isLastStep && <ChevronRight className="w-5 h-5" />}
           </>
         )}
       </button>

@@ -7,21 +7,22 @@
 // TYPES ENUM
 // =====================================================
 
-export type FormatEnum = 'en_presentiel' | 'en_ligne' | 'hybride';
+// Enums basés sur le schéma SQL réel
+export type FormatEnum = 'presentiel' | 'virtuel' | 'hybride';
 
 export type TarificationEnum = 'gratuit' | 'payant' | 'don_libre' | 'mixte';
 
-export type StatutEvenementEnum = 'brouillon' | 'en_attente_validation' | 'valide' | 'publie' | 'archive' | 'refuse';
+export type StatutEvenementEnum = 'brouillon' | 'publie' | 'annule';
 
-export type FrequenceEnum = 'ponctuel' | 'quotidien' | 'hebdomadaire' | 'bi_hebdomadaire' | 'mensuel' | 'trimestriel' | 'annuel';
+export type FrequenceEnum = 'ponctuel' | 'hebdomadaire' | 'mensuel' | 'trimestriel' | 'annuel';
 
-export type LangueEnum = 'fr' | 'en' | 'es' | 'pt' | 'ar' | 'autre';
+export type LangueEnum = 'fr' | 'en' | 'es';
 
-export type NiveauDifficulteEnum = 'debutant' | 'intermediaire' | 'avance';
+export type NiveauDifficulteEnum = 'debutant' | 'intermediaire' | 'avance' | 'tous_niveaux';
 
-export type TypeLieuEnum = 'en_salle' | 'en_plein_air' | 'virtuel';
+export type TypeLieuEnum = 'adresse' | 'lien_video';
 
-export type NiveauPrivacyEnum = 'public' | 'prive' | 'sur_invitation';
+export type NiveauPrivacyEnum = 'public' | 'prive' | 'communautaire';
 
 export type TypeCommunautéEnum = 'eglise' | 'cellule' | 'groupe_jeunes' | 'groupe_femmes' | 'groupe_hommes' | 'ministere' | 'association' | 'reseau' | 'autre';
 
@@ -146,7 +147,7 @@ export interface EventMotCle {
   mot_cle: string;
 }
 
-// Table tickets_categories
+// Table tickets_categories (selon le schéma SQL)
 export interface TicketCategorie {
   id: number;
   event_id: number;
@@ -157,19 +158,20 @@ export interface TicketCategorie {
   updated_at: string; // TIMESTAMP
 }
 
-// Table tickets
+// Table tickets (selon le schéma SQL)
 export interface Ticket {
   id: number;
   event_id: number;
   category_id?: number;
   nom: string;
   description?: string;
-  prix: number; // NUMERIC(10,2)
+  prix: number; // NUMERIC
   quantite?: number;
   date_debut_vente?: string; // TIMESTAMP
   date_fin_vente?: string; // TIMESTAMP
   type_billet?: string;
   conditions?: string;
+  image_url?: string; // URL de l'image du ticket
   is_visible: boolean;
   created_at: string; // TIMESTAMP
   updated_at: string; // TIMESTAMP

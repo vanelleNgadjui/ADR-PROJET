@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { EventFormData } from '../EventWizard';
-import { CheckCircleIcon, ExclamationTriangleIcon, EyeIcon } from '@heroicons/react/24/outline';
+import type { EventFormData } from '../EventWizard';
+import { CheckCircle, AlertTriangle, Eye } from 'lucide-react';
 
 interface Step6ValidationProps {
   formData: EventFormData;
@@ -24,7 +24,7 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
 
     // Étape 1: Informations fondamentales
     if (!formData.titre.trim()) errors.push('Le titre est obligatoire');
-    if (!formData.description.trim()) errors.push('La description est obligatoire');
+    if (!formData.description?.trim()) errors.push('La description est obligatoire');
     if (!formData.image_couverture) errors.push('L\'image de couverture est obligatoire');
     if (!formData.sous_categorie_id) errors.push('La catégorie est obligatoire');
 
@@ -39,10 +39,10 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
 
     // Étape 3: Lieu et format
     if (!formData.format) errors.push('Le format est obligatoire');
-    if (formData.format === 'presentiel' && !formData.adresse.trim()) {
+    if (formData.format === 'presentiel' && !formData.adresse?.trim()) {
       errors.push('L\'adresse est obligatoire pour un événement présentiel');
     }
-    if (formData.format === 'virtuel' && !formData.lieu.trim()) {
+    if (formData.format === 'virtuel' && !formData.lieu?.trim()) {
       errors.push('Le lien vidéo est obligatoire pour un événement virtuel');
     }
 
@@ -109,7 +109,7 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
   return (
     <div className="space-y-6">
       {/* En-tête de l'étape */}
-      <div className="text-center">
+      <div className="text-left lg:text-center">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Validation et publication
         </h3>
@@ -126,9 +126,9 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
       }`}>
         <div className="flex items-center gap-3">
           {isValid ? (
-            <CheckCircleIcon className="w-6 h-6 text-green-600" />
+            <CheckCircle className="w-6 h-6 text-green-600" />
           ) : (
-            <ExclamationTriangleIcon className="w-6 h-6 text-yellow-600" />
+            <AlertTriangle className="w-6 h-6 text-yellow-600" />
           )}
           <div>
             <h4 className={`font-medium ${
@@ -220,13 +220,13 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
 
       {/* Bouton de prévisualisation */}
       <div className="flex justify-center">
-        <button
-          onClick={() => setShowPreview(!showPreview)}
-          className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          <EyeIcon className="w-5 h-5" />
-          {showPreview ? 'Masquer la prévisualisation' : 'Voir la prévisualisation'}
-        </button>
+                 <button
+           onClick={() => setShowPreview(!showPreview)}
+           className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+         >
+           <Eye className="w-5 h-5" />
+           {showPreview ? 'Masquer la prévisualisation' : 'Voir la prévisualisation'}
+         </button>
       </div>
 
       {/* Prévisualisation */}

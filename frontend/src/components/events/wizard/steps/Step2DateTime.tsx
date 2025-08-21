@@ -1,6 +1,6 @@
 import React from 'react';
-import { EventFormData } from '../EventWizard';
-import { CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import type { EventFormData } from '../EventWizard';
+import { Calendar, Clock } from 'lucide-react';
 
 interface Step2DateTimeProps {
   formData: EventFormData;
@@ -32,14 +32,14 @@ const Step2DateTime: React.FC<Step2DateTimeProps> = ({
   };
 
   const handleCapacityChange = (value: string) => {
-    const capacity = value ? parseInt(value) : null;
+    const capacity = value ? parseInt(value) : undefined;
     onFormDataChange({ capacite_max: capacity });
   };
 
   return (
     <div className="space-y-6">
       {/* En-tête de l'étape */}
-      <div className="text-center">
+      <div className="text-left lg:text-center">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Date et heure de l'événement
         </h3>
@@ -54,7 +54,7 @@ const Step2DateTime: React.FC<Step2DateTimeProps> = ({
           Date et heure de début *
         </label>
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-gray-400" />
+          <Calendar className="w-5 h-5 text-gray-400" />
           <input
             type="datetime-local"
             value={formData.date_debut}
@@ -74,7 +74,7 @@ const Step2DateTime: React.FC<Step2DateTimeProps> = ({
           Date et heure de fin *
         </label>
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-gray-400" />
+          <Calendar className="w-5 h-5 text-gray-400" />
           <input
             type="datetime-local"
             value={formData.date_fin}
@@ -95,7 +95,7 @@ const Step2DateTime: React.FC<Step2DateTimeProps> = ({
           Capacité maximale
         </label>
         <div className="flex items-center gap-2">
-          <ClockIcon className="w-5 h-5 text-gray-400" />
+          <Clock className="w-5 h-5 text-gray-400" />
           <input
             type="number"
             value={formData.capacite_max || ''}

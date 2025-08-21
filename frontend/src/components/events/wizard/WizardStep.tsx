@@ -7,23 +7,29 @@ interface WizardStepProps {
 }
 
 const WizardStep: React.FC<WizardStepProps> = ({ stepNumber, totalSteps, children }) => {
+  const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
+  
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-      {/* En-tête de l'étape */}
+      {/* Progressbar et informations */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold text-sm">
-            {stepNumber}
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Étape {stepNumber} sur {totalSteps}
-          </h2>
-        </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div 
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(stepNumber / totalSteps) * 100}%` }}
+            style={{ width: `${progressPercentage}%` }}
           />
+        </div>
+        
+        {/* Informations d'étape alignées à droite */}
+        <div className="flex justify-end mt-2 space-y-1">
+          <div className="text-right">
+            <p className="text-xs text-gray-600">
+              Étape {stepNumber} sur {totalSteps}
+            </p>
+            <p className="text-xs text-gray-500">
+              {progressPercentage}% terminé
+            </p>
+          </div>
         </div>
       </div>
 

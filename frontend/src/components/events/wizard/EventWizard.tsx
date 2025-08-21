@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { supabase } from '../../../lib/supabaseClient';
+import EventHeader from '../EventHeader';
 import WizardStep from './WizardStep';
 import WizardProgress from './WizardProgress';
 import WizardNavigation from './WizardNavigation';
@@ -11,75 +12,72 @@ import Step3Location from './steps/Step3Location';
 import Step4Pricing from './steps/Step4Pricing';
 import Step5Enrichment from './steps/Step5Enrichment';
 import Step6Validation from './steps/Step6Validation';
+import type { 
+  Event, 
+  Ticket, 
+  TicketCategorie, 
+  EventIntervenant,
+  FormatEnum,
+  TarificationEnum,
+  StatutEvenementEnum,
+  NiveauPrivacyEnum,
+  LangueEnum,
+  FrequenceEnum,
+  NiveauDifficulteEnum,
+  TypeLieuEnum
+} from '../../../types/database';
 
-// Types pour les données du wizard
+// Hook pour détecter la taille d'écran
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
+
+  return isDesktop;
+};
+
+// Type pour les données du wizard (correspond au schéma SQL)
 export interface EventFormData {
   // Étape 1: Informations fondamentales
   titre: string;
-  description: string;
-  image_couverture: string;
-  sous_categorie_id: number | null;
+  description?: string;
+  image_couverture?: string;
+  sous_categorie_id: number;
   
   // Étape 2: Date et heure
   date_debut: string;
-  date_fin: string;
-  capacite_max: number | null;
+  date_fin?: string;
+  capacite_max?: number;
   
   // Étape 3: Lieu et format
-  format: 'presentiel' | 'virtuel' | 'hybride';
-  type_lieu: 'adresse' | 'lien_video' | null;
-  lieu: string;
-  adresse: string;
+  format: FormatEnum;
+  lieu?: string;
+  adresse?: string;
   
   // Étape 4: Tarification et billets
-  tarification: 'gratuit' | 'payant' | 'don_libre' | 'mixte';
-  tickets: TicketData[];
-  tickets_categories: TicketCategoryData[];
+  tarification: TarificationEnum;
+  tickets: Ticket[];
+  tickets_categories: TicketCategorie[];
   
   // Étape 5: Enrichissement (optionnel)
-  programme: string;
-  niveau_difficulte: string | null;
-  langue: 'fr' | 'en' | 'es' | null;
-  frequence: string | null;
-  intervenants: SpeakerData[];
+  programme?: string;
+  niveau_difficulte?: NiveauDifficulteEnum;
+  langue: LangueEnum;
+  frequence: FrequenceEnum;
+  intervenants: EventIntervenant[];
   mots_cles: string[];
   
   // Métadonnées
-  statut: 'brouillon' | 'publie' | 'annule';
-  niveau_privacy: 'public' | 'prive' | 'communautaire';
-  est_accessible: boolean;
-}
-
-export interface TicketData {
-  id?: number;
-  nom: string;
-  description?: string;
-  prix: number;
-  quantite?: number;
-  date_debut_vente?: string;
-  date_fin_vente?: string;
-  type_billet?: string;
-  conditions?: string;
-  image_url?: string;
-  is_visible: boolean;
-  category_id?: number;
-}
-
-export interface TicketCategoryData {
-  id?: number;
-  nom: string;
-  description?: string;
-  ordre: number;
-}
-
-export interface SpeakerData {
-  id?: number;
-  nom: string;
-  description?: string;
-  email?: string;
-  photo_url?: string;
-  role_fonction?: string;
-  autres_infos?: any;
+  statut: StatutEvenementEnum;
+  niveau_privacy: NiveauPrivacyEnum;
 }
 
 interface EventWizardProps {
@@ -88,43 +86,86 @@ interface EventWizardProps {
 
 const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const isDesktop = useIsDesktop(); // Hook pour détecter desktop
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoSaving, setAutoSaving] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   
   // Données du formulaire
   const [formData, setFormData] = useState<EventFormData>({
     titre: '',
     description: '',
     image_couverture: '',
-    sous_categorie_id: null,
+    sous_categorie_id: 1, // Valeur par défaut, sera mise à jour
     date_debut: '',
     date_fin: '',
-    capacite_max: null,
+    capacite_max: undefined,
     format: 'presentiel',
-    type_lieu: null,
     lieu: '',
     adresse: '',
     tarification: 'gratuit',
     tickets: [],
     tickets_categories: [],
     programme: '',
-    niveau_difficulte: null,
+    niveau_difficulte: undefined,
     langue: 'fr',
-    frequence: null,
+    frequence: 'ponctuel',
     intervenants: [],
     mots_cles: [],
     statut: 'brouillon',
     niveau_privacy: 'public',
-    est_accessible: true,
   });
 
   const totalSteps = 6;
 
+  // Fonction d'auto-sauvegarde optimisée
+  const autoSaveDraft = useCallback(async (dataToSave: EventFormData) => {
+    if (!user) return;
+    
+    try {
+      setAutoSaving(true);
+      
+      const eventData = {
+        ...dataToSave,
+        organisateur_id: user.id,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (eventId) {
+        const { error } = await supabase
+          .from('events')
+          .update(eventData)
+          .eq('id', eventId)
+          .eq('organisateur_id', user.id);
+
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from('events')
+          .insert([eventData])
+          .select()
+          .single();
+
+        if (error) throw error;
+      }
+      
+      // Sauvegarde terminée
+      console.log('Auto-sauvegarde terminée');
+    } catch (err) {
+      console.error('Erreur lors de l\'auto-sauvegarde:', err);
+    } finally {
+      setAutoSaving(false);
+    }
+  }, [user, eventId]);
+
   // Vérifier que l'utilisateur est connecté et est un organisateur
   useEffect(() => {
+    // Attendre que l'auth soit chargée avant de vérifier
+    if (authLoading) return;
+    
     if (!user) {
       navigate('/auth/connexion');
       return;
@@ -135,7 +176,7 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     //   navigate('/dashboard');
     //   return;
     // }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   // Charger les données d'un événement existant si on est en mode édition
   useEffect(() => {
@@ -172,7 +213,7 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
           date_fin: data.date_fin || '',
           capacite_max: data.capacite_max,
           format: data.format || 'presentiel',
-          type_lieu: data.type_lieu,
+          // type_lieu supprimé car n'existe plus dans le schéma
           lieu: data.lieu || '',
           adresse: data.adresse || '',
           tarification: data.tarification || 'gratuit',
@@ -186,7 +227,6 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
           mots_cles: [], // À récupérer depuis event_mots_cles
           statut: data.statut || 'brouillon',
           niveau_privacy: data.niveau_privacy || 'public',
-          est_accessible: data.est_accessible ?? true,
         });
       }
     } catch (err) {
@@ -197,59 +237,8 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     }
   };
 
-  // Auto-sauvegarde en brouillon
-  useEffect(() => {
-    const autoSaveTimer = setTimeout(() => {
-      if (formData.titre || formData.description) {
-        autoSaveDraft();
-      }
-    }, 3000); // Auto-sauvegarde après 3 secondes d'inactivité
-
-    return () => clearTimeout(autoSaveTimer);
-  }, [formData]);
-
-  const autoSaveDraft = async () => {
-    if (!user) return;
-    
-    try {
-      setAutoSaving(true);
-      
-      const eventData = {
-        ...formData,
-        organisateur_id: user.id,
-        updated_at: new Date().toISOString(),
-      };
-
-      if (eventId) {
-        // Mise à jour d'un événement existant
-        const { error } = await supabase
-          .from('events')
-          .update(eventData)
-          .eq('id', eventId)
-          .eq('organisateur_id', user.id);
-
-        if (error) throw error;
-      } else {
-        // Création d'un nouvel événement
-        const { data, error } = await supabase
-          .from('events')
-          .insert([eventData])
-          .select()
-          .single();
-
-        if (error) throw error;
-        
-        // Mettre à jour l'eventId pour les prochaines sauvegardes
-        if (data) {
-          // Note: Il faudrait gérer l'eventId dans le state ou via une ref
-        }
-      }
-    } catch (err) {
-      console.error('Erreur lors de l\'auto-sauvegarde:', err);
-    } finally {
-      setAutoSaving(false);
-    }
-  };
+  // Auto-sauvegarde manuelle uniquement - plus de boucle infinie
+  // L'auto-sauvegarde sera déclenchée manuellement par les boutons
 
   const handleNext = () => {
     if (currentStep < totalSteps && validateCurrentStep()) {
@@ -265,61 +254,51 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     }
   };
 
-  const validateCurrentStep = (): boolean => {
+  // Validation mémorisée pour éviter les re-renders
+  const currentStepValidation = useMemo(() => {
     switch (currentStep) {
       case 1:
         if (!formData.titre.trim()) {
-          setError('Le titre est obligatoire');
-          return false;
+          return { isValid: false, error: 'Le titre est obligatoire' };
         }
-        if (!formData.description.trim()) {
-          setError('La description est obligatoire');
-          return false;
+        if (!formData.description?.trim()) {
+          return { isValid: false, error: 'La description est obligatoire' };
         }
         if (!formData.sous_categorie_id) {
-          setError('Veuillez sélectionner une catégorie');
-          return false;
+          return { isValid: false, error: 'Veuillez sélectionner une catégorie' };
         }
         break;
       
       case 2:
         if (!formData.date_debut) {
-          setError('La date de début est obligatoire');
-          return false;
+          return { isValid: false, error: 'La date de début est obligatoire' };
         }
         if (!formData.date_fin) {
-          setError('La date de fin est obligatoire');
-          return false;
+          return { isValid: false, error: 'La date de fin est obligatoire' };
         }
         if (new Date(formData.date_fin) <= new Date(formData.date_debut)) {
-          setError('La date de fin doit être postérieure à la date de début');
-          return false;
+          return { isValid: false, error: 'La date de fin doit être postérieure à la date de début' };
         }
         break;
       
       case 3:
         if (!formData.format) {
-          setError('Veuillez sélectionner un format');
-          return false;
+          return { isValid: false, error: 'Veuillez sélectionner un format' };
         }
-        if (formData.format === 'presentiel' && !formData.adresse.trim()) {
-          setError('L\'adresse est obligatoire pour un événement présentiel');
-          return false;
+        if (formData.format === 'presentiel' && !formData.adresse?.trim()) {
+          return { isValid: false, error: 'L\'adresse est obligatoire pour un événement présentiel' };
         }
-        if (formData.format === 'virtuel' && !formData.lieu.trim()) {
-          setError('Le lien vidéo est obligatoire pour un événement virtuel');
-          return false;
+        if (formData.format === 'virtuel' && !formData.lieu?.trim()) {
+          return { isValid: false, error: 'Le lien vidéo est obligatoire pour un événement virtuel' };
         }
         break;
       
       case 4:
         if (!formData.tarification) {
-          setError('Veuillez sélectionner un type de tarification');
-          return false;
+          return { isValid: false, error: 'Veuillez sélectionner un type de tarification' };
         }
         if (formData.tarification === 'payant' && formData.tickets.length === 0) {
-          setError('Veuillez créer au moins un billet pour un événement payant');
-          return false;
+          return { isValid: false, error: 'Veuillez créer au moins un billet pour un événement payant' };
         }
         break;
       
@@ -332,7 +311,20 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
         break;
     }
     
-    return true;
+    return { isValid: true, error: '' };
+  }, [currentStep, formData]);
+
+  // Mettre à jour l'erreur si nécessaire
+  useEffect(() => {
+    if (!currentStepValidation.isValid && currentStepValidation.error !== error) {
+      setError(currentStepValidation.error);
+    } else if (currentStepValidation.isValid && error) {
+      setError('');
+    }
+  }, [currentStepValidation, error]);
+
+  const validateCurrentStep = (): boolean => {
+    return currentStepValidation.isValid;
   };
 
   const handleFormDataChange = (updates: Partial<EventFormData>) => {
@@ -365,12 +357,15 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     }
   };
 
-  if (loading) {
+  // Afficher le loading pendant le chargement de l'auth ou de l'événement
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Chargement de l'événement...</p>
+          <p className="text-gray-600">
+            {authLoading ? 'Vérification de l\'authentification...' : 'Chargement de l\'événement...'}
+          </p>
         </div>
       </div>
     );
@@ -378,46 +373,80 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {eventId ? 'Modifier l\'événement' : 'Créer un nouvel événement'}
-          </h1>
-          <p className="text-gray-600">
-            Suivez les étapes pour créer un événement complet et attractif
-          </p>
-        </div>
+      {/* Header spécifique aux événements */}
+      <EventHeader 
+        onToggleSidebar={() => {
+          setIsSidebarExpanded(!isSidebarExpanded);
+        }}
+        isSidebarExpanded={isSidebarExpanded}
+      />
 
-        {/* Barre de progression */}
-        <WizardProgress currentStep={currentStep} totalSteps={totalSteps} />
-
-        {/* Indicateur d'auto-sauvegarde */}
-        {autoSaving && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-blue-700">Sauvegarde automatique...</span>
-            </div>
-          </div>
+      <div className="flex flex-row relative">
+        {/* Overlay pour fermer la barre latérale sur mobile */}
+        {!isDesktop && isSidebarExpanded && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-10 z-20 lg:hidden"
+            onClick={() => setIsSidebarExpanded(false)}
+          />
         )}
-
-        {/* Contenu de l'étape */}
-        <div className="mt-8">
-          <WizardStep stepNumber={currentStep} totalSteps={totalSteps}>
-            {renderCurrentStep()}
-          </WizardStep>
+        
+        {/* Navigation latérale - Responsive */}
+        <div className={`bg-white transition-all duration-300 flex flex-col sticky top-16 sticky-element ${
+          isDesktop ? 'w-80 z-30 border-r border-gray-200 h-[calc(100vh-4rem)]' : (isSidebarExpanded ? 'fixed top-16 left-0 w-56 z-30 h-[calc(100vh-4rem)]' : 'w-12 z-30 shadow-sm h-[calc(100vh-4rem)]')
+        }`}>
+          <div className={`flex-1 overflow-y-auto scroll-container ${
+            isDesktop ? 'p-4 lg:p-6' : (isSidebarExpanded ? 'p-0' : 'p-2')
+          }`} style={{ overscrollBehavior: 'none' }}>
+            {/* Barre de progression */}
+                                                           <WizardProgress 
+                    currentStep={currentStep} 
+                    totalSteps={totalSteps} 
+                    isExpanded={isDesktop || isSidebarExpanded}
+                    onToggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                  />
+            
+            {/* Indicateur d'auto-sauvegarde */}
+            {autoSaving && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-blue-700">Sauvegarde automatique...</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Navigation */}
-        <WizardNavigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          canProceed={validateCurrentStep()}
-          loading={loading}
-        />
+        {/* Contenu principal - Responsive */}
+        <div className={`flex-1 ${
+          isDesktop ? 'lg:pl-6' : (isSidebarExpanded ? 'pl-0' : 'pl-0')
+        }`}>
+          <div className="w-full p-4 lg:p-6">
+            {/* Titre de la page et instructions */}
+            <div className="mb-6 text-left">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 text-left">
+                {eventId ? 'Modifier l\'événement' : 'Créer un nouvel événement'}
+              </h1>
+              <p className="text-gray-600 text-left">
+                Suivez les étapes pour créer un événement complet et attractif
+              </p>
+            </div>
+
+            <WizardStep stepNumber={currentStep} totalSteps={totalSteps}>
+              {renderCurrentStep()}
+            </WizardStep>
+            
+            {/* Navigation */}
+            <WizardNavigation
+              currentStep={currentStep}
+              totalSteps={totalSteps}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+              canProceed={validateCurrentStep()}
+              loading={loading}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

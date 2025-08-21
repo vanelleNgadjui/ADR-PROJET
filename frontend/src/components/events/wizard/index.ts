@@ -1,6 +1,8 @@
 // Composant principal du wizard
 export { default as EventWizard } from './EventWizard';
-export type { EventFormData, TicketData, TicketCategoryData, SpeakerData } from './EventWizard';
+
+// Types
+export type { EventFormData } from './EventWizard';
 
 // Composants de navigation
 export { default as WizardStep } from './WizardStep';

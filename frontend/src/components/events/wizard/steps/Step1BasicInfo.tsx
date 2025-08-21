@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { EventFormData } from '../EventWizard';
+import type { EventFormData } from '../EventWizard';
 import { supabase } from '../../../../lib/supabaseClient';
 import { Input } from '../../../ui/Input';
 import { Button } from '../../../ui/Button';
-import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Camera, X } from 'lucide-react';
 
 interface Step1BasicInfoProps {
   formData: EventFormData;
@@ -31,7 +31,6 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
   error,
   setError,
 }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -57,7 +56,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
         .order('nom');
 
       if (error) throw error;
-      setCategories(data || []);
+      // Categories not used, just load subcategories directly
     } catch (err) {
       console.error('Erreur lors du chargement des catégories:', err);
       setError('Erreur lors du chargement des catégories');
@@ -132,17 +131,12 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
     onFormDataChange({ image_couverture: '' });
   };
 
-  const handleCategoryChange = (categoryId: number) => {
-    // Réinitialiser la sous-catégorie quand la catégorie change
-    onFormDataChange({ 
-      sous_categorie_id: null 
-    });
-  };
+
 
   return (
     <div className="space-y-6">
       {/* En-tête de l'étape */}
-      <div className="text-center">
+      <div className="text-left lg:text-center">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Informations fondamentales
         </h3>
@@ -163,6 +157,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
           placeholder="Ex: Concert Gospel de Noël"
           className="w-full"
           required
+          label=""
         />
         <p className="text-xs text-gray-500 mt-1">
           Choisissez un titre accrocheur et descriptif
@@ -183,7 +178,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
           required
         />
         <p className="text-xs text-gray-500 mt-1">
-          {formData.description.length}/500 caractères
+          {formData.description?.length || 0}/500 caractères
         </p>
       </div>
 
@@ -204,7 +199,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
               onClick={removeImage}
               className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
             >
-              <XMarkIcon className="w-4 h-4" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         ) : (
@@ -217,7 +212,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
               id="image-upload"
             />
             <label htmlFor="image-upload" className="cursor-pointer">
-              <CameraIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-2" />
               <p className="text-gray-600 font-medium">
                 {uploadingImage ? 'Upload en cours...' : 'Cliquez pour ajouter une image'}
               </p>
@@ -244,7 +239,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
         <select
           value={formData.sous_categorie_id || ''}
           onChange={(e) => {
-            const subCategoryId = e.target.value ? parseInt(e.target.value) : null;
+            const subCategoryId = e.target.value ? parseInt(e.target.value) : 1;
             onFormDataChange({ sous_categorie_id: subCategoryId });
           }}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -281,3 +276,6 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
 };
 
 export default Step1BasicInfo;
+
+
+
