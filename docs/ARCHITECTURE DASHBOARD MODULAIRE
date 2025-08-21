@@ -1,3 +1,277 @@
+�� PARCOURS COMPLET DE CRÉATION D'ÉVÉNEMENT - LOGIQUE DÉTAILLÉE
+�� PRÉAMBULE - CONTEXTE UTILISATEUR
+Profil utilisateur :
+Organisateur connecté (rôle 'organisateur') et l'admin aussi car lui peut tout faire sur le site. 
+Peut être sa première création ou un utilisateur expérimenté
+Objectif : Créer un événement complet et publiable
+Objectifs du parcours :
+Guider l'utilisateur sans le décourager
+Collecter toutes les informations nécessaires
+Permettre une publication rapide ou un enrichissement progressif
+Éviter la perte de données
+
+🚀 ÉTAPE 1 : INFORMATIONS FONDAMENTALES ⭐⭐⭐
+Objectif de l'étape :
+Créer l'identité de base de l'événement avec les éléments visuels essentiels.
+Champs à remplir :
+Titre de l'événement (OBLIGATOIRE)
+3-255 caractères
+Doit être accrocheur et descriptif
+Validation en temps réel
+Image de couverture (OBLIGATOIRE)
+Format JPG/PNG, max 5MB
+Ratio recommandé 16:9
+Upload avec preview immédiate
+Possibilité de recadrer
+Description courte (OBLIGATOIRE)
+50-500 caractères
+Résumé accrocheur pour la découverte
+Aperçu dans les listes d'événements
+Catégorie principale (OBLIGATOIRE)
+Sélection dans une liste prédéfinie
+Chargement dynamique des sous-catégories
+Aide contextuelle selon la catégorie
+Sous-catégorie (OBLIGATOIRE)
+Dépend de la catégorie sélectionnée
+Affinage du type d'événement
+Logique conditionnelle :
+Si image sélectionnée → Preview immédiate dans la sidebar
+Si catégorie sélectionnée → Charger sous-catégories dynamiquement
+Si description longue → Aperçu tronqué avec "voir plus"
+Validation :
+Titre : 3-255 caractères, pas de caractères spéciaux
+Image : Format valide, taille correcte
+Description : 50-500 caractères
+Catégorie et sous-catégorie : Sélection obligatoire
+
+📅 ÉTAPE 2 : DATE ET HORAIRE ⭐⭐⭐
+Objectif de l'étape :
+Définir le timing précis de l'événement avec gestion des fuseaux horaires.
+Champs à remplir :
+Date de début (OBLIGATOIRE)
+Sélecteur de date avec calendrier
+Validation : date future obligatoire
+Format : DD/MM/YYYY
+Heure de début (OBLIGATOIRE)
+Sélecteur d'heure avec minutes
+Format 24h
+Validation : pas d'heure passée si date = aujourd'hui
+Date de fin (OBLIGATOIRE)
+Même sélecteur que date de début
+Validation : après date de début
+Calcul automatique de la durée
+Heure de fin (OBLIGATOIRE)
+Même sélecteur que heure de début
+Validation : après heure de début si même jour
+Fuseau horaire (OBLIGATOIRE)
+Sélection automatique selon la localisation
+Possibilité de changer manuellement
+Affichage des conversions pour les participants
+Logique conditionnelle :
+Si date_fin < date_debut → Erreur immédiate
+Si événement > 24h → Avertissement "Événement de longue durée"
+Si événement passé → Erreur bloquante
+Si même jour → Validation heure de fin > heure de début
+Calculs automatiques :
+Durée totale de l'événement
+Affichage dans différents fuseaux horaires
+Vérification des conflits potentiels
+📍 ÉTAPE 3 : LIEU ET FORMAT ⭐⭐
+Objectif de l'étape :
+Définir où et comment se déroule l'événement avec gestion des capacités.
+Champs à remplir :
+Format de l'événement (OBLIGATOIRE)
+Radio buttons : Physique / Online / Hybride
+Impact sur les champs suivants
+Type de lieu (si physique/hybride)
+Sélection : Salle, Église, Extérieur, Salle de conférence, etc.
+Aide contextuelle selon le type
+Nom du lieu (si physique/hybride)
+Champ texte libre
+Suggestions automatiques si disponible
+Adresse complète (si physique/hybride)
+Champ texte avec validation d'adresse
+Intégration Google Maps pour validation
+Coordonnées GPS automatiques
+Lien de visioconférence (si online/hybride)
+URL de la plateforme (Zoom, Teams, etc.)
+Validation du format URL
+Test de validité du lien
+Capacité maximale (OBLIGATOIRE)
+Nombre de participants maximum
+Validation : nombre positif
+Avertissement si > 1000
+Logique conditionnelle :
+Si format = 'online' → Masquer champs adresse, afficher lien visio
+Si format = 'physique' → Masquer lien visio, afficher adresse
+Si format = 'hybride' → Afficher les deux sections
+Si capacité > 1000 → Avertissement "Événement de grande envergure"
+Si adresse saisie → Validation automatique via API
+Validations spécifiques :
+Adresse : Format valide, géolocalisation possible
+Lien visio : URL valide, test de connectivité
+Capacité : Nombre positif, cohérent avec le lieu
+💰 ÉTAPE 4 : TARIFICATION ET TICKETS ⭐⭐
+Objectif de l'étape :
+Définir la stratégie de monétisation et configurer les tickets.
+Champs à remplir :
+Type de tarification (OBLIGATOIRE)
+Radio buttons : Gratuit / Payant / Don libre / Mixte
+Impact majeur sur la suite
+Configuration des tickets (si pas gratuit)
+Création de catégories de tickets
+Configuration de chaque ticket
+Images optionnelles sur les tickets
+Prix et devises (si payant)
+Prix par ticket
+Devise (EUR par défaut)
+Configuration Stripe
+Niveau de privacy (OBLIGATOIRE)
+Public / Privé / Sur invitation
+Impact sur la visibilité
+Niveau de privacy (OBLIGATOIRE)
+Public / Privé / Sur invitation
+Impact sur la visibilité
+Groupe privé (si privé)
+Sélection d'une communauté
+Gestion des permissions
+Logique conditionnelle :
+Si gratuit → Masquer toute configuration de tickets
+Si payant → Configuration complète avec Stripe
+Si don_libre → Tickets gratuits + option don
+Si mixte → Combinaison de tickets gratuits et payants
+Si privé → Forcer sélection d'un groupe
+Configuration des tickets :
+Catégories : Early Bird, Standard, VIP, etc.
+Tickets : Nom, description, prix, quantité, dates de vente
+Images : Optionnelles, personnalisation visuelle
+Conditions : Étudiants, membres, etc.
+
+ ÉTAPE 5 : ENRICHISSEMENT ⭐
+Objectif de l'étape :
+Enrichir l'événement avec des informations détaillées (optionnel).
+Champs à remplir :
+Description détaillée (OPTIONNEL)
+Éditeur riche (texte, liens, mise en forme)
+Limite : 5000 caractères
+Prévisualisation en temps réel
+Programme complet (OPTIONNEL)
+Planning détaillé de l'événement
+Horaires, activités, intervenants
+Limite : 2000 caractères
+Niveau de difficulté (OPTIONNEL)
+Débutant / Intermédiaire / Avancé
+Aide au ciblage de l'audience
+Langue (OPTIONNEL)
+Français par défaut
+Autres langues disponibles
+Fréquence (OPTIONNEL)
+Ponctuel par défaut
+Options : Quotidien, Hebdomadaire, etc.
+Intervenants (OPTIONNEL)
+Liste dynamique d'intervenants
+Nom, rôle, photo, description
+Maximum 20 intervenants
+Mots-clés (OPTIONNEL)
+Tags pour la découverte
+Maximum 10 mots-clés
+Suggestions automatiques
+Logique conditionnelle :
+Si fréquence ≠ 'ponctuel' → Afficher champs de récurrence
+Si intervenants ajoutés → Prévisualisation des cartes
+Si description longue → Aperçu dans la preview
+Tous les champs optionnels → Pas de validation stricte
+
+✅ ÉTAPE 6 : VALIDATION ET PUBLICATION ⭐⭐⭐
+Objectif de l'étape :
+Réviser l'événement complet et choisir le statut final.
+Contenu de l'étape :
+Récapitulatif complet
+Toutes les informations saisies
+Vérification de cohérence
+Points d'attention identifiés
+Prévisualisation publique
+Aperçu de la fiche événement
+Comment elle apparaîtra aux participants
+Test de la responsivité
+Choix du statut final
+Brouillon : Sauvegarde privée
+En attente de validation : Soumission pour review
+Actions finales
+Bouton de publication
+Sauvegarde en brouillon
+Retour à l'édition
+
+Logique conditionnelle :
+Si champs critiques manquants → Empêcher publication
+Si événement dans < 24h → Avertissement "Urgent"
+Si première publication → Tutoriel rapide
+Si brouillon → Sauvegarde automatique
+Validation finale :
+Tous les champs obligatoires remplis
+Cohérence des données vérifiée
+Acceptation des conditions d'utilisation
+🔄 SYSTÈME D'AUTO-SAUVEGARDE
+Stratégie de sauvegarde :
+Automatique : À chaque modification (délai 2 secondes)
+Manuelle : Bouton "Sauvegarder le brouillon"
+Récupération : Au rechargement de la page
+Indicateurs :
+"Brouillon enregistré à 10:42" (style Apple)
+Indicateur de progression de sauvegarde
+Messages d'erreur en cas d'échec
+👁️ PRÉVISUALISATION EN TEMPS RÉEL
+Mini-preview (sidebar) :
+Titre, date, lieu, format
+Image de couverture
+Statut actuel
+Mise à jour en temps réel
+Prévisualisation finale (étape 6) :
+Fiche publique complète
+Responsive design
+Actions de test
+📱 RESPONSIVE DESIGN
+Mobile (320px - 768px) :
+Étapes empilées verticalement
+Preview en bas d'écran
+Navigation tactile
+Champs en pleine largeur
+Tablet (768px - 1024px) :
+Layout adaptatif
+Preview en sidebar
+Navigation intermédiaire
+Desktop (1024px+) :
+Layout complet
+Preview fixe à droite
+Navigation fluide
+Utilisation optimale de l'espace
+
+🎯 GESTION DES ERREURS
+Types d'erreurs :
+Validation : Champs manquants ou invalides
+Réseau : Problèmes de connexion
+Upload : Échec d'upload d'images
+Base de données : Erreurs de sauvegarde
+Stratégie de récupération :
+Messages d'erreur clairs et contextuels
+Possibilité de réessayer
+Sauvegarde automatique en cas d'erreur
+Récupération des données perdues
+🚀 FLUX UTILISATEUR FINAL
+Parcours typique :
+Accès : Clic sur "Créer un événement"
+Étapes 1-4 : Création de l'événement de base (obligatoire)
+Étape 5 : Enrichissement optionnel
+Étape 6 : Validation et publication
+Résultat : Événement créé et publié
+Parcours alternatif :
+Étapes 1-4 : Création de base
+Sauvegarde : Enregistrement en brouillon
+Reprise : Retour plus tard pour finaliser
+Publication : Finalisation et publication
+Cette logique détaillée vous convient-elle pour l'implémentation ? 🎯
+
+
 �� DOCUMENTATION COMPLÈTE - ARCHITECTURE DASHBOARD MODULAIRE
 �� CONTEXTE ET OBJECTIFS
 Problématique initiale :
@@ -15,17 +289,6 @@ src/
 │   ├── OrganisateurDashboard.tsx  # Dashboard organisateur
 │   ├── ParticipantDashboard.tsx   # Dashboard participant (placeholder)
 │   └── AdminDashboard.tsx         # Dashboard admin (placeholder)
-├── components/dashboard/
-│   ├── common/                    # Composants réutilisables
-│   │   ├── EventCard.tsx          # Carte événement universelle
-│   │   ├── StatsCard.tsx          # Carte statistiques
-│   │   └── FilterBar.tsx          # Barre de filtres
-│   ├── participant/               # Composants spécifiques participant
-│   ├── organisateur/              # Composants spécifiques organisateur
-│   └── admin/                     # Composants spécifiques admin
-└── hooks/
-    └── useEventManagement.ts      # Hook spécialisé organisateur
-
 
 
 

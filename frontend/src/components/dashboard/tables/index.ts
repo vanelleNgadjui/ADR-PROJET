@@ -1,2 +1,2 @@
 // Basic Tables
-export { BasicTableOne } from './BasicTables';
+export * from './BasicTables';

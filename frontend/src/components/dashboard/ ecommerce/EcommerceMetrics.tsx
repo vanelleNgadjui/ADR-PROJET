@@ -1,5 +1,5 @@
 import { ArrowDownIcon, ArrowUpIcon, UsersIcon, PackageIcon } from "lucide-react";
-import Badge from "../ui/Badge";
+import Badge from "../../ui/Badge";
 
 export default function EcommerceMetrics() {
   return (

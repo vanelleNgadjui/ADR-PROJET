@@ -1,5 +1,5 @@
 import Label from "../Label";
-import InputField from "../input/InputField";
+import InputField from "../input/SimpleInput";
 import { MailIcon } from "lucide-react";
 
 export default function InputGroup() {

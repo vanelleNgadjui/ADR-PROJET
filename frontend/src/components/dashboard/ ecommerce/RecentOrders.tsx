@@ -4,8 +4,8 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/Table";
-import Badge from "../ui/Badge";
+} from "../../ui/Table";
+import Badge from "../../ui/Badge";
 import { FilterIcon } from "lucide-react";
 
 // Define the TypeScript interface for the table rows

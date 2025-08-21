@@ -1,0 +1,293 @@
+LISTE COMPLÈTE DES COMPOSANTS POUR LE WIZARD DE CRÉATION D'ÉVÉNEMENTS
+📋 COMPOSANTS EXISTANTS À RÉUTILISER
+1. Composants UI de base (déjà créés)
+Button - Boutons d'action (précédent, suivant, sauvegarder)
+InputField - Champs de saisie texte
+TextArea - Zones de texte longues
+Select - Listes déroulantes
+Radio - Boutons radio
+Checkbox - Cases à cocher
+Switch - Interrupteurs on/off
+Badge - Badges de statut
+Modal - Modales de confirmation
+Alert - Messages d'alerte
+Avatar - Avatars pour intervenants
+Table - Tableaux pour listes
+Dropdown - Menus déroulants
+
+
+🧩 LISTE COMPLÈTE DES COMPOSANTS POUR LE WIZARD DE CRÉATION D'ÉVÉNEMENTS
+📋 COMPOSANTS EXISTANTS À RÉUTILISER
+1. Composants UI de base (déjà créés)
+Button - Boutons d'action (précédent, suivant, sauvegarder)
+InputField - Champs de saisie texte
+TextArea - Zones de texte longues
+Select - Listes déroulantes
+Radio - Boutons radio
+Checkbox - Cases à cocher
+Switch - Interrupteurs on/off
+Badge - Badges de statut
+Modal - Modales de confirmation
+Alert - Messages d'alerte
+Avatar - Avatars pour intervenants
+Table - Tableaux pour listes
+Dropdown - Menus déroulants
+2. Composants de formulaire (déjà créés)
+Form - Conteneur de formulaire
+Label - Labels de champs
+DatePicker - Sélecteur de date
+FileInput - Upload de fichiers
+DropZone - Zone de dépôt de fichiers
+MultiSelect - Sélection multiple
+PhoneInput - Champ téléphone
+ToggleSwitch - Interrupteur personnalisé
+3. Composants dashboard existants
+PageHeader - En-tête de page avec breadcrumbs
+PageContainer - Conteneur de contenu
+ComponentCard - Cartes de composants
+GridShape - Grilles de mise en page
+ChartTab - Onglets pour graphiques
+ThemeTogglerTwo - Basculement de thème
+4. Composants de navigation
+PageBreadcrumb - Fil d'Ariane
+ProgressBar - Barre de progression (à créer)
+
+�� COMPOSANTS À CRÉER SPÉCIFIQUEMENT
+1. Composants de navigation du wizard
+WizardProgressBar - Barre de progression des étapes
+WizardNavigation - Boutons précédent/suivant
+WizardStepIndicator - Indicateur d'étape actuelle
+2. Composants de saisie spécialisés
+ImageUploader - Upload d'images avec preview
+ImageCropper - Recadrage d'images
+RichTextEditor - Éditeur de texte riche
+TimePicker - Sélecteur d'heure
+DateTimePicker - Sélecteur date + heure
+TimezoneSelector - Sélecteur de fuseau horaire
+AddressInput - Champ d'adresse avec validation
+UrlInput - Champ URL avec validation
+3. Composants de configuration
+CategorySelector - Sélecteur de catégorie/sous-catégorie
+FormatSelector - Sélecteur de format (physique/online/hybride)
+PrivacySelector - Sélecteur de niveau de privacy
+TarificationSelector - Sélecteur de type de tarification
+4. Composants de tickets
+TicketCategoryForm - Formulaire de catégorie de tickets
+TicketForm - Formulaire de ticket individuel
+TicketImageUploader - Upload d'image pour ticket
+TicketsList - Liste des tickets créés
+TicketPreview - Aperçu d'un ticket
+TicketsConfiguration - Configuration complète des tickets
+5. Composants d'intervenants
+IntervenantForm - Formulaire d'intervenant
+IntervenantCard - Carte d'intervenant
+IntervenantsList - Liste des intervenants
+IntervenantAvatar - Avatar d'intervenant avec upload
+6. Composants de prévisualisation
+MiniPreview - Preview mini dans la sidebar
+EventPreview - Prévisualisation complète de l'événement
+TicketPreview - Aperçu des tickets
+FinalPreview - Prévisualisation finale
+7. Composants de validation
+ValidationIndicator - Indicateur de validation
+ErrorDisplay - Affichage des erreurs
+SuccessMessage - Messages de succès
+WarningMessage - Messages d'avertissement
+8. Composants de sauvegarde
+SaveIndicator - Indicateur de sauvegarde
+AutoSaveStatus - Statut de l'auto-sauvegarde
+DraftRecovery - Récupération de brouillon
+�� COMPOSANTS SPÉCIALISÉS
+
+
+1. Composants de géolocalisation
+MapSelector - Sélecteur de carte pour adresse
+AddressValidator - Validation d'adresse
+CoordinatesDisplay - Affichage des coordonnées
+2. Composants de récurrence
+RecurrenceSelector - Sélecteur de récurrence
+RecurrencePreview - Aperçu des occurrences
+3. Composants de mots-clés
+TagsInput - Saisie de mots-clés
+TagsSuggestions - Suggestions de mots-clés
+TagsDisplay - Affichage des mots-clés
+4. Composants de configuration Stripe
+StripeConfiguration - Configuration des paiements
+PricingDisplay - Affichage des prix
+CurrencySelector - Sélecteur de devise
+�� COMPOSANTS RESPONSIVE
+1. Composants mobile-first
+MobileWizardLayout - Layout mobile du wizard
+MobileStepNavigation - Navigation mobile
+MobilePreview - Preview mobile
+
+2. Composants adaptatifs
+ResponsiveForm - Formulaire responsive
+ResponsiveGrid - Grille responsive
+ResponsivePreview - Preview responsive
+�� COMPOSANTS UTILITAIRES
+1. Composants de feedback
+LoadingSpinner - Indicateur de chargement
+ProgressIndicator - Indicateur de progression
+StatusIndicator - Indicateur de statut
+2. Composants d'aide
+HelpTooltip - Infobulle d'aide
+ContextualHelp - Aide contextuelle
+TutorialOverlay - Overlay de tutoriel
+3. Composants de confirmation
+ConfirmationDialog - Dialogue de confirmation
+UnsavedChangesWarning - Avertissement de changements non sauvegardés
+PublishConfirmation - Confirmation de publication
+
+
+
+🧩 LISTE COMPLÈTE DES COMPOSANTS POUR LE WIZARD DE CRÉATION D'ÉVÉNEMENTS
+📋 COMPOSANTS EXISTANTS À RÉUTILISER
+1. Composants UI de base (déjà créés)
+Button - Boutons d'action (précédent, suivant, sauvegarder)
+InputField - Champs de saisie texte
+TextArea - Zones de texte longues
+Select - Listes déroulantes
+Radio - Boutons radio
+Checkbox - Cases à cocher
+Switch - Interrupteurs on/off
+Badge - Badges de statut
+Modal - Modales de confirmation
+Alert - Messages d'alerte
+Avatar - Avatars pour intervenants
+Table - Tableaux pour listes
+Dropdown - Menus déroulants
+2. Composants de formulaire (déjà créés)
+Form - Conteneur de formulaire
+Label - Labels de champs
+DatePicker - Sélecteur de date
+FileInput - Upload de fichiers
+DropZone - Zone de dépôt de fichiers
+MultiSelect - Sélection multiple
+PhoneInput - Champ téléphone
+ToggleSwitch - Interrupteur personnalisé
+3. Composants dashboard existants
+PageHeader - En-tête de page avec breadcrumbs
+PageContainer - Conteneur de contenu
+ComponentCard - Cartes de composants
+GridShape - Grilles de mise en page
+ChartTab - Onglets pour graphiques
+ThemeTogglerTwo - Basculement de thème
+4. Composants de navigation
+PageBreadcrumb - Fil d'Ariane
+ProgressBar - Barre de progression (à créer)
+�� COMPOSANTS À CRÉER SPÉCIFIQUEMENT
+1. Composants de navigation du wizard
+WizardProgressBar - Barre de progression des étapes
+WizardNavigation - Boutons précédent/suivant
+WizardStepIndicator - Indicateur d'étape actuelle
+2. Composants de saisie spécialisés
+ImageUploader - Upload d'images avec preview
+ImageCropper - Recadrage d'images
+RichTextEditor - Éditeur de texte riche
+TimePicker - Sélecteur d'heure
+DateTimePicker - Sélecteur date + heure
+TimezoneSelector - Sélecteur de fuseau horaire
+AddressInput - Champ d'adresse avec validation
+UrlInput - Champ URL avec validation
+3. Composants de configuration
+CategorySelector - Sélecteur de catégorie/sous-catégorie
+FormatSelector - Sélecteur de format (physique/online/hybride)
+PrivacySelector - Sélecteur de niveau de privacy
+TarificationSelector - Sélecteur de type de tarification
+4. Composants de tickets
+TicketCategoryForm - Formulaire de catégorie de tickets
+TicketForm - Formulaire de ticket individuel
+TicketImageUploader - Upload d'image pour ticket
+TicketsList - Liste des tickets créés
+TicketPreview - Aperçu d'un ticket
+TicketsConfiguration - Configuration complète des tickets
+5. Composants d'intervenants
+IntervenantForm - Formulaire d'intervenant
+IntervenantCard - Carte d'intervenant
+IntervenantsList - Liste des intervenants
+IntervenantAvatar - Avatar d'intervenant avec upload
+6. Composants de prévisualisation
+MiniPreview - Preview mini dans la sidebar
+EventPreview - Prévisualisation complète de l'événement
+TicketPreview - Aperçu des tickets
+FinalPreview - Prévisualisation finale
+7. Composants de validation
+ValidationIndicator - Indicateur de validation
+ErrorDisplay - Affichage des erreurs
+SuccessMessage - Messages de succès
+WarningMessage - Messages d'avertissement
+8. Composants de sauvegarde
+SaveIndicator - Indicateur de sauvegarde
+AutoSaveStatus - Statut de l'auto-sauvegarde
+DraftRecovery - Récupération de brouillon
+�� COMPOSANTS SPÉCIALISÉS
+1. Composants de géolocalisation
+MapSelector - Sélecteur de carte pour adresse
+AddressValidator - Validation d'adresse
+CoordinatesDisplay - Affichage des coordonnées
+2. Composants de récurrence
+RecurrenceSelector - Sélecteur de récurrence
+RecurrencePreview - Aperçu des occurrences
+3. Composants de mots-clés
+TagsInput - Saisie de mots-clés
+TagsSuggestions - Suggestions de mots-clés
+TagsDisplay - Affichage des mots-clés
+4. Composants de configuration Stripe
+StripeConfiguration - Configuration des paiements
+PricingDisplay - Affichage des prix
+CurrencySelector - Sélecteur de devise
+�� COMPOSANTS RESPONSIVE
+1. Composants mobile-first
+MobileWizardLayout - Layout mobile du wizard
+MobileStepNavigation - Navigation mobile
+MobilePreview - Preview mobile
+2. Composants adaptatifs
+ResponsiveForm - Formulaire responsive
+ResponsiveGrid - Grille responsive
+ResponsivePreview - Preview responsive
+�� COMPOSANTS UTILITAIRES
+1. Composants de feedback
+LoadingSpinner - Indicateur de chargement
+ProgressIndicator - Indicateur de progression
+StatusIndicator - Indicateur de statut
+2. Composants d'aide
+HelpTooltip - Infobulle d'aide
+ContextualHelp - Aide contextuelle
+TutorialOverlay - Overlay de tutoriel
+3. Composants de confirmation
+ConfirmationDialog - Dialogue de confirmation
+UnsavedChangesWarning - Avertissement de changements non sauvegardés
+PublishConfirmation - Confirmation de publication
+🎨 COMPOSANTS DE DESIGN
+1. Composants de mise en page
+WizardLayout - Layout principal du wizard
+StepContainer - Conteneur d'étape
+SidebarPreview - Preview dans la sidebar
+2. Composants visuels
+StepIcon - Icône d'étape
+StatusIcon - Icône de statut
+ValidationIcon - Icône de validation
+�� COMPOSANTS DE DONNÉES
+1. Composants de gestion d'état
+WizardStateProvider - Provider d'état du wizard
+FormStateManager - Gestionnaire d'état de formulaire
+ValidationManager - Gestionnaire de validation
+2. Composants de données
+DataFetcher - Récupération de données
+DataValidator - Validation de données
+DataTransformer - Transformation de données
+🔗 COMPOSANTS D'INTÉGRATION
+1. Composants Supabase
+SupabaseUploader - Upload vers Supabase
+SupabaseValidator - Validation Supabase
+SupabaseSaver - Sauvegarde Supabase
+2. Composants externes
+GoogleMapsIntegration - Intégration Google Maps
+StripeIntegration - Intégration Stripe
+ImageOptimizer - Optimisation d'images
+�� RÉSUMÉ PAR CATÉGORIE
+Composants existants à réutiliser : 15+
+Composants à créer : 40+
+Total estimé : 55+ composants
+Voulez-vous que je détaille certains composants spécifiques ou que je commence par créer les plus critiques ? 🎯

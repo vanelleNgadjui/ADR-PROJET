@@ -1,5 +1,5 @@
 // Line Charts
-export { LineChartOne } from './line';
+export * from './line';
 
 // Bar Charts
-export { BarChartOne } from './bar';
+export * from './bar';

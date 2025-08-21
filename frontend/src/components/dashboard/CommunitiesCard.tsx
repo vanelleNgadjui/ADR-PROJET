@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { UsersIcon, MapPinIcon, GlobeIcon, LockIcon } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { useAuth } from "../../hooks/useAuth";
-import Badge from "./ui/Badge";
+import Badge from "../ui/Badge";
 
 interface Community {
   id: number;

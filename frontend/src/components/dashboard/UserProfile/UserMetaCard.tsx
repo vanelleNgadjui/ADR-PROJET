@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Edit3Icon, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
-import { Modal } from "../ui/Modal";
-import Button from "../ui/Button";
-import InputField from "../form/input/InputField";
-import Label from "../form/Label";
-import Avatar from "../ui/Avatar";
+import { Modal } from "../../ui/Modal";
+import { Button } from "../../ui/Button";
+import { SimpleInput as InputField, Label } from "../../form";
+import Avatar from "../../ui/Avatar";
 import { useAuth } from "../../../hooks/useAuth";
 import { useProfilePhoto } from "../../../hooks/useProfilePhoto";
 

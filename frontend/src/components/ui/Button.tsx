@@ -9,6 +9,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   icon?: React.ElementType;
   iconPosition?: 'left' | 'right';
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -26,7 +28,7 @@ const sizeClasses: Record<string, string> = {
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading = false, icon: Icon, iconPosition = 'left', children, className = '', ...props }, ref) => {
+  ({ variant = 'primary', size = 'md', loading = false, icon: Icon, iconPosition = 'left', startIcon, endIcon, children, className = '', ...props }, ref) => {
     const { onDrag, onDragEnd, onDragStart, onDragOver, onDragEnter, onDragLeave, onDrop, onAnimationStart, onAnimationEnd, onAnimationIteration, ...restProps } = props;
     return (
       <motion.button
@@ -37,11 +39,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading}
         {...restProps}
       >
-        {Icon && iconPosition === 'left' && <Icon className="w-5 h-5" aria-hidden="true" />}
+        {(Icon && iconPosition === 'left') || startIcon}
         {loading ? <span className="animate-pulse">...</span> : children}
-        {Icon && iconPosition === 'right' && <Icon className="w-5 h-5" aria-hidden="true" />}
+        {(Icon && iconPosition === 'right') || endIcon}
       </motion.button>
     );
   }
 );
-Button.displayName = 'Button'; 
+Button.displayName = 'Button';

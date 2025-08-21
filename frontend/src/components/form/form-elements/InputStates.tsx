@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InputField from "../input/InputField";
+import InputField from "../input/SimpleInput";
 import Label from "../Label";
 
 export default function InputStates() {

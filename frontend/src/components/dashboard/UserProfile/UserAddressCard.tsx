@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Edit3Icon } from "lucide-react";
-import { Modal } from "../ui/Modal";
-import Button from "../ui/Button";
-import InputField from "../form/input/InputField";
-import Label from "../form/Label";
+import { Modal } from "../../ui/Modal";
+import { Button } from "../../ui/Button";
+import { SimpleInput as InputField } from "../../form";
+import { Label } from "../../form";
 import { useAuth } from "../../../hooks/useAuth";
 
 export default function UserAddressCard() {

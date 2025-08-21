@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Dropdown } from "../ui/Dropdown";
-import { DropdownItem } from "../ui/DropdownItem";
+import { Dropdown } from "../../ui/Dropdown";
+import { DropdownItem } from "../../ui/DropdownItem";
 import { Link } from "react-router-dom";
 import { BellIcon, XIcon } from "lucide-react";
-import Avatar from "../ui/Avatar";
+import Avatar from "../../ui/Avatar";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);

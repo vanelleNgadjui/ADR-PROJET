@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { DropdownItem } from "../ui/DropdownItem";
-import { Dropdown } from "../ui/Dropdown";
+import { DropdownItem } from "../../ui/DropdownItem";
+import { Dropdown } from "../../ui/Dropdown";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { useProfilePhoto } from "../../../hooks/useProfilePhoto";
-import Avatar from "../ui/Avatar";
+import Avatar from "../../ui/Avatar";
 import { 
   UserIcon, 
   SettingsIcon, 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine } from '../../components/dashboard/ui';
+import { Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine, Button } from '../../components/ui';
 import { Header, UserDropdown, NotificationDropdown } from '../../components/dashboard/header';
 import { 
   ThemeToggleButton, 
@@ -29,7 +29,7 @@ import {
   Form, 
   Label, 
   Select, 
-  InputField, 
+  SimpleInput as InputField, 
   DatePicker, 
   MultiSelect, 
   Checkbox, 
@@ -48,7 +48,7 @@ import {
   DropZone,
   DefaultInputs,
   CheckboxComponents
-} from '../../components/dashboard/form';
+} from '../../components/form';
 import { PlusIcon, ArrowRightIcon, UserIcon, CheckCircleIcon, AlertTriangleIcon, InfoIcon, MoreHorizontalIcon, SettingsIcon, LogOutIcon, PencilIcon, TrashIcon, LockIcon } from 'lucide-react';
 
 const TestDashboardComponents: React.FC = () => {

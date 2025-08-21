@@ -13,7 +13,7 @@ import {
 import { useAuth } from "../../../hooks/useAuth";
 import { useSidebar } from "../../../context/dashboard/SidebarContext";
 import { useTheme } from "../../../context/dashboard/ThemeContext";
-import Avatar from "../ui/Avatar";
+import Avatar from "../../ui/Avatar";
 import { useProfilePhoto } from "../../../hooks/useProfilePhoto";
 
 interface MenuItem {

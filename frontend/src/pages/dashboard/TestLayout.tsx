@@ -2,7 +2,7 @@ import { PlusIcon, DownloadIcon, FilterIcon } from "lucide-react";
 import DashboardLayout from "../../components/dashboard/layout/DashboardLayout";
 import PageHeader from "../../components/dashboard/layout/PageHeader";
 import PageContainer from "../../components/dashboard/layout/PageContainer";
-import Button from "../../components/dashboard/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { EventsCard, CommunitiesCard } from "../../components/dashboard";
 
 export default function TestLayout() {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/ui/Header';
 import Footer from '../components/ui/Footer';
 import NewsletterForm from '../components/ui/NewsletterForm';
@@ -8,7 +9,7 @@ import FallingText from '../components/ui/TextAnimations/FallingText';
 import Carousel from '../components/ui/Carousel';
 import CardSwap, { Card as CardSwapCard } from '../components/ui/CardSwap';
 import { Music, BookOpen, Users, Mountain } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Button } from '../components/ui';
 import adrBg from '../assets/ADR-BG.png';
 import bgEventsGrid from '../assets/bg-events-grid.png';
 import imageDownloadApp from '../assets/image-download-app.png';
@@ -26,8 +27,12 @@ export default function LandingPage() {
                       <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Tous les événements chrétiens.<br />Au même endroit.</h1>
           <p className="text-lg md:text-xl text-neutral-700 mb-8 max-w-sm md:max-w-none">Créez. Découvrez. Vivez les événements qui nourrissent votre foi.</p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button variant="primary">Découvrir les événements</Button>
-            <Button variant="secondary">Organiser un événement</Button>
+            <Link to="/auth/connexion">
+              <Button variant="primary">Découvrir les événements</Button>
+            </Link>
+            <Link to="/auth/choix-role">
+              <Button variant="secondary">Organiser un événement</Button>
+            </Link>
           </div>
         </div>
         {/* CardSwap à droite - masqué sur mobile */}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Label from "../Label";
-import InputField from "../input/InputField";
+import InputField from "../input/SimpleInput";
 import Select from "../Select";
 import { EyeIcon, EyeOffIcon, ClockIcon, CreditCardIcon } from "lucide-react";
 import DatePicker from "../date-picker";
