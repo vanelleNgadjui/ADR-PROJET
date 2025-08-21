@@ -9,6 +9,7 @@ import ChoixRole from './pages/auth/ChoixRole';
 import Inscription from './pages/auth/Inscription';
 import Onboarding from './pages/auth/Onboarding';
 import AuthCallback from './pages/auth/AuthCallback';
+import EventWizard from './components/events/wizard/EventWizard';
 import './App.css';
 
 function App() {
@@ -26,6 +27,10 @@ function App() {
         <Route path="/auth/inscription/:role" element={<Inscription />} />
         <Route path="/auth/onboarding/:role" element={<Onboarding />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        
+        {/* Routes du wizard d'événements */}
+        <Route path="/events/create" element={<EventWizard />} />
+        <Route path="/events/edit/:id" element={<EventWizard />} />
       </Routes>
     </Router>
   );
