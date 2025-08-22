@@ -10,11 +10,13 @@ import Inscription from './pages/auth/Inscription';
 import Onboarding from './pages/auth/Onboarding';
 import AuthCallback from './pages/auth/AuthCallback';
 import EventWizard from './components/events/wizard/EventWizard';
+import FaviconManager from './components/common/FaviconManager';
 import './App.css';
 
 function App() {
   return (
     <Router>
+      <FaviconManager />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/ui-kit" element={<UiKit />} />

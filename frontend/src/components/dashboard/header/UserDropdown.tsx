@@ -120,7 +120,7 @@ export default function UserDropdown() {
           <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
             {userEmail}
           </span>
-          <span className="mt-0.5 block text-xs text-blue-600 dark:text-blue-400">
+                          <span className="mt-0.5 block text-xs text-primary-blue dark:text-primary-blue">
             {userRole === 'participant' ? 'Participant' : 
              userRole === 'organisateur' ? 'Organisateur' : 
              userRole === 'admin' ? 'Administrateur' : userRole}

@@ -200,7 +200,7 @@ export const ProfilePhotoUpload: React.FC<ProfilePhotoUploadProps> = ({
               e.stopPropagation();
               handlePhotoRemove();
             }}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-all duration-200 shadow-lg hover:scale-110 z-10"
+                          className="absolute -top-2 -right-2 bg-secondary-coral text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-secondary-coral/90 transition-all duration-200 shadow-lg hover:scale-110 z-10"
             title="Supprimer la photo"
             disabled={disabled}
           >
@@ -219,11 +219,11 @@ export const ProfilePhotoUpload: React.FC<ProfilePhotoUploadProps> = ({
         {currentPhotoUrl && (
           <div className="absolute -bottom-1 -right-1">
             {isGooglePhoto ? (
-              <div className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                              <div className="bg-primary-blue text-white rounded-full w-5 h-5 flex items-center justify-center">
                 <CheckCircle className="w-3 h-3" />
               </div>
             ) : isUploadedPhoto ? (
-              <div className="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                              <div className="bg-secondary-mint text-white rounded-full w-5 h-5 flex items-center justify-center">
                 <Upload className="w-3 h-3" />
               </div>
             ) : null}
@@ -233,7 +233,7 @@ export const ProfilePhotoUpload: React.FC<ProfilePhotoUploadProps> = ({
 
       {/* Message d'erreur */}
       {error && (
-        <div className="mt-2 flex items-center gap-2 text-red-600 text-sm">
+                    <div className="mt-2 flex items-center gap-2 text-secondary-coral text-sm">
           <AlertCircle className="w-4 h-4" />
           <span>{error}</span>
         </div>
@@ -251,7 +251,7 @@ export const ProfilePhotoUpload: React.FC<ProfilePhotoUploadProps> = ({
       {/* Indicateur de source pour les photos Google */}
       {isGooglePhoto && (
         <div className="mt-2 text-center">
-          <div className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs">
+                          <div className="inline-flex items-center gap-1 bg-primary-blue/5 text-primary-blue px-2 py-1 rounded-full text-xs">
             <CheckCircle className="w-3 h-3" />
             <span>Photo Google</span>
           </div>

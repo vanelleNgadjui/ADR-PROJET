@@ -15,17 +15,19 @@ const WizardStep: React.FC<WizardStepProps> = ({ stepNumber, totalSteps, childre
       <div className="mb-6">
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-primary-blue h-2 rounded-full transition-all duration-300"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
         
-        {/* Informations d'étape alignées à droite */}
-        <div className="flex justify-end mt-2 space-y-1">
-          <div className="text-right">
+        {/* Informations d'étape : étape à gauche, pourcentage à droite */}
+        <div className="flex justify-between items-center mt-2">
+          <div className="text-left">
             <p className="text-xs text-gray-600">
               Étape {stepNumber} sur {totalSteps}
             </p>
+          </div>
+          <div className="text-right">
             <p className="text-xs text-gray-500">
               {progressPercentage}% terminé
             </p>

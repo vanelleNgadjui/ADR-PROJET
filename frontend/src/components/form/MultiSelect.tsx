@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDownIcon, XIcon } from "lucide-react";
 
 interface Option {
@@ -10,6 +10,7 @@ interface Option {
 interface MultiSelectProps {
   label: string;
   options: Option[];
+  selected?: string[];
   defaultSelected?: string[];
   onChange?: (selected: string[]) => void;
   disabled?: boolean;
@@ -20,6 +21,7 @@ interface MultiSelectProps {
 const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   options,
+  selected,
   defaultSelected = [],
   onChange,
   disabled = false,
@@ -27,8 +29,42 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   className = "",
 }) => {
   const [selectedOptions, setSelectedOptions] =
-    useState<string[]>(defaultSelected);
+    useState<string[]>(selected || defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Synchroniser avec les props externes
+  useEffect(() => {
+    if (selected !== undefined) {
+      setSelectedOptions(selected);
+    }
+  }, [selected]);
+
+  // Gestion du clic à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    // Gestion de la touche Échap
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isOpen]);
 
   const toggleDropdown = () => {
     if (!disabled) setIsOpen((prev) => !prev);
@@ -59,10 +95,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         {label}
       </label>
 
-      <div className="relative z-20 inline-block w-full">
+      <div ref={dropdownRef} className="relative z-20 inline-block w-full">
         <div className="relative flex flex-col items-center">
           <div onClick={toggleDropdown} className="w-full">
-            <div className="mb-2 flex h-11 rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:focus:border-blue-400">
+            <div className="mb-2 flex h-11 rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-sm outline-none transition focus:border-transparent focus:ring-2 focus:ring-primary-blue dark:border-gray-700 dark:bg-gray-900 dark:focus:border-primary-blue">
               <div className="flex flex-wrap flex-auto gap-2">
                 {selectedValuesText.length > 0 ? (
                   selectedValuesText.map((text, index) => (
@@ -106,7 +142,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   onClick={() => handleSelect(option.value)}
                   className={`cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${
                     selectedOptions.includes(option.value)
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                      ? "bg-primary-blue/10 text-primary-blue dark:bg-primary-blue/20 dark:text-primary-blue"
                       : "text-gray-700 dark:text-gray-300"
                   }`}
                 >

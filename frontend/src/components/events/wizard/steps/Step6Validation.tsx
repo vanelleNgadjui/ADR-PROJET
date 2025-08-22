@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { EventFormData } from '../EventWizard';
 import { CheckCircle, AlertTriangle, Eye } from 'lucide-react';
+import { Button } from '../../../ui/Button';
 
 interface Step6ValidationProps {
   formData: EventFormData;
@@ -32,8 +33,23 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
     if (!formData.date_debut) errors.push('La date de début est obligatoire');
     if (!formData.date_fin) errors.push('La date de fin est obligatoire');
     if (formData.date_debut && formData.date_fin) {
-      if (new Date(formData.date_fin) <= new Date(formData.date_debut)) {
-        errors.push('La date de fin doit être postérieure à la date de début');
+      // Créer des objets Date avec les heures si elles sont définies
+      const startDate = new Date(formData.date_debut);
+      const endDate = new Date(formData.date_fin);
+      
+      // Si les heures sont définies, les ajouter aux dates
+      if (formData.heure_debut) {
+        const [hours, minutes] = formData.heure_debut.split(':');
+        startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      }
+      
+      if (formData.heure_fin) {
+        const [hours, minutes] = formData.heure_fin.split(':');
+        endDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      }
+      
+      if (endDate <= startDate) {
+        errors.push('La date/heure de fin doit être postérieure à la date/heure de début');
       }
     }
 
@@ -121,23 +137,23 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
       {/* Statut de validation */}
       <div className={`p-4 rounded-lg border ${
         isValid 
-          ? 'bg-green-50 border-green-200' 
-          : 'bg-yellow-50 border-yellow-200'
+                      ? 'bg-primary-orange/10 border-primary-orange/20' 
+          : 'bg-primary-blue/10 border-primary-blue/20'
       }`}>
         <div className="flex items-center gap-3">
           {isValid ? (
-            <CheckCircle className="w-6 h-6 text-green-600" />
+            <CheckCircle className="w-6 h-6 text-primary-orange" />
           ) : (
-            <AlertTriangle className="w-6 h-6 text-yellow-600" />
+            <AlertTriangle className="w-6 h-6 text-primary-blue" />
           )}
           <div>
             <h4 className={`font-medium ${
-              isValid ? 'text-green-900' : 'text-yellow-900'
+              isValid ? 'text-primary-orange' : 'text-primary-blue'
             }`}>
               {isValid ? 'Événement prêt à être publié' : 'Événement incomplet'}
             </h4>
             <p className={`text-sm ${
-              isValid ? 'text-green-800' : 'text-yellow-800'
+              isValid ? 'text-primary-orange' : 'text-primary-blue'
             }`}>
               {isValid 
                 ? 'Toutes les informations obligatoires sont renseignées'
@@ -220,20 +236,21 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
 
       {/* Bouton de prévisualisation */}
       <div className="flex justify-center">
-                 <button
+                 <Button
            onClick={() => setShowPreview(!showPreview)}
-           className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+           variant="ghost"
+           className="flex items-center gap-2"
          >
            <Eye className="w-5 h-5" />
            {showPreview ? 'Masquer la prévisualisation' : 'Voir la prévisualisation'}
-         </button>
+         </Button>
       </div>
 
       {/* Prévisualisation */}
       {showPreview && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h4 className="font-medium text-gray-900 mb-4">Prévisualisation publique</h4>
-          <div className="bg-white rounded-lg p-4 border border-gray-300">
+          <div className="bg-white rounded-lg p-4 border border-neutral-black/10">
             {/* Ici vous pourriez afficher une prévisualisation de l'événement */}
             <div className="space-y-3">
               <h3 className="text-xl font-bold">{formData.titre}</h3>
@@ -250,21 +267,21 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button
+        <Button
           onClick={handleSaveDraft}
           disabled={publishing}
-          className="px-8 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+          variant="secondary"
         >
           {publishing ? 'Sauvegarde...' : 'Sauvegarder en brouillon'}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={handlePublish}
           disabled={!isValid || publishing}
-          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          variant="primary"
         >
           {publishing ? 'Publication...' : 'Publier l\'événement'}
-        </button>
+        </Button>
       </div>
 
       {/* Message d'erreur */}
@@ -275,9 +292,9 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
       )}
 
       {/* Conseils finaux */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-medium text-blue-900 mb-2">🎉 Félicitations !</h4>
-        <p className="text-sm text-blue-800">
+              <div className="bg-primary-orange/10 border border-primary-orange/20 rounded-lg p-4">
+          <h4 className="font-medium text-primary-orange mb-2">🎉 Félicitations !</h4>
+          <p className="text-sm text-primary-orange">
           Vous êtes sur le point de publier votre événement. Une fois publié, il sera visible 
           par tous les utilisateurs de la plateforme et pourra recevoir des inscriptions.
         </p>

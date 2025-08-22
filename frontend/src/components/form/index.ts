@@ -24,6 +24,7 @@ export { default as InputStates } from './form-elements/InputStates';
 export { default as InputGroup } from './form-elements/InputGroup';
 export { default as FileInputExample } from './form-elements/FileInputExample';
 export { default as DropZone } from './form-elements/DropZone';
+export { default as ImageDropZone } from './form-elements/ImageDropZone';
 export { default as DefaultInputs } from './form-elements/DefaultInputs';
 export { default as CheckboxComponents } from './form-elements/CheckboxComponents';
 

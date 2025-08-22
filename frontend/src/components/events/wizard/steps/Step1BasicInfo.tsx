@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import type { EventFormData } from '../EventWizard';
-import { supabase } from '../../../../lib/supabaseClient';
-import { Input } from '../../../ui/Input';
+import { supabase, EVENT_IMAGES_BUCKET } from '../../../../lib/supabaseClient';
+import { useAuth } from '../../../../hooks/useAuth';
 import { Button } from '../../../ui/Button';
+import SimpleInput from '../../../form/input/SimpleInput';
+import Select from '../../../form/Select';
+import FileInput from '../../../form/input/FileInput';
+import TextArea from '../../../form/input/TextArea';
+import { ImageDropZone } from '../../../form';
 import { Camera, X } from 'lucide-react';
 
 interface Step1BasicInfoProps {
@@ -10,6 +15,13 @@ interface Step1BasicInfoProps {
   onFormDataChange: (updates: Partial<EventFormData>) => void;
   error: string;
   setError: (error: string) => void;
+}
+
+interface FieldErrors {
+  titre?: string;
+  description?: string;
+  image_couverture?: string;
+  sous_categorie_id?: string;
 }
 
 interface Category {
@@ -31,9 +43,11 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
   error,
   setError,
 }) => {
+  const { user } = useAuth();
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   // Charger les catégories et sous-catégories
   useEffect(() => {
@@ -46,6 +60,11 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
       loadSubCategories();
     }
   }, [formData.sous_categorie_id]);
+
+  // Debug: Log des changements d'image
+  useEffect(() => {
+    console.log('Image de couverture mise à jour:', formData.image_couverture);
+  }, [formData.image_couverture]);
 
   const loadCategories = async () => {
     try {
@@ -80,20 +99,62 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
     }
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculer les nouvelles dimensions (max 1200px de large)
+        const maxWidth = 1200;
+        const maxHeight = 800;
+        let { width, height } = img;
+        
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Dessiner l'image redimensionnée
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convertir en blob avec qualité 0.8
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          } else {
+            resolve(file);
+          }
+        }, 'image/jpeg', 0.8);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  };
 
+  const uploadImage = async (file: File) => {
     // Validation du fichier
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      setError('L\'image doit faire moins de 5MB');
+      setFieldErrors(prev => ({ ...prev, image_couverture: `L'image est trop volumineuse (${(file.size / 1024 / 1024).toFixed(1)}MB). Taille maximale : 5MB` }));
       return;
     }
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      setError('Format d\'image non supporté. Utilisez JPG, PNG ou WebP');
+      setFieldErrors(prev => ({ ...prev, image_couverture: `Format non supporté : ${file.type}. Utilisez JPG, PNG ou WebP` }));
       return;
     }
 
@@ -101,30 +162,78 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
       setUploadingImage(true);
       setError('');
 
+      // Compresser l'image si elle est trop grande
+      let fileToUpload = file;
+      if (file.size > 500 * 1024) { // Si > 500KB, compresser
+        console.log('🔄 Compression de l\'image...');
+        fileToUpload = await compressImage(file);
+        console.log('✅ Image compressée:', fileToUpload.size, 'bytes');
+      }
+
       // Créer un nom unique pour le fichier
-      const fileExt = file.name.split('.').pop();
+      const fileExt = fileToUpload.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `event-covers/${fileName}`;
 
+      console.log('Début upload vers bucket:', EVENT_IMAGES_BUCKET);
+      
       // Upload vers Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from('event-images')
-        .upload(filePath, file);
+        .from(EVENT_IMAGES_BUCKET)
+        .upload(filePath, fileToUpload);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Erreur upload:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('Upload réussi, obtention URL publique...');
 
       // Obtenir l'URL publique
       const { data: { publicUrl } } = supabase.storage
-        .from('event-images')
+        .from(EVENT_IMAGES_BUCKET)
         .getPublicUrl(filePath);
 
+      console.log('✅ Image uploadée avec succès:', { filePath, publicUrl });
+      console.log('🔄 Mise à jour du state avec l\'URL...');
       onFormDataChange({ image_couverture: publicUrl });
+      console.log('✅ State mis à jour');
+      // Effacer l'erreur de l'image si elle existe
+      setFieldErrors(prev => ({ ...prev, image_couverture: undefined }));
     } catch (err) {
       console.error('Erreur lors de l\'upload de l\'image:', err);
-      setError('Erreur lors de l\'upload de l\'image');
+      
+      // Erreurs spécifiques selon le type d'erreur
+      if (err && typeof err === 'object' && 'statusCode' in err) {
+        const error = err as any;
+        if (error.statusCode === '413') {
+          setFieldErrors(prev => ({ ...prev, image_couverture: 'L\'image est trop volumineuse pour le serveur. Essayez une image plus petite.' }));
+        } else if (error.statusCode === '401') {
+          setFieldErrors(prev => ({ ...prev, image_couverture: 'Erreur d\'authentification. Veuillez vous reconnecter.' }));
+        } else if (error.statusCode === '403') {
+          setFieldErrors(prev => ({ ...prev, image_couverture: 'Vous n\'avez pas les permissions pour uploader des images.' }));
+        } else {
+          setFieldErrors(prev => ({ ...prev, image_couverture: `Erreur serveur (${error.statusCode}): ${error.message || 'Erreur inconnue'}` }));
+        }
+      } else {
+        setFieldErrors(prev => ({ ...prev, image_couverture: 'Erreur lors de l\'upload de l\'image. Vérifiez votre connexion.' }));
+      }
     } finally {
       setUploadingImage(false);
     }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log('🖼️ FileInput: Fichier reçu:', file.name, file.size, file.type);
+      await uploadImage(file);
+    }
+  };
+
+  const handleDropZoneUpload = async (file: File) => {
+    console.log('🖼️ DropZone: Fichier reçu:', file.name, file.size, file.type);
+    await uploadImage(file);
   };
 
   const removeImage = () => {
@@ -145,44 +254,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
         </p>
       </div>
 
-      {/* Titre */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Titre de l'événement *
-        </label>
-        <Input
-          type="text"
-          value={formData.titre}
-          onChange={(e) => onFormDataChange({ titre: e.target.value })}
-          placeholder="Ex: Concert Gospel de Noël"
-          className="w-full"
-          required
-          label=""
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          Choisissez un titre accrocheur et descriptif
-        </p>
-      </div>
-
-      {/* Description */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Description *
-        </label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => onFormDataChange({ description: e.target.value })}
-          placeholder="Décrivez votre événement de manière attractive..."
-          rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          required
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          {formData.description?.length || 0}/500 caractères
-        </p>
-      </div>
-
-      {/* Image de couverture */}
+      {/* Image de couverture - EN PREMIER */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Image de couverture *
@@ -193,81 +265,172 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
             <img
               src={formData.image_couverture}
               alt="Couverture de l'événement"
-              className="w-full h-48 object-cover rounded-lg border border-gray-300"
+              className="w-full h-64 object-cover lg:object-contain rounded-lg border border-neutral-black/10 lg:bg-gray-50"
+              onError={(e) => {
+                console.error('Erreur de chargement image:', e);
+                e.currentTarget.style.display = 'none';
+              }}
+              onLoad={() => console.log('Image chargée avec succès')}
             />
-            <button
+            <Button
               onClick={removeImage}
-              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2 p-1 rounded-full text-secondary-coral hover:text-secondary-coral border border-secondary-coral hover:border-secondary-coral"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="image-upload"
-            />
-            <label htmlFor="image-upload" className="cursor-pointer">
-              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600 font-medium">
-                {uploadingImage ? 'Upload en cours...' : 'Cliquez pour ajouter une image'}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                JPG, PNG ou WebP • Max 5MB
-              </p>
-            </label>
-          </div>
+          <>
+            {/* Desktop: DropZone */}
+            <div className="hidden lg:block">
+              <ImageDropZone
+                onImageUpload={handleDropZoneUpload}
+                uploading={uploadingImage}
+              />
+            </div>
+            
+            {/* Mobile: FileInput classique */}
+            <div className="lg:hidden">
+              <div className="border-2 border-dashed border-neutral-black/10 rounded-lg p-6 text-center hover:border-neutral-black/20 transition-colors">
+                <FileInput
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="mobile-image-input"
+                />
+                <label htmlFor="mobile-image-input" className="cursor-pointer">
+                  <Camera className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 font-medium">
+                    {uploadingImage ? 'Upload en cours...' : 'Cliquez pour ajouter une image'}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    JPG, PNG ou WebP • Max 5MB
+                  </p>
+                </label>
+              </div>
+            </div>
+          </>
         )}
         
         {uploadingImage && (
-          <div className="mt-2 flex items-center gap-2 text-blue-600">
-            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <div className="mt-2 flex items-center gap-2 text-primary-blue">
+            <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin" />
             <span className="text-sm">Upload en cours...</span>
           </div>
+        )}
+        
+        {/* Message d'erreur pour l'image */}
+        {fieldErrors.image_couverture && (
+          <p className="mt-2 text-xs text-primary-orange">{fieldErrors.image_couverture}</p>
+        )}
+      </div>
+
+      {/* Titre */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Titre de l'événement *
+        </label>
+        <SimpleInput
+          type="text"
+          value={formData.titre}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            onFormDataChange({ titre: value });
+            
+            // Validation en temps réel
+            if (value.length === 0) {
+              setFieldErrors(prev => ({ ...prev, titre: 'Le titre est obligatoire' }));
+            } else if (value.length < 3) {
+              setFieldErrors(prev => ({ ...prev, titre: 'Le titre doit contenir au moins 3 caractères' }));
+            } else if (value.length > 100) {
+              setFieldErrors(prev => ({ ...prev, titre: 'Le titre ne peut pas dépasser 100 caractères' }));
+            } else {
+              setFieldErrors(prev => ({ ...prev, titre: undefined }));
+            }
+          }}
+          placeholder="Ex: Concert Gospel de Noël"
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Choisissez un titre accrocheur et descriptif
+        </p>
+        {fieldErrors.titre && (
+          <p className="mt-2 text-xs text-primary-orange">{fieldErrors.titre}</p>
+        )}
+      </div>
+
+      {/* Description */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Description *
+        </label>
+        <TextArea
+          value={formData.description || ''}
+          onChange={(value) => {
+            onFormDataChange({ description: value });
+            
+            // Validation en temps réel
+            if (value.length === 0) {
+              setFieldErrors(prev => ({ ...prev, description: 'La description est obligatoire' }));
+            } else if (value.length < 10) {
+              setFieldErrors(prev => ({ ...prev, description: 'La description doit contenir au moins 10 caractères' }));
+            } else if (value.length > 500) {
+              setFieldErrors(prev => ({ ...prev, description: 'La description ne peut pas dépasser 500 caractères' }));
+            } else {
+              setFieldErrors(prev => ({ ...prev, description: undefined }));
+            }
+          }}
+          placeholder="Décrivez votre événement de manière attractive..."
+          rows={4}
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          {formData.description?.length || 0}/500 caractères
+        </p>
+        {fieldErrors.description && (
+          <p className="mt-2 text-xs text-primary-orange">{fieldErrors.description}</p>
         )}
       </div>
 
       {/* Catégorie */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="text-sm font-medium text-gray-700 mb-2">
           Catégorie *
         </label>
-        <select
-          value={formData.sous_categorie_id || ''}
-          onChange={(e) => {
-            const subCategoryId = e.target.value ? parseInt(e.target.value) : 1;
+        <Select
+          options={subCategories.map((subCategory) => ({
+            value: subCategory.id.toString(),
+            label: subCategory.nom
+          }))}
+          placeholder="Sélectionnez une catégorie"
+          onChange={(value) => {
+            const subCategoryId = value ? parseInt(value) : 1;
             onFormDataChange({ sous_categorie_id: subCategoryId });
+            
+            // Validation en temps réel
+            if (!value) {
+              setFieldErrors(prev => ({ ...prev, sous_categorie_id: 'Veuillez sélectionner une catégorie' }));
+            } else {
+              setFieldErrors(prev => ({ ...prev, sous_categorie_id: undefined }));
+            }
           }}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          required
-        >
-          <option value="">Sélectionnez une catégorie</option>
-          {subCategories.map((subCategory) => (
-            <option key={subCategory.id} value={subCategory.id}>
-              {subCategory.nom}
-            </option>
-          ))}
-        </select>
+          defaultValue={formData.sous_categorie_id?.toString() || ''}
+        />
         <p className="text-xs text-gray-500 mt-1">
           Choisissez la catégorie qui correspond le mieux à votre événement
         </p>
+        {fieldErrors.sous_categorie_id && (
+          <p className="mt-2 text-xs text-primary-orange">{fieldErrors.sous_categorie_id}</p>
+        )}
       </div>
 
-      {/* Message d'erreur */}
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
+
 
       {/* Indicateur de chargement */}
       {loading && (
         <div className="text-center py-4">
-          <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <div className="w-6 h-6 border-2 border-primary-blue border-t-transparent rounded-full animate-spin mx-auto mb-2" />
           <p className="text-sm text-gray-500">Chargement des catégories...</p>
         </div>
       )}

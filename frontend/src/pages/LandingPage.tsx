@@ -10,6 +10,7 @@ import Carousel from '../components/ui/Carousel';
 import CardSwap, { Card as CardSwapCard } from '../components/ui/CardSwap';
 import { Music, BookOpen, Users, Mountain } from 'lucide-react';
 import { Button } from '../components/ui';
+import PageTitle from '../components/common/PageTitle';
 import adrBg from '../assets/ADR-BG.png';
 import bgEventsGrid from '../assets/bg-events-grid.png';
 import imageDownloadApp from '../assets/image-download-app.png';
@@ -17,6 +18,10 @@ import imageDownloadApp from '../assets/image-download-app.png';
 export default function LandingPage() {
   return (
     <div className="bg-neutral-white min-h-screen flex flex-col">
+      <PageTitle 
+        title="Landing Page" 
+        description="Découvrez tous les événements chrétiens au même endroit. Créez, découvrez et vivez les événements qui nourrissent votre foi."
+      />
       {/* 1. Header */}
       <Header />
 

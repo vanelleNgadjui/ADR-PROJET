@@ -74,7 +74,7 @@ const cardData: BentoCardProps[] = [
     title: "Trouve enfin des événements qui te parlent",
     description: "Des recommandations selon ta foi et tes centres d'intérêts.",
     icon: (
-      <span className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-blue-50 text-blue-700 shadow-sm">
+      <span className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-primary-blue/5 text-primary-blue shadow-sm">
         <Calendar size={24} />
       </span>
     ),
@@ -125,7 +125,7 @@ const cardData: BentoCardProps[] = [
     title: "Mieux connaître, mieux impacter",
     description: "Suis les inscriptions, retours et profils pour bâtir une communauté engagée.",
     icon: (
-      <span className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-blue-50 text-blue-700 shadow-sm">
+      <span className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-primary-blue/5 text-primary-blue shadow-sm">
         <BarChart2 size={24} />
       </span>
     ),

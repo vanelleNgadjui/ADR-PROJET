@@ -51,10 +51,13 @@ body {
   animation: shake 0.5s ease-in-out;
 }
 
-/* Améliorations pour les inputs */
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+/* Améliorations pour les inputs - Supprimé pour éviter les conflits avec les composants */
+
+/* Prévenir le zoom sur mobile pour les inputs */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* Améliorations pour les boutons */
@@ -68,4 +71,14 @@ button:disabled {
   .animate-fadeIn {
     animation-duration: 0.3s;
   }
+}
+
+/* Cacher la barre de scroll */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
 }

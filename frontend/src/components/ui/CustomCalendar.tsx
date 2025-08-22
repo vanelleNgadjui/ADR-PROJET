@@ -7,6 +7,8 @@ interface CustomCalendarProps {
   role?: 'participant' | 'organisateur';
   placeholder?: string;
   className?: string;
+  allowFutureDates?: boolean; // Nouvelle prop pour contrôler les dates futures
+  minDate?: string; // Date minimum sélectionnable (pour la date de fin)
 }
 
 export default function CustomCalendar({ 
@@ -14,7 +16,9 @@ export default function CustomCalendar({
   onChange, 
   role = 'organisateur',
   placeholder = "",
-  className = ""
+  className = "",
+  allowFutureDates = false,
+  minDate
 }: CustomCalendarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showYearDropdown, setShowYearDropdown] = useState(false);
@@ -38,13 +42,17 @@ export default function CustomCalendar({
     if (value) {
       return new Date(value);
     }
+    // Si on a une minDate, commencer par cette date, sinon aujourd'hui
+    if (minDate) {
+      return new Date(minDate);
+    }
     // Commencer par la date d'aujourd'hui
     return new Date();
   });
 
   const focusColors = role === 'participant' 
-    ? 'focus:ring-primary-orange focus:border-primary-orange' 
-    : 'focus:ring-primary-blue focus:border-primary-blue';
+    ? 'focus:outline-none focus:ring-2 focus:ring-primary-orange/20 focus:border-primary-orange' 
+    : 'focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent';
 
   const primaryColor = role === 'participant' ? 'primary-orange' : 'primary-blue';
   const primaryColorHover = role === 'participant' ? 'hover:bg-primary-orange/10' : 'hover:bg-primary-blue/10';
@@ -62,40 +70,86 @@ export default function CustomCalendar({
   };
 
   const handleDateSelect = (day: number) => {
-    const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const dateString = selectedDate.toISOString().split('T')[0];
+    // Créer la date en format YYYY-MM-DD pour éviter les problèmes de fuseau horaire
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const dayStr = day.toString().padStart(2, '0');
+    const dateString = `${year}-${month}-${dayStr}`;
     onChange(dateString);
     setIsOpen(false);
   };
 
   const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    const previousMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    const today = new Date();
+    const currentYear = new Date().getFullYear();
+    
+    if (allowFutureDates) {
+      // Pour les événements : permettre la navigation dans la plage autorisée
+      const minYear = currentYear; // Année actuelle minimum
+      const minDate = new Date(minYear, 0, 1); // 1er janvier de l'année actuelle
+      
+      if (previousMonth >= minDate) {
+        setCurrentDate(previousMonth);
+      }
+    } else {
+      // Pour les dates de naissance : permettre tous les mois passés
+      setCurrentDate(previousMonth);
+    }
   };
 
   const goToNextMonth = () => {
     const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     const today = new Date();
+    const currentYear = new Date().getFullYear();
     
-    // ✅ Permettre seulement les mois passés pour les dates de naissance
-    if (nextMonth <= today) {
-      setCurrentDate(nextMonth);
+    if (allowFutureDates) {
+      // Pour les événements : permettre les mois futurs mais limiter à +2 ans
+      const maxFutureYear = currentYear + 2;
+      const maxDate = new Date(maxFutureYear, 11, 31); // 31 décembre de l'année max
+      
+      if (nextMonth <= maxDate) {
+        setCurrentDate(nextMonth);
+      }
+    } else {
+      // Pour les dates de naissance : permettre seulement les mois passés
+      if (nextMonth <= today) {
+        setCurrentDate(nextMonth);
+      }
     }
   };
 
   const goToPreviousYear = () => {
-    // Permettre d'aller jusqu'à 100 ans en arrière pour les dates de naissance
     const currentYear = new Date().getFullYear();
-    const minYear = currentYear - 100;
-    if (currentDate.getFullYear() > minYear) {
-      setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1));
+    
+    if (allowFutureDates) {
+      // Pour les événements : permettre la navigation dans la plage autorisée
+      const minYear = currentYear; // Année actuelle minimum
+      if (currentDate.getFullYear() > minYear) {
+        setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1));
+      }
+    } else {
+      // Pour les dates de naissance : permettre d'aller jusqu'à 100 ans en arrière
+      const minYear = currentYear - 100;
+      if (currentDate.getFullYear() > minYear) {
+        setCurrentDate(new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1));
+      }
     }
   };
 
   const goToNextYear = () => {
-    // ✅ Permettre seulement les années passées pour les dates de naissance
     const currentYear = new Date().getFullYear();
-    if (currentDate.getFullYear() < currentYear) {
-      setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1));
+    if (allowFutureDates) {
+      // Pour les événements : permettre année actuelle + 2 années futures maximum
+      const maxFutureYear = currentYear + 2;
+      if (currentDate.getFullYear() < maxFutureYear) {
+        setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1));
+      }
+    } else {
+      // Pour les dates de naissance : permettre seulement les années passées
+      if (currentDate.getFullYear() < currentYear) {
+        setCurrentDate(new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1));
+      }
     }
   };
 
@@ -126,22 +180,59 @@ export default function CustomCalendar({
   // Ajouter les jours du mois
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const isToday = date.toISOString().split('T')[0] === today.toISOString().split('T')[0];
-    const isSelected = selectedDate && date.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0];
-    const isPast = date <= new Date(today.setHours(0, 0, 0, 0));
+    // Créer la dateString de la même manière que dans handleDateSelect pour éviter les décalages
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const dayStr = day.toString().padStart(2, '0');
+    const dateString = `${year}-${month}-${dayStr}`;
+    const todayString = today.toLocaleDateString('en-CA'); // Format YYYY-MM-DD en fuseau horaire local
+    
+    // Déterminer la date présélectionnée par défaut (seulement si aucune date n'est sélectionnée)
+    const getDefaultPreselectedDate = () => {
+      if (value) {
+        // Si une date est sélectionnée, pas de présélection
+        return null;
+      }
+      if (allowFutureDates && minDate) {
+        // Pour les événements avec minDate : présélectionner la date de début
+        return minDate;
+      }
+      // Pour les dates de naissance ou événements sans minDate : présélectionner aujourd'hui
+      return todayString;
+    };
+    
+    const defaultPreselectedDate = getDefaultPreselectedDate();
+    const isToday = dateString === todayString;
+    const isDefaultPreselected = defaultPreselectedDate && dateString === defaultPreselectedDate;
+    const isSelected = value && dateString === value;
+    
+    const todayStart = new Date(today.setHours(0, 0, 0, 0));
+    const isPast = date <= todayStart;
+    const isFuture = date >= todayStart;
+
+    // Vérifier si la date respecte la contrainte minDate (incluant la date elle-même)
+    const isAfterMinDate = minDate ? date >= new Date(minDate + 'T00:00:00') : true;
+
+    // Déterminer si le jour est sélectionnable selon le contexte
+    let isSelectable = allowFutureDates ? isFuture : isPast;
+    
+    // Appliquer la contrainte minDate si elle existe
+    if (minDate) {
+      isSelectable = isSelectable && isAfterMinDate;
+    }
 
     days.push(
       <button
         key={day}
-        onClick={() => isPast && handleDateSelect(day)}
-        disabled={!isPast}
+        onClick={() => isSelectable && handleDateSelect(day)}
+        disabled={!isSelectable}
         className={`
           h-7 w-7 rounded text-xs font-medium transition-all duration-200
-          ${!isPast 
+          ${!isSelectable 
             ? 'text-gray-300 cursor-not-allowed' 
             : `${primaryColorHover} cursor-pointer`
           }
-          ${isToday 
+          ${isDefaultPreselected 
             ? role === 'participant'
               ? 'border-2 border-primary-orange text-primary-orange'
               : 'border-2 border-primary-blue text-primary-blue'
@@ -171,12 +262,23 @@ export default function CustomCalendar({
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={`
-            w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-left transition-colors appearance-none
+            w-full pl-10 pr-4 py-3 border rounded-lg bg-white text-left transition-colors appearance-none text-base
+            ${isOpen 
+              ? 'border-primary-blue ring-2 ring-primary-blue/20' 
+              : 'border-gray-300'
+            }
             ${focusColors}
             ${value ? 'text-gray-900' : 'text-gray-400'}
           `}
         >
-          {value ? formatDisplayDate(value) : formatDisplayDate(new Date().toISOString().split('T')[0])}
+          {value ? formatDisplayDate(value) : (() => {
+            if (allowFutureDates && minDate) {
+              // Pour les événements avec minDate : afficher la date de début comme placeholder
+              return formatDisplayDate(minDate);
+            }
+            // Pour les dates de naissance ou événements sans minDate : afficher aujourd'hui
+            return formatDisplayDate(new Date().toLocaleDateString('en-CA'));
+          })()}
         </button>
       </div>
 
@@ -212,9 +314,19 @@ export default function CustomCalendar({
                 {showYearDropdown && (
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto min-w-[100px]">
                     <div className="p-2">
-                      {Array.from({ length: 101 }, (_, i) => {
-                        const year = new Date().getFullYear() - i;
-                        return (
+                      {(() => {
+                        const currentYear = new Date().getFullYear();
+                        let years: number[] = [];
+                        
+                        if (allowFutureDates) {
+                          // Pour les événements : année actuelle + 2 années futures
+                          years = [currentYear, currentYear + 1, currentYear + 2];
+                        } else {
+                          // Pour les dates de naissance : 101 années en arrière
+                          years = Array.from({ length: 101 }, (_, i) => currentYear - i);
+                        }
+                        
+                        return years.map((year) => (
                           <button
                             key={year}
                             onClick={() => {
@@ -231,8 +343,8 @@ export default function CustomCalendar({
                           >
                             {year}
                           </button>
-                        );
-                      })}
+                        ));
+                      })()}
                     </div>
                   </div>
                 )}

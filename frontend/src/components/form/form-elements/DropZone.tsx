@@ -19,7 +19,7 @@ const DropzoneComponent: React.FC = () => {
   return (
     <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dropzone</h3>
-      <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-blue-500 dark:border-gray-700 rounded-xl hover:border-blue-500">
+      <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-primary-blue dark:border-gray-700 rounded-xl hover:border-primary-blue">
         <div
           className="dropzone rounded-xl border-dashed border-gray-300 p-7 lg:p-10 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
           onDragOver={handleDragOver}
@@ -42,7 +42,7 @@ const DropzoneComponent: React.FC = () => {
               Drag and drop your PNG, JPG, WebP, SVG images here or browse
             </span>
 
-            <span className="font-medium underline text-sm text-blue-500">
+            <span className="font-medium underline text-sm text-primary-blue">
               Browse File
             </span>
           </div>

@@ -16,9 +16,7 @@ export type StatutEvenementEnum = 'brouillon' | 'publie' | 'annule';
 
 export type FrequenceEnum = 'ponctuel' | 'hebdomadaire' | 'mensuel' | 'trimestriel' | 'annuel';
 
-export type LangueEnum = 'fr' | 'en' | 'es';
 
-export type NiveauDifficulteEnum = 'debutant' | 'intermediaire' | 'avance' | 'tous_niveaux';
 
 export type TypeLieuEnum = 'adresse' | 'lien_video';
 
@@ -31,6 +29,9 @@ export type TypeEvenementSpecifiqueEnum = 'seminaire' | 'conference' | 'atelier'
 export type RoleUtilisateurEnum = 'participant' | 'organisateur' | 'moderateur' | 'admin';
 
 export type TypeSessionEnum = 'pleniere' | 'atelier' | 'table_ronde' | 'priere' | 'louange' | 'pause';
+
+// Nouveau type pour les sessions d'événements
+export type EventSessionTypeEnum = 'pleniere' | 'atelier' | 'table_ronde' | 'priere' | 'louange' | 'pause' | 'conference' | 'networking' | 'debat' | 'autre';
 
 export type AudienceEnum = 'familles' | 'jeunes' | 'pasteurs' | 'etudiants' | 'seniors' | 'enfants' | 'couples' | 'tout_public';
 
@@ -95,11 +96,10 @@ export interface Event {
   slug: string;
   description?: string;
   programme?: string;
+  programme_mode?: 'simple' | 'structured'; // Nouveau champ
   sous_categorie_id: number;
   format: FormatEnum;
   frequence: FrequenceEnum;
-  langue: LangueEnum;
-  niveau_difficulte?: NiveauDifficulteEnum;
   statut: StatutEvenementEnum;
   type_lieu?: TypeLieuEnum;
   lieu?: string;
@@ -199,7 +199,7 @@ export interface EventSession {
   description?: string;
   date_debut: string; // TIMESTAMP
   date_fin: string; // TIMESTAMP
-  type_session: TypeSessionEnum;
+  type_session: EventSessionTypeEnum;
   intervenant_id?: number;
   salle?: string;
   ordre: number;
@@ -250,7 +250,6 @@ export interface UserWithRelations extends User {
 export interface EventFilters {
   statut?: StatutEvenementEnum[];
   format?: FormatEnum[];
-  langue?: LangueEnum[];
   date_debut_min?: string;
   date_debut_max?: string;
   sous_categorie_id?: number;
@@ -290,8 +289,6 @@ export interface CreateEventForm {
   sous_categorie_id: number;
   format: FormatEnum;
   frequence: FrequenceEnum;
-  langue: LangueEnum;
-  niveau_difficulte?: NiveauDifficulteEnum;
   type_lieu?: TypeLieuEnum;
   lieu?: string;
   adresse?: string;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { supabase } from '../../../lib/supabaseClient';
+import PageTitle from '../../common/PageTitle';
 import EventHeader from '../EventHeader';
 import WizardStep from './WizardStep';
 import WizardProgress from './WizardProgress';
@@ -17,13 +18,12 @@ import type {
   Ticket, 
   TicketCategorie, 
   EventIntervenant,
+  EventSession,
   FormatEnum,
   TarificationEnum,
   StatutEvenementEnum,
   NiveauPrivacyEnum,
-  LangueEnum,
   FrequenceEnum,
-  NiveauDifficulteEnum,
   TypeLieuEnum
 } from '../../../types/database';
 
@@ -54,7 +54,9 @@ export interface EventFormData {
   
   // Étape 2: Date et heure
   date_debut: string;
+  heure_debut?: string;
   date_fin?: string;
+  heure_fin?: string;
   capacite_max?: number;
   
   // Étape 3: Lieu et format
@@ -69,11 +71,11 @@ export interface EventFormData {
   
   // Étape 5: Enrichissement (optionnel)
   programme?: string;
-  niveau_difficulte?: NiveauDifficulteEnum;
-  langue: LangueEnum;
+  programme_mode?: 'simple' | 'structured';
   frequence: FrequenceEnum;
   intervenants: EventIntervenant[];
   mots_cles: string[];
+  sessions?: EventSession[];
   
   // Métadonnées
   statut: StatutEvenementEnum;
@@ -101,7 +103,9 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     image_couverture: '',
     sous_categorie_id: 1, // Valeur par défaut, sera mise à jour
     date_debut: '',
+    heure_debut: '',
     date_fin: '',
+    heure_fin: '',
     capacite_max: undefined,
     format: 'presentiel',
     lieu: '',
@@ -110,8 +114,6 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     tickets: [],
     tickets_categories: [],
     programme: '',
-    niveau_difficulte: undefined,
-    langue: 'fr',
     frequence: 'ponctuel',
     intervenants: [],
     mots_cles: [],
@@ -220,8 +222,6 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
           tickets: data.tickets || [],
           tickets_categories: data.tickets_categories || [],
           programme: data.programme || '',
-          niveau_difficulte: data.niveau_difficulte,
-          langue: data.langue || 'fr',
           frequence: data.frequence,
           intervenants: data.event_intervenants || [],
           mots_cles: [], // À récupérer depuis event_mots_cles
@@ -276,8 +276,23 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
         if (!formData.date_fin) {
           return { isValid: false, error: 'La date de fin est obligatoire' };
         }
-        if (new Date(formData.date_fin) <= new Date(formData.date_debut)) {
-          return { isValid: false, error: 'La date de fin doit être postérieure à la date de début' };
+        // Créer des objets Date avec les heures si elles sont définies
+        const startDate = new Date(formData.date_debut);
+        const endDate = new Date(formData.date_fin);
+        
+        // Si les heures sont définies, les ajouter aux dates
+        if (formData.heure_debut) {
+          const [hours, minutes] = formData.heure_debut.split(':');
+          startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        }
+        
+        if (formData.heure_fin) {
+          const [hours, minutes] = formData.heure_fin.split(':');
+          endDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        }
+        
+        if (endDate <= startDate) {
+          return { isValid: false, error: 'La date/heure de fin doit être postérieure à la date/heure de début' };
         }
         break;
       
@@ -362,7 +377,7 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-8 h-8 border-4 border-primary-blue border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600">
             {authLoading ? 'Vérification de l\'authentification...' : 'Chargement de l\'événement...'}
           </p>
@@ -372,7 +387,12 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <PageTitle 
+        title={eventId ? "Modifier l'événement" : "Créer un événement"}
+        description="Créez ou modifiez votre événement en suivant les étapes du wizard"
+      />
+      <div className="min-h-screen bg-gray-50">
       {/* Header spécifique aux événements */}
       <EventHeader 
         onToggleSidebar={() => {
@@ -407,12 +427,12 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
             
             {/* Indicateur d'auto-sauvegarde */}
             {autoSaving && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-sm text-blue-700">Sauvegarde automatique...</span>
-                </div>
-              </div>
+                      <div className="mt-4 p-3 bg-primary-blue/10 border border-primary-blue/20 rounded-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin" />
+            <span className="text-sm text-primary-blue">Sauvegarde automatique...</span>
+          </div>
+        </div>
             )}
           </div>
         </div>
@@ -449,6 +469,7 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Badge, Dropdown, DropdownItem, Modal, Avatar, Alert, Table, TableHeader, TableBody, TableRow, TableCell, ImageGrid, ResponsiveImage, IframeVideo, VideoSixteenToNine, VideoFourToThree, VideoOneToOne, VideoTwentyOneToNine, Button } from '../../components/ui';
 import { Header, UserDropdown, NotificationDropdown } from '../../components/dashboard/header';
+import PageTitle from '../../components/common/PageTitle';
 import { 
   ThemeToggleButton, 
   ThemeTogglerTwo,
@@ -68,7 +69,12 @@ const TestDashboardComponents: React.FC = () => {
   const [showAlert5, setShowAlert5] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <>
+      <PageTitle 
+        title="Dashboard" 
+        description="Tableau de bord principal pour gérer vos événements et communautés"
+      />
+      <div className="min-h-screen bg-gray-50 p-8">
       <div className="w-full max-w-7xl mx-auto">
         <div className="bg-green-100 p-4 mb-4 rounded border-2 border-green-500">
           <h1 className="text-2xl font-bold text-green-800">✅ PAGE DE TEST FONCTIONNE</h1>
@@ -1686,6 +1692,7 @@ const TestDashboardComponents: React.FC = () => {
         </div>
       </Modal>
     </div>
+    </>
   );
 };
 

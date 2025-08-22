@@ -50,7 +50,7 @@ const WizardProgress: React.FC<WizardProgressProps> = ({ currentStep, totalSteps
       onClick={!isExpanded ? onToggleSidebar : undefined}
     >
       <div className={`transition-all duration-300 ${
-        isExpanded ? 'space-y-6' : 'space-y-4'
+        isExpanded ? 'space-y-3.5' : 'space-y-4'
       }`}>
         {steps.map((step, index) => (
           <div key={step.number} className={`flex items-start transition-all duration-300 ${
@@ -63,9 +63,9 @@ const WizardProgress: React.FC<WizardProgressProps> = ({ currentStep, totalSteps
                   isExpanded ? 'w-10 h-10 text-sm' : 'w-6 h-6 text-xs'
                 } ${
                   step.number < currentStep
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-primary-orange text-white'
                     : step.number === currentStep
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary-blue text-white'
                     : 'bg-gray-200 text-gray-500'
                 }`}
               >
@@ -74,31 +74,33 @@ const WizardProgress: React.FC<WizardProgressProps> = ({ currentStep, totalSteps
               
               {/* Ligne de connexion verticale */}
               {index < steps.length - 1 && (
-                <div className="w-0.5 h-12 mt-2">
+                <div className={`w-0.5 mt-2 transition-all duration-300 ${
+                  isExpanded ? 'h-20' : 'h-16'
+                }`}>
                   <div 
                     className={`w-full h-full transition-all duration-300 ${
-                      step.number < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                      step.number < currentStep ? 'bg-primary-orange' : 'bg-gray-200'
                     }`}
                   />
                 </div>
               )}
             </div>
 
-                               {/* Colonne droite : Labels et descriptions - cachés si pas expanded */}
-                   {isExpanded && (
-                     <div className="flex-1 min-w-0">
-                       <p className={`text-sm font-semibold mb-1 text-left ${
-                         step.number <= currentStep ? 'text-gray-900' : 'text-gray-500'
-                       }`}>
-                         {step.title}
-                       </p>
-                       <p className={`text-xs leading-relaxed text-left ${
-                         step.number <= currentStep ? 'text-gray-600' : 'text-gray-400'
-                       }`}>
-                         {step.description}
-                       </p>
-                     </div>
-                   )}
+            {/* Colonne droite : Labels et descriptions - cachés si pas expanded */}
+            {isExpanded && (
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-semibold mb-1 text-left ${
+                  step.number <= currentStep ? 'text-gray-900' : 'text-gray-500'
+                }`}>
+                  {step.title}
+                </p>
+                <p className={`text-xs leading-relaxed text-left ${
+                  step.number <= currentStep ? 'text-gray-600' : 'text-gray-400'
+                }`}>
+                  {step.description}
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>

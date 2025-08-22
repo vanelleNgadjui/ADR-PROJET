@@ -54,7 +54,7 @@ const Header: React.FC = () => {
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${
                   userRole === 'participant' 
                     ? 'bg-orange-100 text-orange-700' 
-                    : 'bg-blue-100 text-blue-700'
+                    : 'bg-primary-blue/10 text-primary-blue'
                 }`}>
                   {userRole === 'participant' ? 'Participant' : 'Organisateur'}
                 </span>
@@ -96,7 +96,7 @@ const Header: React.FC = () => {
                     <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${
                       userRole === 'participant' 
                         ? 'bg-orange-100 text-orange-700' 
-                        : 'bg-blue-100 text-blue-700'
+                        : 'bg-primary-blue/10 text-primary-blue'
                     }`}>
                       {userRole === 'participant' ? 'P' : 'O'}
                     </span>
