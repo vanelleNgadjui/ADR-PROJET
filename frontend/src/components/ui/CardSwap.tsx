@@ -29,14 +29,33 @@ export interface CardSwapProps {
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   customClass?: string;
+  backgroundImage?: string; // Nouvelle prop pour l'image de background
+  backgroundSize?: 'cover' | 'contain' | 'auto' | '100%' | '100% 100%' | string;
+  backgroundPosition?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right';
+  backgroundRepeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ customClass, ...rest }, ref) => (
+  ({ 
+    customClass, 
+    backgroundImage, 
+    backgroundSize = 'cover',
+    backgroundPosition = 'center',
+    backgroundRepeat = 'no-repeat',
+    ...rest 
+  }, ref) => (
     <div
       ref={ref}
       {...rest}
-      className={`absolute top-1/2 left-1/2 rounded-[18px] border border-white bg-black [transform-style:preserve-3d] [will-change:transform] [backface-visibility:hidden] ${customClass ?? ""} ${rest.className ?? ""}`.trim()}
+      className={`absolute top-1/2 left-1/2 rounded-[18px] [transform-style:preserve-3d] [will-change:transform] [backface-visibility:hidden] ${customClass ?? ""} ${rest.className ?? ""}`.trim()}
+      style={{
+        ...rest.style,
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+        backgroundSize,
+        backgroundPosition,
+        backgroundRepeat,
+        backgroundColor: backgroundImage ? 'transparent' : 'black', // Fallback si pas d'image
+      }}
     />
   ),
 );
@@ -253,3 +272,40 @@ const CardSwap: React.FC<CardSwapProps> = ({
 };
 
 export default CardSwap;
+
+/*
+Exemple d'utilisation avec image de background :
+
+import CardSwap, { Card } from './CardSwap';
+import cardConcertPng from '../../assets/Card-concerts.png';
+import cardConcertSvg from '../../assets/Card-concerts.svg';
+
+// Utilisation basique
+<CardSwap width={500} height={400}>
+  <Card backgroundImage={cardConcertPng} />
+  <Card backgroundImage={cardConcertSvg} />
+  <Card backgroundImage={cardConcertPng} />
+</CardSwap>
+
+// Avec styles personnalisés
+<CardSwap width={500} height={400}>
+  <Card 
+    backgroundImage={cardConcertPng} 
+    backgroundSize="cover"
+    backgroundPosition="center"
+    backgroundRepeat="no-repeat"
+  />
+  <Card 
+    backgroundImage={cardConcertSvg} 
+    backgroundSize="contain"
+    backgroundPosition="top left"
+  />
+  <Card 
+    backgroundImage={cardConcertPng} 
+    backgroundSize="100px 100px"
+    backgroundRepeat="repeat"
+  />
+</CardSwap>
+
+Le composant supporte maintenant les formats PNG et SVG avec tous les styles CSS background !
+*/

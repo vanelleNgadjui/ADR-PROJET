@@ -9,11 +9,15 @@ import FallingText from '../components/ui/TextAnimations/FallingText';
 import Carousel from '../components/ui/Carousel';
 import CardSwap, { Card as CardSwapCard } from '../components/ui/CardSwap';
 import { Music, BookOpen, Users, Mountain } from 'lucide-react';
-import { Button } from '../components/ui';
+import { Button, ScrollStack, ScrollStackItem } from '../components/ui';
 import PageTitle from '../components/common/PageTitle';
 import adrBg from '../assets/ADR-BG.png';
 import bgEventsGrid from '../assets/bg-events-grid.png';
 import imageDownloadApp from '../assets/image-download-app.png';
+import card1Svg from '../assets/Card-1.svg';
+import card2Svg from '../assets/Card-2.svg';
+import card3Svg from '../assets/Card-3.svg';
+import card4Svg from '../assets/Card-4.svg';
 
 export default function LandingPage() {
   return (
@@ -31,6 +35,36 @@ export default function LandingPage() {
         <div className="w-full md:w-[65%] flex flex-col items-center md:items-start justify-center text-center md:text-left px-6 md:pl-12">
                       <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Tous les événements chrétiens.<br />Au même endroit.</h1>
           <p className="text-lg md:text-xl text-neutral-700 mb-8 max-w-sm md:max-w-none">Créez. Découvrez. Vivez les événements qui nourrissent votre foi.</p>
+                    {/* ScrollStack à droite - masqué sur deskstop */}
+
+        <section className="h-[440px] w-screen flex justify-center block px-6 md:hidden">
+        <ScrollStack className="h-full w-[400px]">
+    <ScrollStackItem itemClassName="w-full"> 
+      <img 
+        src={card1Svg} 
+        alt="Card 1" 
+      />
+    </ScrollStackItem>
+    <ScrollStackItem itemClassName="w-full">
+      <img 
+        src={card2Svg} 
+        alt="Card 2" 
+      />
+    </ScrollStackItem>
+    <ScrollStackItem itemClassName="w-full">
+      <img 
+        src={card3Svg} 
+        alt="Card 3" 
+      />
+    </ScrollStackItem>
+        <ScrollStackItem itemClassName="w-full h-[440px]">
+      <img 
+        src={card4Svg} 
+        alt="Card 4" 
+      />
+    </ScrollStackItem>
+  </ScrollStack>
+      </section>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/auth/connexion">
               <Button variant="primary">Découvrir les événements</Button>
@@ -42,40 +76,39 @@ export default function LandingPage() {
         </div>
         {/* CardSwap à droite - masqué sur mobile */}
         <div className="relative w-full md:w-[35%] min-h-[340px] hidden md:block">
-          <div className="absolute -bottom-24 right-0">
+          <div className="absolute -bottom-16 right-0">
             <CardSwap width={420} height={320} verticalDistance={38} delay={3500}>
-              <CardSwapCard customClass="bg-gradient-to-br from-primary-blue to-primary-orange text-white flex flex-col items-start justify-start p-8 shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <Music className="w-8 h-8 text-white/90" />
-                  <span className="text-2xl font-bold">Concerts</span>
-                </div>
-                <span className="text-base">Louez et vibrez en musique</span>
-              </CardSwapCard>
-              <CardSwapCard customClass="bg-gradient-to-br from-primary-orange to-secondary-coral text-white flex flex-col items-start justify-start p-8 shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <BookOpen className="w-8 h-8 text-white/90" />
-                  <span className="text-2xl font-bold">Conférences</span>
-                </div>
-                <span className="text-base">Approfondissez votre foi</span>
-              </CardSwapCard>
-              <CardSwapCard customClass="bg-gradient-to-br from-secondary-coral to-secondary-mint text-white flex flex-col items-start justify-start p-8 shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <Users className="w-8 h-8 text-white/90" />
-                  <span className="text-2xl font-bold">Jeunesse</span>
-                </div>
-                <span className="text-base">Des temps forts pour les jeunes</span>
-              </CardSwapCard>
-              <CardSwapCard customClass="bg-gradient-to-br from-secondary-mint to-primary-blue text-white flex flex-col items-start justify-start p-8 shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <Mountain className="w-8 h-8 text-white/90" />
-                  <span className="text-2xl font-bold">Retraites</span>
-                </div>
-                <span className="text-base">Pause spirituelle et ressourcement</span>
-              </CardSwapCard>
+              <CardSwapCard 
+                customClass="shadow-xl"
+                backgroundImage={card1Svg}
+                backgroundSize="cover"
+                backgroundPosition="center"
+              />
+              <CardSwapCard 
+                customClass="shadow-xl"
+                backgroundImage={card2Svg}
+                backgroundSize="cover"
+                backgroundPosition="center"
+              />
+              <CardSwapCard 
+                customClass="shadow-xl"
+                backgroundImage={card3Svg}
+                backgroundSize="cover"
+                backgroundPosition="center"
+              />
+              <CardSwapCard 
+                customClass="shadow-xl"
+                backgroundImage={card4Svg}
+                backgroundSize="cover"
+                backgroundPosition="center"
+              />
             </CardSwap>
           </div>
         </div>
-      </section>
+       
+      
+  
+</section>
       {/* 3. Section Mission & Valeurs */}
       <section className="relative flex flex-col items-center justify-center pt-10 pb-0 rounded-3xl mx-4 overflow-hidden min-h-[200px]">
       <div className="w-full max-w-3xl mx-auto h-[150px] md:h-[200px] overflow-hidden mx-4 my-8">

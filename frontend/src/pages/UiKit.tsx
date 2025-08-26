@@ -12,6 +12,11 @@ import Carousel from '../components/ui/Carousel';
 import AnimatedList from '../components/ui/AnimatedList';
 import Header from '../components/ui/Header';
 import Footer from '../components/ui/Footer';
+import ScrollStack, { ScrollStackItem } from '../components/ui/ScrollStack';
+import card1Svg from '../assets/Card-1.svg';
+import card2Svg from '../assets/Card-2.svg';
+import card3Svg from '../assets/Card-3.svg';
+import card4Svg from '../assets/Card-4.svg';
 
 export default function UiKit() {
   return (
@@ -328,6 +333,36 @@ export default function UiKit() {
           loop={true}
         />
       </section>
+
+
+  <section className="h-[550px] w-full flex justify-center">
+  <ScrollStack className="h-full w-full">
+    <ScrollStackItem itemClassName="w-full"> 
+      <img 
+        src={card1Svg} 
+        alt="Card 1" 
+      />
+    </ScrollStackItem>
+    <ScrollStackItem itemClassName="w-full">
+      <img 
+        src={card2Svg} 
+        alt="Card 2" 
+      />
+    </ScrollStackItem>
+    <ScrollStackItem itemClassName="w-full">
+      <img 
+        src={card3Svg} 
+        alt="Card 3" 
+      />
+    </ScrollStackItem>
+        <ScrollStackItem itemClassName="w-full">
+      <img 
+        src={card4Svg} 
+        alt="Card 4" 
+      />
+    </ScrollStackItem>
+  </ScrollStack>
+</section>
       </div>
       <Footer />
     </div>

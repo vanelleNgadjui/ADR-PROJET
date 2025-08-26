@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import UiKit from './pages/UiKit';
 import TestDashboardComponents from './pages/dashboard/TestDashboardComponents';
 import TestLayout from './pages/dashboard/TestLayout';
+import TestCardSwap from './pages/TestCardSwap';
 import Connexion from './pages/auth/Connexion';
 import ChoixRole from './pages/auth/ChoixRole';
 import Inscription from './pages/auth/Inscription';
@@ -22,6 +23,7 @@ function App() {
         <Route path="/ui-kit" element={<UiKit />} />
         <Route path="/test-dashboard" element={<TestDashboardComponents />} />
         <Route path="/test-layout" element={<TestLayout />} />
+        <Route path="/test-cardswap" element={<TestCardSwap />} />
         
         {/* Routes d'authentification */}
         <Route path="/auth/connexion" element={<Connexion />} />

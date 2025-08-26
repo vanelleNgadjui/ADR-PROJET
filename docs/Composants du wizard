@@ -1,58 +1,12 @@
-LISTE COMPLÈTE DES COMPOSANTS POUR LE WIZARD DE CRÉATION D'ÉVÉNEMENTS
-📋 COMPOSANTS EXISTANTS À RÉUTILISER
-1. Composants UI de base (déjà créés)
-Button - Boutons d'action (précédent, suivant, sauvegarder)
-InputField - Champs de saisie texte
-TextArea - Zones de texte longues
-Select - Listes déroulantes
-Radio - Boutons radio
-Checkbox - Cases à cocher
-Switch - Interrupteurs on/off
-Badge - Badges de statut
-Modal - Modales de confirmation
-Alert - Messages d'alerte
-Avatar - Avatars pour intervenants
-Table - Tableaux pour listes
-Dropdown - Menus déroulants
 
 
-🧩 LISTE COMPLÈTE DES COMPOSANTS POUR LE WIZARD DE CRÉATION D'ÉVÉNEMENTS
-📋 COMPOSANTS EXISTANTS À RÉUTILISER
-1. Composants UI de base (déjà créés)
-Button - Boutons d'action (précédent, suivant, sauvegarder)
-InputField - Champs de saisie texte
-TextArea - Zones de texte longues
-Select - Listes déroulantes
-Radio - Boutons radio
-Checkbox - Cases à cocher
-Switch - Interrupteurs on/off
-Badge - Badges de statut
-Modal - Modales de confirmation
-Alert - Messages d'alerte
-Avatar - Avatars pour intervenants
-Table - Tableaux pour listes
-Dropdown - Menus déroulants
-2. Composants de formulaire (déjà créés)
-Form - Conteneur de formulaire
-Label - Labels de champs
-DatePicker - Sélecteur de date
-FileInput - Upload de fichiers
-DropZone - Zone de dépôt de fichiers
-MultiSelect - Sélection multiple
-PhoneInput - Champ téléphone
-ToggleSwitch - Interrupteur personnalisé
-3. Composants dashboard existants
-PageHeader - En-tête de page avec breadcrumbs
-PageContainer - Conteneur de contenu
-ComponentCard - Cartes de composants
-GridShape - Grilles de mise en page
-ChartTab - Onglets pour graphiques
-ThemeTogglerTwo - Basculement de thème
-4. Composants de navigation
-PageBreadcrumb - Fil d'Ariane
-ProgressBar - Barre de progression (à créer)
+
+
+
+
 
 �� COMPOSANTS À CRÉER SPÉCIFIQUEMENT
+ProgressBar - Barre de progression (à créer)
 1. Composants de navigation du wizard
 WizardProgressBar - Barre de progression des étapes
 WizardNavigation - Boutons précédent/suivant

@@ -25,3 +25,4 @@ export { default as NewsletterForm } from './NewsletterForm';
 export { PolymorphicButton } from './PolymorphicButton';
 export { default as CardSwap } from './CardSwap';
 export { default as AnimatedList } from './AnimatedList';
+export { default as ScrollStack, ScrollStackItem } from './ScrollStack';
