@@ -2,28 +2,40 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { User, Session } from '@supabase/supabase-js';
 
+interface AuthState {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+}
+
 export const useAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [authState, setAuthState] = useState<AuthState>({
+    user: null,
+    session: null,
+    loading: true,
+  });
 
   useEffect(() => {
     // Récupérer la session actuelle
-    const getInitialSession = async () => {
+    const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      setAuthState({
+        user: session?.user ?? null,
+        session: session,
+        loading: false,
+      });
     };
 
-    getInitialSession();
+    getSession();
 
-    // Écouter les changements d'auth
+    // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+        setAuthState({
+          user: session?.user ?? null,
+          session: session,
+          loading: false,
+        });
       }
     );
 
@@ -100,6 +112,7 @@ export const useAuth = () => {
         if (dbError) {
           // On ne retourne pas l'erreur car l'utilisateur est créé dans Auth
           // mais on la log pour debug
+          console.error('Erreur lors de la création en DB:', dbError);
         }
         
         // 3. Se connecter automatiquement après l'inscription
@@ -154,9 +167,7 @@ export const useAuth = () => {
   };
 
   return {
-    user,
-    session,
-    loading,
+    ...authState,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,

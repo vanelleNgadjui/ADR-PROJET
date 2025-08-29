@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import calendarIcon from '../../assets/calendar.svg';
 
 interface CustomCalendarProps {
   value: string;
@@ -256,7 +257,7 @@ export default function CustomCalendar({
       {/* Input déclencheur - UNE SEULE ICÔNE */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <CalendarIcon className="h-5 w-5 text-gray-400" />
+          <img src={calendarIcon} alt="Calendrier" className="h-5 w-5 opacity-40" />
         </div>
         <button
           type="button"

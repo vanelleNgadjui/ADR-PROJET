@@ -26,3 +26,6 @@ export { PolymorphicButton } from './PolymorphicButton';
 export { default as CardSwap } from './CardSwap';
 export { default as AnimatedList } from './AnimatedList';
 export { default as ScrollStack, ScrollStackItem } from './ScrollStack';
+export { default as FollowButton } from './FollowButton';
+export { default as CategoryCard } from './CategoryCard';
+

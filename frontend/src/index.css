@@ -71,6 +71,11 @@ button:disabled {
   .animate-fadeIn {
     animation-duration: 0.3s;
   }
+  
+  /* Marge globale sur mobile */
+  body {
+    @apply px-3; /* 8px de marge gauche et droite sur mobile */
+  }
 }
 
 /* Cacher la barre de scroll */

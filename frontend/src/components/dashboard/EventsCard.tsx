@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { CalendarIcon, MapPinIcon, UsersIcon, ClockIcon } from "lucide-react";
+import { UsersIcon, ClockIcon } from "lucide-react";
+import calendarIcon from "../../assets/calendar.svg";
+import locationIcon from "../../assets/location.svg";
 import { supabase } from "../../lib/supabaseClient";
 import { useAuth } from "../../hooks/useAuth";
 import Badge from "../ui/Badge";
@@ -98,7 +100,7 @@ export default function EventsCard() {
 
       {events.length === 0 ? (
         <div className="text-center py-8">
-          <CalendarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <img src={calendarIcon} alt="Calendrier" className="w-12 h-12 mx-auto mb-4 opacity-40" />
           <p className="text-gray-500 dark:text-gray-400">
             Aucun événement trouvé
           </p>
@@ -122,13 +124,13 @@ export default function EventsCard() {
 
               <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-1">
-                  <CalendarIcon className="w-3 h-3" />
+                  <img src={calendarIcon} alt="Calendrier" className="w-3 h-3 opacity-60" />
                   <span>{formatDate(event.date_debut)}</span>
                 </div>
                 
                 {event.lieu && (
                   <div className="flex items-center gap-1">
-                    <MapPinIcon className="w-3 h-3" />
+                    <img src={locationIcon} alt="Localisation" className="w-3 h-3 opacity-60" />
                     <span>{event.lieu}</span>
                   </div>
                 )}

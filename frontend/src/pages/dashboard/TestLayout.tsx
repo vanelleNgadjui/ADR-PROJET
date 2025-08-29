@@ -1,4 +1,5 @@
-import { PlusIcon, DownloadIcon, FilterIcon } from "lucide-react";
+import { PlusIcon, DownloadIcon } from "lucide-react";
+import filterIcon from "../../assets/filter 06.svg";
 import DashboardLayout from "../../components/dashboard/layout/DashboardLayout";
 import PageHeader from "../../components/dashboard/layout/PageHeader";
 import PageContainer from "../../components/dashboard/layout/PageContainer";
@@ -14,7 +15,7 @@ export default function TestLayout() {
   const actions = (
     <>
       <Button variant="outline" size="sm">
-        <FilterIcon className="w-4 h-4 mr-2" />
+        <img src={filterIcon} alt="Filtres" className="w-4 h-4 mr-2" />
         Filtrer
       </Button>
       <Button variant="outline" size="sm">

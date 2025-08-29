@@ -1,10 +1,11 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import HomePage from './pages/HomePage';
+import DynamicEventsPage from './pages/DynamicEventsPage';
 import UiKit from './pages/UiKit';
 import TestDashboardComponents from './pages/dashboard/TestDashboardComponents';
 import TestLayout from './pages/dashboard/TestLayout';
-import TestCardSwap from './pages/TestCardSwap';
 import Connexion from './pages/auth/Connexion';
 import ChoixRole from './pages/auth/ChoixRole';
 import Inscription from './pages/auth/Inscription';
@@ -20,10 +21,10 @@ function App() {
       <FaviconManager />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/ui-kit" element={<UiKit />} />
         <Route path="/test-dashboard" element={<TestDashboardComponents />} />
         <Route path="/test-layout" element={<TestLayout />} />
-        <Route path="/test-cardswap" element={<TestCardSwap />} />
         
         {/* Routes d'authentification */}
         <Route path="/auth/connexion" element={<Connexion />} />
@@ -35,6 +36,14 @@ function App() {
         {/* Routes du wizard d'événements */}
         <Route path="/events/create" element={<EventWizard />} />
         <Route path="/events/edit/:id" element={<EventWizard />} />
+        
+        {/* Routes des pages dynamiques d'événements */}
+        <Route path="/search" element={<DynamicEventsPage context="search" />} />
+        <Route path="/category/:id" element={<DynamicEventsPage context="category" />} />
+        <Route path="/upcoming" element={<DynamicEventsPage context="upcoming" />} />
+        <Route path="/suggestions" element={<DynamicEventsPage context="suggestions" />} />
+        <Route path="/top-events" element={<DynamicEventsPage context="top-events" />} />
+        <Route path="/recent" element={<DynamicEventsPage context="recent" />} />
       </Routes>
     </Router>
   );

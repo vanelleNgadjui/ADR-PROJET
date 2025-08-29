@@ -6,7 +6,7 @@ import {
   TableRow,
 } from "../../ui/Table";
 import Badge from "../../ui/Badge";
-import { FilterIcon } from "lucide-react";
+import filterIcon from "../../../assets/filter 06.svg";
 
 // Define the TypeScript interface for the table rows
 interface Product {
@@ -80,7 +80,7 @@ export default function RecentOrders() {
 
         <div className="flex items-center gap-3">
           <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-            <FilterIcon className="w-5 h-5" />
+            <img src={filterIcon} alt="Filtres" className="w-5 h-5" />
             Filter
           </button>
           <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">

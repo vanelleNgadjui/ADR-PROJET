@@ -37,27 +37,27 @@ export default function LandingPage() {
           <p className="text-lg md:text-xl text-neutral-700 mb-8 max-w-sm md:max-w-none">Créez. Découvrez. Vivez les événements qui nourrissent votre foi.</p>
                     {/* ScrollStack à droite - masqué sur deskstop */}
 
-        <section className="h-[440px] w-screen flex justify-center block px-6 md:hidden">
-        <ScrollStack className="h-full w-[400px]">
-    <ScrollStackItem itemClassName="w-full"> 
+        <section className="h-[440px] w-screen block md:hidden">
+        <ScrollStack className="h-full w-full flex justify-center">
+    <ScrollStackItem itemClassName="w-[90%]">   
       <img 
         src={card1Svg} 
         alt="Card 1" 
       />
     </ScrollStackItem>
-    <ScrollStackItem itemClassName="w-full">
+    <ScrollStackItem itemClassName="w-[90%]">
       <img 
         src={card2Svg} 
         alt="Card 2" 
       />
     </ScrollStackItem>
-    <ScrollStackItem itemClassName="w-full">
+    <ScrollStackItem itemClassName="w-[90%]">
       <img 
         src={card3Svg} 
         alt="Card 3" 
       />
     </ScrollStackItem>
-        <ScrollStackItem itemClassName="w-full h-[440px]">
+      <ScrollStackItem itemClassName="w-[90%] h-full">
       <img 
         src={card4Svg} 
         alt="Card 4" 

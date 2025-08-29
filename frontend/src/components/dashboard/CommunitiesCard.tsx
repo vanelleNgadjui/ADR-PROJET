@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { UsersIcon, MapPinIcon, GlobeIcon, LockIcon } from "lucide-react";
+import { UsersIcon, GlobeIcon, LockIcon } from "lucide-react";
+import locationIcon from "../../assets/location.svg";
 import { supabase } from "../../lib/supabaseClient";
 import { useAuth } from "../../hooks/useAuth";
 import Badge from "../ui/Badge";
@@ -122,7 +123,7 @@ export default function CommunitiesCard() {
                 </div>
                 
                 <div className="flex items-center gap-1">
-                  <MapPinIcon className="w-3 h-3" />
+                  <img src={locationIcon} alt="Localisation" className="w-3 h-3 opacity-60" />
                   <span>Créée le {formatDate(community.created_at)}</span>
                 </div>
               </div>

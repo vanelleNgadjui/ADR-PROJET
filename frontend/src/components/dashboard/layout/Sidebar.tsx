@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { 
   HomeIcon, 
-  CalendarIcon, 
   UsersIcon, 
   SettingsIcon, 
   BarChart3Icon,
@@ -10,6 +9,7 @@ import {
   UserIcon,
   LogOutIcon
 } from "lucide-react";
+import calendarIcon from "../../../assets/calendar.svg";
 import { useAuth } from "../../../hooks/useAuth";
 import { useSidebar } from "../../../context/dashboard/SidebarContext";
 import { useTheme } from "../../../context/dashboard/ThemeContext";
@@ -25,7 +25,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { name: "Tableau de bord", href: "/dashboard", icon: HomeIcon },
-  { name: "Événements", href: "/events", icon: CalendarIcon },
+  { name: "Événements", href: "/events", icon: () => <img src={calendarIcon} alt="Événements" className="w-5 h-5" /> },
   { name: "Communautés", href: "/communities", icon: UsersIcon },
   { name: "Analytics", href: "/analytics", icon: BarChart3Icon },
   { name: "Rapports", href: "/reports", icon: FileTextIcon },

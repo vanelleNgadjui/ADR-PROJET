@@ -1,4 +1,4 @@
-import { CalendarIcon } from "lucide-react";
+import calendarIcon from "../../assets/calendar.svg";
 import Label from "./Label";
 
 type PropsType = {
@@ -38,8 +38,8 @@ export default function DatePicker({
           className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 pr-11 text-base shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 bg-transparent text-gray-800 border-gray-300 focus:border-primary-blue focus:ring-primary-blue/20 dark:border-gray-700 dark:focus:border-primary-blue"
         />
 
-        <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-          <CalendarIcon className="w-5 h-5" />
+        <span className="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2">
+          <img src={calendarIcon} alt="Calendrier" className="w-5 h-5 opacity-50" />
         </span>
       </div>
     </div>
