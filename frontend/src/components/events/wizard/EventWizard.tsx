@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { supabase } from '../../../lib/supabaseClient';
@@ -14,7 +14,6 @@ import Step4Pricing from './steps/Step4Pricing';
 import Step5Enrichment from './steps/Step5Enrichment';
 import Step6Validation from './steps/Step6Validation';
 import type { 
-  Event, 
   Ticket, 
   TicketCategorie, 
   EventIntervenant,
@@ -23,8 +22,7 @@ import type {
   TarificationEnum,
   StatutEvenementEnum,
   NiveauPrivacyEnum,
-  FrequenceEnum,
-  TypeLieuEnum
+  FrequenceEnum
 } from '../../../types/database';
 
 // Hook pour détecter la taille d'écran
@@ -93,7 +91,7 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [autoSaving, setAutoSaving] = useState(false);
+  // const [autoSaving, setAutoSaving] = useState(false); // Pour usage futur
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   
   // Données du formulaire
@@ -107,13 +105,14 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
     date_fin: '',
     heure_fin: '',
     capacite_max: undefined,
-    format: 'presentiel',
+    format: 'en_presentiel', // Utilise le bon enum de la DB
     lieu: '',
     adresse: '',
     tarification: 'gratuit',
     tickets: [],
     tickets_categories: [],
     programme: '',
+    programme_mode: 'simple', // Champ obligatoire
     frequence: 'ponctuel',
     intervenants: [],
     mots_cles: [],
@@ -123,45 +122,45 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
 
   const totalSteps = 6;
 
-  // Fonction d'auto-sauvegarde optimisée
-  const autoSaveDraft = useCallback(async (dataToSave: EventFormData) => {
-    if (!user) return;
-    
-    try {
-      setAutoSaving(true);
-      
-      const eventData = {
-        ...dataToSave,
-        organisateur_id: user.id,
-        updated_at: new Date().toISOString(),
-      };
+  // Fonction d'auto-sauvegarde optimisée (pour usage futur)
+  // const autoSaveDraft = useCallback(async (dataToSave: EventFormData) => {
+  //   if (!user) return;
+  //   
+  //   try {
+  //     setAutoSaving(true);
+  //     
+  //     const eventData = {
+  //       ...dataToSave,
+  //       organisateur_id: user.id,
+  //       updated_at: new Date().toISOString(),
+  //     };
 
-      if (eventId) {
-        const { error } = await supabase
-          .from('events')
-          .update(eventData)
-          .eq('id', eventId)
-          .eq('organisateur_id', user.id);
+  //     if (eventId) {
+  //       const { error } = await supabase
+  //         .from('events')
+  //         .update(eventData)
+  //         .eq('id', eventId)
+  //         .eq('organisateur_id', user.id);
 
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from('events')
-          .insert([eventData])
-          .select()
-          .single();
+  //       if (error) throw error;
+  //     } else {
+  //       const { data, error } = await supabase
+  //         .from('events')
+  //         .insert([eventData])
+  //         .select()
+  //         .single();
 
-        if (error) throw error;
-      }
-      
-      // Sauvegarde terminée
-      console.log('Auto-sauvegarde terminée');
-    } catch (err) {
-      console.error('Erreur lors de l\'auto-sauvegarde:', err);
-    } finally {
-      setAutoSaving(false);
-    }
-  }, [user, eventId]);
+  //       if (error) throw error;
+  //     }
+  //     
+  //     // Sauvegarde terminée
+  //     console.log('Auto-sauvegarde terminée');
+  //   } catch (err) {
+  //     console.error('Erreur lors de l\'auto-sauvegarde:', err);
+  //   } finally {
+  //     setAutoSaving(false);
+  //   }
+  // }, [user, eventId]);
 
   // Vérifier que l'utilisateur est connecté et est un organisateur
   useEffect(() => {
@@ -214,14 +213,14 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
           date_debut: data.date_debut || '',
           date_fin: data.date_fin || '',
           capacite_max: data.capacite_max,
-          format: data.format || 'presentiel',
-          // type_lieu supprimé car n'existe plus dans le schéma
+          format: data.format || 'en_presentiel', // Utilise le bon enum
           lieu: data.lieu || '',
           adresse: data.adresse || '',
           tarification: data.tarification || 'gratuit',
           tickets: data.tickets || [],
           tickets_categories: data.tickets_categories || [],
           programme: data.programme || '',
+          programme_mode: data.programme_mode || 'simple', // Champ obligatoire
           frequence: data.frequence,
           intervenants: data.event_intervenants || [],
           mots_cles: [], // À récupérer depuis event_mots_cles
@@ -300,10 +299,10 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
         if (!formData.format) {
           return { isValid: false, error: 'Veuillez sélectionner un format' };
         }
-        if (formData.format === 'presentiel' && !formData.adresse?.trim()) {
+        if (formData.format === 'en_presentiel' && !formData.adresse?.trim()) {
           return { isValid: false, error: 'L\'adresse est obligatoire pour un événement présentiel' };
         }
-        if (formData.format === 'virtuel' && !formData.lieu?.trim()) {
+        if (formData.format === 'en_ligne' && !formData.lieu?.trim()) {
           return { isValid: false, error: 'Le lien vidéo est obligatoire pour un événement virtuel' };
         }
         break;
@@ -393,13 +392,15 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
         description="Créez ou modifiez votre événement en suivant les étapes du wizard"
       />
       <div className="min-h-screen bg-gray-50">
-      {/* Header spécifique aux événements */}
-      <EventHeader 
-        onToggleSidebar={() => {
-          setIsSidebarExpanded(!isSidebarExpanded);
-        }}
-        isSidebarExpanded={isSidebarExpanded}
-      />
+      {/* Header spécifique aux événements - Full width sur mobile */}
+      <div className="header-full-width">
+        <EventHeader 
+          onToggleSidebar={() => {
+            setIsSidebarExpanded(!isSidebarExpanded);
+          }}
+          isSidebarExpanded={isSidebarExpanded}
+        />
+      </div>
 
       <div className="flex flex-row relative">
         {/* Overlay pour fermer la barre latérale sur mobile */}
@@ -425,15 +426,15 @@ const EventWizard: React.FC<EventWizardProps> = ({ eventId }) => {
                     onToggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
                   />
             
-            {/* Indicateur d'auto-sauvegarde */}
-            {autoSaving && (
+            {/* Indicateur d'auto-sauvegarde (pour usage futur) */}
+            {/* {autoSaving && (
                       <div className="mt-4 p-3 bg-primary-blue/10 border border-primary-blue/20 rounded-lg">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 border-2 border-primary-blue border-t-transparent rounded-full animate-spin" />
             <span className="text-sm text-primary-blue">Sauvegarde automatique...</span>
           </div>
         </div>
-            )}
+            )} */}
           </div>
         </div>
 

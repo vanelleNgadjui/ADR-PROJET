@@ -74,16 +74,75 @@ button:disabled {
   
   /* Marge globale sur mobile */
   body {
-    @apply px-3; /* 8px de marge gauche et droite sur mobile */
+    @apply px-3; /* 12px de marge gauche et droite sur mobile */
+  }
+  
+  /* Permettre au header de prendre toute la largeur */
+  .header-full-width {
+    margin-left: -12px;
+    margin-right: -12px;
+    width: calc(100% + 24px);
+  }
+  
+  /* Padding interne du header pour alignement */
+  .header-full-width > * {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* Améliorations pour le header mobile */
+  .mobile-menu {
+    position: relative;
+    z-index: 50;
+  }
+
+  /* Animation du menu mobile */
+  .mobile-menu button {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .mobile-menu button:hover {
+    transform: scale(1.05);
+  }
+
+  /* Focus visible pour l'accessibilité */
+  .mobile-menu button:focus-visible {
+    outline: 2px solid #00008B;
+    outline-offset: 2px;
   }
 }
 
+/* Améliorations pour le header sticky */
+header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9999 !important;
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* S'assurer que le header reste au-dessus de tout */
+.header-full-width {
+  position: relative;
+  z-index: 9999;
+}
+
+/* Améliorer le backdrop-blur pour une meilleure lisibilité */
+header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
 /* Cacher la barre de scroll */
-.hide-scrollbar {
+.hide-scrollbar,
+.scrollbar-hide {
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
 }
 
-.hide-scrollbar::-webkit-scrollbar {
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }

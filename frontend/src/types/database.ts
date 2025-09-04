@@ -7,20 +7,18 @@
 // TYPES ENUM
 // =====================================================
 
-// Enums basés sur le schéma SQL réel
-export type FormatEnum = 'presentiel' | 'virtuel' | 'hybride';
+// Enums basés sur le schéma SQL réel (version réelle de la DB)
+export type FormatEnum = 'en_presentiel' | 'en_ligne' | 'hybride';
 
 export type TarificationEnum = 'gratuit' | 'payant' | 'don_libre' | 'mixte';
 
-export type StatutEvenementEnum = 'brouillon' | 'publie' | 'annule';
+export type StatutEvenementEnum = 'brouillon' | 'en_attente_validation' | 'valide' | 'publie' | 'archive' | 'refuse';
 
-export type FrequenceEnum = 'ponctuel' | 'hebdomadaire' | 'mensuel' | 'trimestriel' | 'annuel';
+export type FrequenceEnum = 'ponctuel' | 'quotidien' | 'hebdomadaire' | 'bi_hebdomadaire' | 'mensuel' | 'trimestriel' | 'annuel';
 
+export type TypeLieuEnum = 'en_salle' | 'en_plein_air' | 'virtuel';
 
-
-export type TypeLieuEnum = 'adresse' | 'lien_video';
-
-export type NiveauPrivacyEnum = 'public' | 'prive' | 'communautaire';
+export type NiveauPrivacyEnum = 'public' | 'prive' | 'sur_invitation';
 
 export type TypeCommunautéEnum = 'eglise' | 'cellule' | 'groupe_jeunes' | 'groupe_femmes' | 'groupe_hommes' | 'ministere' | 'association' | 'reseau' | 'autre';
 
@@ -28,12 +26,16 @@ export type TypeEvenementSpecifiqueEnum = 'seminaire' | 'conference' | 'atelier'
 
 export type RoleUtilisateurEnum = 'participant' | 'organisateur' | 'moderateur' | 'admin';
 
-export type TypeSessionEnum = 'pleniere' | 'atelier' | 'table_ronde' | 'priere' | 'louange' | 'pause';
+export type TypeSessionEnum = 'pleniere' | 'atelier' | 'table_ronde' | 'priere' | 'louange' | 'pause' | 'conference' | 'networking' | 'debat' | 'autre';
 
-// Nouveau type pour les sessions d'événements
-export type EventSessionTypeEnum = 'pleniere' | 'atelier' | 'table_ronde' | 'priere' | 'louange' | 'pause' | 'conference' | 'networking' | 'debat' | 'autre';
+// Nouveaux enums ajoutés dans la DB réelle
+export type StatutInvitationEnum = 'en_attente' | 'invite' | 'accepte' | 'refuse';
 
-export type AudienceEnum = 'familles' | 'jeunes' | 'pasteurs' | 'etudiants' | 'seniors' | 'enfants' | 'couples' | 'tout_public';
+export type RoleMissionEnum = 'eglise_locale' | 'reseau_eglises' | 'ministere_individuel' | 'association_chretienne' | 'ong_chretienne' | 'groupe_jeunesse' | 'pasteur' | 'evangeliste' | 'missionnaire' | 'formateur' | 'conference_orateur' | 'artiste_gospel' | 'label_musical_chretien' | 'compagnie_artistique' | 'maison_dedition' | 'organisateur_festival' | 'organisateur_concert' | 'ecole_biblique' | 'autre';
+
+export type GenreEnum = 'homme' | 'femme' | 'prefere_ne_pas_preciser';
+
+export type AudienceEnum = 'familles' | 'jeunes' | 'serviteurs de Dieu' | 'etudiants' | 'seniors' | 'enfants' | 'couples' | 'ministères' | 'tout_public' | 'femmes' | 'hommes';
 
 export type CanalDiffusionEnum = 'youtube' | 'zoom' | 'instagram_live' | 'facebook_live' | 'site_web' | 'teams' | 'meet';
 
@@ -43,7 +45,7 @@ export type CanalDiffusionEnum = 'youtube' | 'zoom' | 'instagram_live' | 'facebo
 // INTERFACES DES TABLES
 // =====================================================
 
-// Table users
+// Table users (version réelle de la DB)
 export interface User {
   id: string; // UUID
   email: string;
@@ -57,6 +59,23 @@ export interface User {
   photo_profil_url?: string;
   date_creation: string; // TIMESTAMP
   date_dernier_login?: string; // TIMESTAMP
+  localisation?: string;
+  mission?: RoleMissionEnum;
+  mission_autre?: string;
+  preferences_categories?: number[]; // ARRAY
+  preferences_audiences?: AudienceEnum[]; // ARRAY
+  preferences_format?: FormatEnum[]; // ARRAY
+  preferences_frequence?: FrequenceEnum[]; // ARRAY
+  preferences_tarification?: TarificationEnum[]; // ARRAY
+  types_evenements_crees?: TypeEvenementSpecifiqueEnum[]; // ARRAY
+  latitude?: number;
+  longitude?: number;
+  genre?: GenreEnum;
+  // Nouveaux champs ajoutés
+  notifications_email?: boolean;
+  notifications_push?: boolean;
+  notifications_sms?: boolean;
+  notification_frequency?: 'immediate' | 'daily' | 'weekly';
 }
 
 // Table categories
@@ -89,14 +108,14 @@ export interface Communaute {
   created_at: string; // TIMESTAMP
 }
 
-// Table events (table centrale)
+// Table events (table centrale - version réelle de la DB)
 export interface Event {
   id: number;
   titre: string;
   slug: string;
   description?: string;
   programme?: string;
-  programme_mode?: 'simple' | 'structured'; // Nouveau champ
+  programme_mode: 'simple' | 'structured'; // Champ obligatoire avec contrainte CHECK
   sous_categorie_id: number;
   format: FormatEnum;
   frequence: FrequenceEnum;
@@ -117,13 +136,17 @@ export interface Event {
   updated_at: string; // TIMESTAMP
 }
 
-// Table communaute_utilisateurs
+// Table communaute_utilisateurs (version réelle de la DB)
 export interface CommunauteUtilisateur {
   id: number;
   user_id: string; // UUID
   communaute_id: number;
   role: RoleUtilisateurEnum;
-  date_adhésion: string; // TIMESTAMP
+  statut: StatutInvitationEnum;
+  invited_by?: string; // UUID
+  message_invitation?: string;
+  date_invitation: string; // TIMESTAMP
+  date_reponse?: string; // TIMESTAMP
 }
 
 // Table event_audiences
@@ -158,7 +181,7 @@ export interface TicketCategorie {
   updated_at: string; // TIMESTAMP
 }
 
-// Table tickets (selon le schéma SQL)
+// Table tickets (version réelle de la DB)
 export interface Ticket {
   id: number;
   event_id: number;
@@ -171,10 +194,10 @@ export interface Ticket {
   date_fin_vente?: string; // TIMESTAMP
   type_billet?: string;
   conditions?: string;
-  image_url?: string; // URL de l'image du ticket
   is_visible: boolean;
   created_at: string; // TIMESTAMP
   updated_at: string; // TIMESTAMP
+  image_url?: string; // URL de l'image du ticket (ajouté dans la DB réelle)
 }
 
 // Table event_intervenants
@@ -191,7 +214,7 @@ export interface EventIntervenant {
   updated_at: string; // TIMESTAMP
 }
 
-// Table event_sessions
+// Table event_sessions (version réelle de la DB)
 export interface EventSession {
   id: number;
   event_id: number;
@@ -199,12 +222,32 @@ export interface EventSession {
   description?: string;
   date_debut: string; // TIMESTAMP
   date_fin: string; // TIMESTAMP
-  type_session: EventSessionTypeEnum;
+  type_session: TypeSessionEnum; // Utilise le bon enum de la DB
   intervenant_id?: number;
   salle?: string;
   ordre: number;
   created_at: string; // TIMESTAMP
   updated_at: string; // TIMESTAMP
+}
+
+// =====================================================
+// NOUVELLES TABLES AJOUTÉES
+// =====================================================
+
+// Table user_follows (nouvelle)
+export interface UserFollow {
+  id: number;
+  follower_id: string; // UUID
+  followed_id: string; // UUID
+  created_at: string; // TIMESTAMP
+}
+
+// Table event_favorites (nouvelle)
+export interface EventFavorite {
+  id: number;
+  user_id: string; // UUID
+  event_id: number;
+  created_at: string; // TIMESTAMP
 }
 
 // =====================================================

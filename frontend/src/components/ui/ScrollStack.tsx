@@ -285,6 +285,46 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         .scroll-stack-inner::-webkit-scrollbar {
           display: none;
         }
+        
+        /* Optimisations pour mobile */
+        .scroll-stack-card {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+        }
+        
+        .scroll-stack-card img {
+          max-width: 100%;
+          height: auto;
+          object-fit: contain;
+          display: block;
+        }
+        
+        /* Amélioration du centrage sur mobile */
+        @media (max-width: 768px) {
+          .scroll-stack-card {
+            padding: 12px;
+            min-height: 200px;
+          }
+          
+          .scroll-stack-card img {
+            max-height: 300px;
+            width: auto;
+            max-width: 100%;
+          }
+        }
+        
+        /* Optimisations pour très petits écrans */
+        @media (max-width: 375px) {
+          .scroll-stack-card {
+            padding: 8px;
+          }
+          
+          .scroll-stack-card img {
+            max-height: 250px;
+          }
+        }
       `}</style>
     </div>
   );

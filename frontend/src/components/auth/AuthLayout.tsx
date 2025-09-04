@@ -35,8 +35,10 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
-            {/* Header */}
-      <AuthHeader showBackButton={showBackButton} backTo={backTo} />
+            {/* Header - Full width sur mobile */}
+      <div className="header-full-width">
+        <AuthHeader showBackButton={showBackButton} backTo={backTo} />
+      </div>
 
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center p-2 sm:p-4">

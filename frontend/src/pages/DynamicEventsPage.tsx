@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useEvents, useEventsByCategory, useUpcomingEvents } from '../hooks/useEvents';
 import { Navigate } from 'react-router-dom';
 import HomeLayout from '../components/layout/HomeLayout';
 import EventCardVertical from '../components/events/EventCardVertical';
@@ -10,7 +11,7 @@ import AdvancedSearchHeader from '../components/search/AdvancedSearchHeader';
 import FilterModal from '../components/filters/FilterModal';
 import PageHeader from '../components/dashboard/layout/PageHeader';
 import ViewToggle from '../components/ui/ViewToggle';
-import { Grid3X3Icon, ListIcon } from 'lucide-react';
+// import { Grid3X3Icon, ListIcon } from 'lucide-react'; // Non utilisé pour le moment
 import filterIcon from '../assets/filter 06.svg';
 import calendarIcon from '../assets/calendar.svg';
 import arrowLeftIcon from '../assets/arrow-left-rectangle.svg';
@@ -23,15 +24,32 @@ const DynamicEventsPage: React.FC<DynamicEventsPageProps> = ({ context }) => {
   // Tous les hooks doivent être appelés en premier, avant toute logique conditionnelle
   const { user, loading } = useAuth();
   const { id: categoryId } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
+  // searchParams non utilisé pour le moment
   const navigate = useNavigate();
   
   // États locaux
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'vertical2' | 'list'>('vertical2');
   const [activeFilters, setActiveFilters] = useState<any>({});
-  const [events, setEvents] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Hooks pour récupérer les données selon le contexte
+  const eventsByCategory = useEventsByCategory(parseInt(categoryId || '0'), {});
+  const upcomingEvents = useUpcomingEvents({});
+  const allEvents = useEvents({});
+
+  // Déterminer quelle source de données utiliser
+  const getEventsData = () => {
+    switch (context) {
+      case 'category':
+        return eventsByCategory;
+      case 'upcoming':
+        return upcomingEvents;
+      default:
+        return allEvents;
+    }
+  };
+
+  const { events, loading: isLoading, error } = getEventsData();
 
   // Configuration selon le contexte
   const getPageConfig = () => {
@@ -192,94 +210,7 @@ const DynamicEventsPage: React.FC<DynamicEventsPageProps> = ({ context }) => {
     // TODO: Appliquer les filtres aux événements
   };
 
-  // Chargement des événements selon le contexte
-  useEffect(() => {
-    const loadEvents = async () => {
-      setIsLoading(true);
-      
-      // Simulation de chargement d'événements selon le contexte
-      const mockEvents = [
-        {
-          id: 1,
-          titre: 'Lève-toi France 2023, 4ème édition',
-          lieu: 'Palais des Congrès de Versailles',
-          adresse: 'Versailles, FR',
-          date_debut: '2024-01-21T09:00:00Z',
-          date_fin: '2024-01-22T18:00:00Z',
-          image_couverture: 'https://picsum.photos/400/300?random=1',
-          tarification: 'gratuit',
-          organisateur: {
-            id: '1',
-            nom: 'Team',
-            prenom: 'Zoe',
-            avatar_url: 'https://picsum.photos/40/40?random=1',
-            role: 'organisateur'
-          },
-          participants_count: 20,
-          participants_avatars: [
-            'https://picsum.photos/40/40?random=10',
-            'https://picsum.photos/40/40?random=11',
-            'https://picsum.photos/40/40?random=12'
-          ]
-        },
-        {
-          id: 2,
-          titre: 'Séminaire Business Cameroun',
-          lieu: 'Douala - Yaoundé',
-          adresse: 'Cameroun',
-          date_debut: '2024-03-19T09:00:00Z',
-          date_fin: '2024-03-26T18:00:00Z',
-          image_couverture: 'https://picsum.photos/400/300?random=2',
-          tarification: 'payant',
-          prix_min: 15000,
-          organisateur: {
-            id: '2',
-            nom: 'Team',
-            prenom: 'Zoe',
-            avatar_url: 'https://picsum.photos/40/40?random=2',
-            role: 'organisateur'
-          },
-          participants_count: 15,
-          participants_avatars: [
-            'https://picsum.photos/40/40?random=20',
-            'https://picsum.photos/40/40?random=21',
-            'https://picsum.photos/40/40?random=22'
-          ]
-        },
-        {
-          id: 3,
-          titre: 'Conférence des jeunes église ICC',
-          lieu: 'San Francisco',
-          adresse: 'CA, USA',
-          date_debut: '2024-03-10T09:00:00Z',
-          date_fin: '2024-03-19T18:00:00Z',
-          image_couverture: 'https://picsum.photos/400/300?random=3',
-          tarification: 'gratuit',
-          organisateur: {
-            id: '3',
-            nom: 'Church',
-            prenom: 'ICC',
-            avatar_url: 'https://picsum.photos/40/40?random=3',
-            role: 'organisateur'
-          },
-          participants_count: 25,
-          participants_avatars: [
-            'https://picsum.photos/40/40?random=30',
-            'https://picsum.photos/40/40?random=31',
-            'https://picsum.photos/40/40?random=32'
-          ]
-        }
-      ];
-
-      // Simuler un délai de chargement
-      setTimeout(() => {
-        setEvents(mockEvents);
-        setIsLoading(false);
-      }, 500);
-    };
-
-    loadEvents();
-  }, [context, categoryId]);
+  // Les données sont maintenant récupérées via les hooks useEvents
 
   // Gestion du retour
   const handleBack = () => {
@@ -296,7 +227,7 @@ const DynamicEventsPage: React.FC<DynamicEventsPageProps> = ({ context }) => {
   }
 
   if (!user) {
-    return <Navigate to="/auth/signin" replace />;
+    return <Navigate to="/auth/connexion" replace />;
   }
 
   return (
@@ -367,6 +298,12 @@ const DynamicEventsPage: React.FC<DynamicEventsPageProps> = ({ context }) => {
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-blue"></div>
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 dark:text-red-400">
+                Erreur lors du chargement des événements: {error}
+              </p>
+            </div>
           ) : (
             <div className={getGridClass()}>
               {events.map((event) => (
@@ -378,7 +315,7 @@ const DynamicEventsPage: React.FC<DynamicEventsPageProps> = ({ context }) => {
           )}
 
           {/* Message si aucun événement */}
-          {!isLoading && events.length === 0 && (
+          {!isLoading && !error && events.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 dark:text-gray-400">
                 Aucun événement trouvé.

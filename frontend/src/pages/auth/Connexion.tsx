@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { GoogleAuthButton } from '../../components/auth/GoogleAuthButton';
@@ -6,10 +6,11 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function Connexion() {
   const navigate = useNavigate();
-  const { signInWithEmail, resetPassword } = useAuth();
+  const { signInWithEmail, resetPassword, user } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -20,6 +21,37 @@ export default function Connexion() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resetEmailSent, setResetEmailSent] = useState(false);
+
+  // Redirection automatique si déjà connecté
+  useEffect(() => {
+    if (user) {
+      redirectBasedOnRole();
+    }
+  }, [user]);
+
+  const redirectBasedOnRole = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user?.id)
+        .single();
+      
+      if (!error && data) {
+        if (data.role === 'participant') {
+          navigate('/home');
+        } else if (data.role === 'organisateur') {
+          navigate('/homeOrg');
+        } else if (data.role === 'admin') {
+          navigate('/admin-dashboard');
+        }
+      }
+    } catch (err) {
+      console.error('Erreur lors de la vérification du rôle:', err);
+      // Fallback vers la LandingPage
+      navigate('/');
+    }
+  };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,8 +69,8 @@ export default function Connexion() {
       if (error) {
         setError(error.message);
       } else {
-        // Redirection vers la page d'accueil
-        navigate('/');
+        // La redirection sera gérée par le useEffect quand user change
+        console.log('Connexion réussie');
       }
     } catch (err) {
       setError('Une erreur est survenue');

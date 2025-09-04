@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DropdownItem } from "../../ui/DropdownItem";
 import { Dropdown } from "../../ui/Dropdown";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { useProfilePhoto } from "../../../hooks/useProfilePhoto";
 import Avatar from "../../ui/Avatar";
@@ -9,19 +9,19 @@ import {
   UserIcon, 
   SettingsIcon, 
   LogOutIcon, 
-  ChevronDownIcon,
-  LogInIcon
+  ChevronDownIcon
 } from "lucide-react";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
+  const navigate = useNavigate();
 
   // Utiliser le hook de gestion des photos de profil
   const { getOptimizedUrl } = useProfilePhoto({
     userId: user?.id || '',
     userName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Utilisateur',
-    initialPhotoUrl: user?.user_metadata?.avatar_url || ''
+    initialPhotoUrl: '' // La photo sera récupérée depuis la DB par le hook
   });
 
   function toggleDropdown() {
@@ -34,8 +34,17 @@ export default function UserDropdown() {
 
   const handleSignOut = async () => {
     closeDropdown();
-    if (signOut) {
-      await signOut();
+    try {
+      const { error } = await signOut();
+      if (error) {
+        console.error('Erreur lors de la déconnexion:', error);
+      } else {
+        // Rediriger vers la landing page après déconnexion réussie
+        navigate('/');
+        console.log('Déconnexion réussie');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
     }
   };
 
@@ -87,7 +96,6 @@ export default function UserDropdown() {
           size="medium"
           status="online"
           role={userRole}
-         
           className="mr-3 flex-shrink-0"
         />
 

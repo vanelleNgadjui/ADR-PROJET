@@ -19,8 +19,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className={`transition-all duration-300 ease-in-out ${
         isMobileOpen ? 'ml-0' : isExpanded ? 'ml-0 lg:ml-64' : 'ml-0 lg:ml-16'
       }`}>
-        {/* Header */}
-        <Header onToggle={toggleMobileSidebar} onClick={toggleSidebar} />
+        {/* Header - Full width sur mobile */}
+        <div className="header-full-width">
+          <Header onToggle={toggleMobileSidebar} onClick={toggleSidebar} />
+        </div>
         
         {/* Page Content */}
         <main className="p-6">

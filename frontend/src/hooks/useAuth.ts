@@ -166,12 +166,44 @@ export const useAuth = () => {
     return { data, error };
   };
 
+  // Fonction pour récupérer le rôle utilisateur de manière optimisée
+  const getUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+      
+      if (!error && data) {
+        return data.role;
+      }
+      return null;
+    } catch (err) {
+      console.error('Erreur lors de la récupération du rôle:', err);
+      return null;
+    }
+  };
+
+  // Fonction pour déterminer la destination selon le rôle
+  const getDestinationByRole = (role: string | null) => {
+    if (!role) return '/';
+    if (role === 'participant') return '/home';
+    if (role === 'organisateur') return '/homeOrg';
+    if (role === 'admin') return '/admin-dashboard';
+    return '/';
+  };
+
   return {
-    ...authState,
+    user: authState.user,
+    session: authState.session,
+    loading: authState.loading,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
     signOut,
     resetPassword,
+    getUserRole,
+    getDestinationByRole,
   };
 }; 

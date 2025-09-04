@@ -21,7 +21,10 @@ import card4Svg from '../assets/Card-4.svg';
 export default function UiKit() {
   return (
     <div className="bg-neutral-white min-h-screen flex flex-col">
-      <Header />
+      {/* Header - Full width sur mobile */}
+      <div className="header-full-width">
+        <Header />
+      </div>
       <div className="flex-1 p-8 space-y-8">
       {/* Section Hero avec CardSwap aligné à droite */}
       <section className="relative flex flex-col md:flex-row items-center justify-between pt-16 pb-4 bg-gradient-to-br from-primary-blue/5 to-primary-orange/5 rounded-3xl mb-12 overflow-hidden">

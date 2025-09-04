@@ -1,24 +1,36 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from './useAuth';
-import type { User } from '@supabase/supabase-js';
 
-export const useUserSync = () => {
-  const { user, session } = useAuth();
+interface UseUserSyncReturn {
+  isUserSynced: boolean;
+  loading: boolean;
+  error: string | null;
+  syncUser: () => Promise<void>;
+}
 
-  // Synchroniser l'utilisateur avec notre table users
-  const syncUserToDatabase = async (authUser: User, role: 'participant' | 'organisateur' = 'participant') => {
+export const useUserSync = (): UseUserSyncReturn => {
+  const [isUserSynced, setIsUserSynced] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  const syncUser = async () => {
+    if (!user) return;
+
     try {
-      // Vérifier si l'utilisateur existe déjà dans notre table
-      const { data: existingUser, error: checkError } = await supabase
+      setLoading(true);
+      setError(null);
+
+      // Vérifier si l'utilisateur existe dans la table users
+      const { data: existingUser, error: fetchError } = await supabase
         .from('users')
-        .select('id, role')
-        .eq('id', authUser.id)
+        .select('id')
+        .eq('id', user.id)
         .single();
 
-      if (checkError && checkError.code !== 'PGRST116') {
-        console.error('Erreur lors de la vérification utilisateur:', checkError);
-        return { error: checkError };
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        throw fetchError;
       }
 
       // Si l'utilisateur n'existe pas, le créer
@@ -26,46 +38,45 @@ export const useUserSync = () => {
         const { error: insertError } = await supabase
           .from('users')
           .insert({
-            id: authUser.id,
-            email: authUser.email!,
-            password_hash: '', // Pas de mot de passe hashé pour OAuth
-            nom: authUser.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            prenom: authUser.user_metadata?.full_name?.split(' ')[0] || '',
-            role: role,
-            photo_profil_url: authUser.user_metadata?.avatar_url || null,
+            id: user.id,
+            email: user.email || '',
+            password_hash: null, // Pas de mot de passe pour OAuth
+            nom: user.user_metadata?.nom || '',
+            prenom: user.user_metadata?.prenom || '',
+            role: user.user_metadata?.role || 'participant',
+            statut_compte_enum: 'actif',
+            photo_profil_url: user.user_metadata?.avatar_url || null,
             date_creation: new Date().toISOString(),
+            date_dernier_login: new Date().toISOString(),
           });
 
         if (insertError) {
-          console.error('Erreur lors de la création utilisateur:', insertError);
-          return { error: insertError };
+          throw insertError;
         }
       }
 
-      return { success: true };
-    } catch (error) {
-      console.error('Erreur lors de la synchronisation:', error);
-      return { error };
+      setIsUserSynced(true);
+    } catch (err) {
+      console.error('Erreur lors de la synchronisation de l\'utilisateur:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Écouter les changements d'authentification pour synchroniser
+  // Synchroniser automatiquement quand l'utilisateur change
   useEffect(() => {
-    if (user && session) {
-      // Récupérer le rôle depuis localStorage (pour OAuth) ou les métadonnées
-      const pendingRole = localStorage.getItem('pendingRole');
-      const role = pendingRole || user.user_metadata?.role || 'participant';
-      
-      // Attendre un peu avant de nettoyer localStorage pour s'assurer que le rôle est utilisé
-      setTimeout(() => {
-        if (pendingRole) {
-          localStorage.removeItem('pendingRole');
-        }
-      }, 2000);
-      
-      syncUserToDatabase(user, role as 'participant' | 'organisateur');
+    if (user) {
+      syncUser();
+    } else {
+      setIsUserSynced(false);
     }
-  }, [user, session]);
+  }, [user]);
 
-  return { syncUserToDatabase };
-}; 
+  return {
+    isUserSynced,
+    loading,
+    error,
+    syncUser,
+  };
+};

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useUserLocation } from '../../hooks/useUserLocation';
 import locationIcon from '../../assets/location.svg';
 import downArrowIcon from '../../assets/down-arrow.svg';
 
@@ -10,10 +10,7 @@ interface LocationDisplayProps {
 const LocationDisplay: React.FC<LocationDisplayProps> = ({ 
   className = '' 
 }) => {
-  const { user } = useAuth();
-
-  // Récupérer la localisation depuis les métadonnées Supabase
-  const location = user?.user_metadata?.location;
+  const { location: userLocation, loading } = useUserLocation();
   
   // Parser la localisation pour extraire ville et pays
   const parseLocation = (locationString: string) => {
@@ -35,7 +32,7 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({
     return { city: null, country: null };
   };
 
-  const { city, country } = parseLocation(location || '');
+  const { city } = parseLocation(userLocation || '');
   const displayCity = city || 'Inconnu';
 
   return (
@@ -51,7 +48,7 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({
       {/* Ligne du bas : ville + icône arrow alignée à droite */}
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-gray-700 pl-4">
-          {displayCity}
+          {loading ? 'Chargement...' : displayCity}
         </span>
         <img src={downArrowIcon} alt="Sélectionner" className="w-3 h-3 text-gray-400" />
       </div>

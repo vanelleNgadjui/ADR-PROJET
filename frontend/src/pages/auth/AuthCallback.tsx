@@ -10,6 +10,14 @@ export default function AuthCallback() {
   const { user, loading } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
+  // Redirection immédiate si pas d'utilisateur et pas de chargement
+  useEffect(() => {
+    if (!loading && !user) {
+      console.log('🔴 Pas d\'utilisateur, redirection immédiate vers connexion');
+      navigate('/auth/connexion');
+    }
+  }, [user, loading, navigate]);
+
   useEffect(() => {
     const handleCallback = async () => {
       try {
@@ -19,32 +27,46 @@ export default function AuthCallback() {
         if (user) {
           // Récupérer le rôle depuis localStorage (pour OAuth) ou les métadonnées
           const pendingRole = localStorage.getItem('pendingRole');
-          const role = pendingRole || user.user_metadata?.role || 'participant';
+          let role = pendingRole || user.user_metadata?.role || 'participant';
           
           // Ne pas nettoyer localStorage ici, laisser useUserSync le faire
           // pour éviter les problèmes de timing
           
-          // Vérifier si l'utilisateur a déjà un profil complet
+          // Vérifier si l'utilisateur a déjà un profil complet ET récupérer son rôle actuel
           const { data: userProfile, error: profileError } = await supabase
             .from('users')
-            .select('nom, prenom')
+            .select('nom, prenom, role')
             .eq('id', user.id)
             .single();
+          
+          // Si on a un profil en base, utiliser le rôle de la base (plus fiable)
+          if (userProfile && userProfile.role) {
+            role = userProfile.role;
+          }
+          
+          // Nettoyer le localStorage une fois le rôle récupéré
+          if (pendingRole) {
+            localStorage.removeItem('pendingRole');
+          }
           
           if (profileError) {
             navigate(`/auth/onboarding/${role}`);
           } else if (userProfile && userProfile.nom && userProfile.prenom) {
-            navigate('/');
+            // Rediriger vers la page d'accueil appropriée selon le rôle
+            if (role === 'participant') {
+              navigate('/home');
+            } else if (role === 'organisateur') {
+              navigate('/homeOrg');
+            } else {
+              navigate('/');
+            }
           } else {
             navigate(`/auth/onboarding/${role}`);
           }
         } else {
-          setError('Erreur lors de l\'authentification');
-          
-          // Rediriger vers la page de connexion après 3 secondes
-          setTimeout(() => {
-            navigate('/auth/connexion');
-          }, 3000);
+          // Si pas d'utilisateur après le chargement, rediriger immédiatement
+          console.log('🔴 Pas d\'utilisateur, redirection vers connexion');
+          navigate('/auth/connexion');
         }
       } catch (err) {
         console.error('💥 Erreur callback:', err);
@@ -86,11 +108,13 @@ export default function AuthCallback() {
     );
   }
 
+  // Ce composant ne devrait jamais s'afficher car on redirige toujours
+  // Mais au cas où, on affiche un spinner simple
   return (
-    <AuthLayout title="Redirection...">
+    <AuthLayout title="Connexion en cours...">
       <div className="text-center">
         <div className="w-8 h-8 border-4 border-[#00008B] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-600">Redirection en cours...</p>
+        <p className="text-gray-600">Finalisation de votre connexion...</p>
       </div>
     </AuthLayout>
   );

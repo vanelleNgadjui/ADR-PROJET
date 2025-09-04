@@ -101,7 +101,11 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                className={`flex items-center ${
+                  isExpanded || isMobileOpen 
+                    ? 'px-3 py-2' 
+                    : 'px-1 py-2 justify-center'
+                } text-sm font-medium rounded-lg transition-colors duration-200 ${
                   isActive
                     ? 'bg-primary-blue text-white'
                     : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
@@ -122,35 +126,48 @@ export default function Sidebar() {
         </nav>
 
         {/* User Profile Section */}
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center">
-            <Avatar
-              src={getOptimizedUrl()}
-              alt={user?.user_metadata?.full_name || user?.email || 'Utilisateur'}
-              size="medium"
-              role={user?.user_metadata?.role || 'participant'}
-            />
-            
-            {(isExpanded || isMobileOpen) && (
-              <div className="ml-3 flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 dark:text-white truncate">
-                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Utilisateur'}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  {user?.user_metadata?.role === 'organisateur' ? 'Organisateur' : 
-                   user?.user_metadata?.role === 'admin' ? 'Administrateur' : 'Participant'}
-                </p>
+        <div className="border-t border-gray-200 dark:border-gray-700">
+          {(isExpanded || isMobileOpen) ? (
+            <div className="p-4">
+              <div className="flex items-center">
+                <Avatar
+                  src={getOptimizedUrl()}
+                  alt={user?.user_metadata?.full_name || user?.email || 'Utilisateur'}
+                  size="medium"
+                  role={user?.user_metadata?.role || 'participant'}
+                />
+                
+                <div className="ml-3 flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 dark:text-white truncate">
+                    {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Utilisateur'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {user?.user_metadata?.role === 'organisateur' ? 'Organisateur' : 
+                     user?.user_metadata?.role === 'admin' ? 'Administrateur' : 'Participant'}
+                  </p>
+                </div>
+                
+                <button
+                  onClick={handleSignOut}
+                  className="ml-2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  title="Se déconnecter"
+                >
+                  <LogOutIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </button>
               </div>
-            )}
-            
-            <button
-              onClick={handleSignOut}
-              className="ml-2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              title="Se déconnecter"
-            >
-              <LogOutIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
-          </div>
+            </div>
+          ) : (
+            // Version rétractée - juste l'icône de déconnexion centrée
+            <div className="p-2 flex justify-center">
+              <button
+                onClick={handleSignOut}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                title="Se déconnecter"
+              >
+                <LogOutIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

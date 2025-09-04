@@ -39,6 +39,9 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsMobile(mobile);
       if (!mobile) {
         setIsMobileOpen(false);
+      } else {
+        // Sur mobile, réinitialiser l'état de la sidebar
+        setIsExpanded(true);
       }
     };
 

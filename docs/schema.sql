@@ -1,696 +1,919 @@
--- =====================================================
--- SCHÉMA SQL COMPLET POUR "L'AGENDA DU ROYAUME"
--- =====================================================
+SCHEMA RECUPÉRÉ SUR LA BASE DE DONNÉES - LA DERNIERE VERSION
 
--- Activation de l'extension UUID (si elle n'existe pas déjà)
-DO $$ BEGIN
-    CREATE EXTENSION "uuid-ossp";
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- =====================================================
--- 1. CRÉATION DES TYPES ENUM
--- =====================================================
-
--- Format des événements
-DO $$ BEGIN
-    CREATE TYPE format_enum AS ENUM (
-      'en_presentiel',
-      'en_ligne',
-      'hybride'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Tarification
-DO $$ BEGIN
-    CREATE TYPE tarification_enum AS ENUM (
-      'gratuit',
-      'payant',
-      'don_libre',
-      'mixte'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Statut des événements
-DO $$ BEGIN
-    CREATE TYPE statut_evenement_enum AS ENUM (
-      'brouillon',
-      'en_attente_validation',
-      'valide',
-      'publie',
-      'archive',
-      'refuse'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Fréquence des événements
-DO $$ BEGIN
-    CREATE TYPE frequence_enum AS ENUM (
-      'ponctuel',
-      'quotidien',
-      'hebdomadaire',
-      'bi_hebdomadaire',
-      'mensuel',
-      'trimestriel',
-      'annuel'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Langues
-DO $$ BEGIN
-    CREATE TYPE langue_enum AS ENUM (
-      'fr',
-      'en',
-      'es',
-      'pt',
-      'ar',
-      'autre'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Niveau de difficulté
-DO $$ BEGIN
-    CREATE TYPE niveau_difficulte_enum AS ENUM (
-      'debutant',
-      'intermediaire',
-      'avance'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Type de lieu
-DO $$ BEGIN
-    CREATE TYPE type_lieu_enum AS ENUM (
-      'en_salle',
-      'en_plein_air',
-      'virtuel'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Niveau de confidentialité
-DO $$ BEGIN
-    CREATE TYPE niveau_privacy_enum AS ENUM (
-      'public',
-      'prive',
-      'sur_invitation'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Type de communauté
-DO $$ BEGIN
-    CREATE TYPE type_communauté_enum AS ENUM (
-      'eglise',
-      'cellule',
-      'groupe_jeunes',
-      'groupe_femmes',
-      'groupe_hommes',
-      'ministere',
-      'association',
-      'reseau',
-      'autre'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Type d'événement spécifique
-DO $$ BEGIN
-    CREATE TYPE type_evenement_specifique_enum AS ENUM (
-      'seminaire',
-      'conference',
-      'atelier',
-      'culte',
-      'concert',
-      'retreat',
-      'formation',
-      'webinar'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Rôle utilisateur
-DO $$ BEGIN
-    CREATE TYPE role_utilisateur_enum AS ENUM (
-      'participant',
-      'organisateur',
-      'moderateur',
-      'admin'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Type de session
-DO $$ BEGIN
-    CREATE TYPE type_session_enum AS ENUM (
-      'pleniere',
-      'atelier',
-      'table_ronde',
-      'priere',
-      'louange',
-      'pause'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Audience cible
-DO $$ BEGIN
-    CREATE TYPE audience_enum AS ENUM (
-      'familles',
-      'jeunes',
-      'pasteurs',
-      'etudiants',
-      'seniors',
-      'enfants',
-      'couples',
-      'tout_public'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Canal de diffusion
-DO $$ BEGIN
-    CREATE TYPE canal_diffusion_enum AS ENUM (
-      'youtube',
-      'zoom',
-      'instagram_live',
-      'facebook_live',
-      'site_web',
-      'teams',
-      'meet'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
-
-
--- =====================================================
--- 2. CRÉATION DES TABLES PRINCIPALES
--- =====================================================
-
--- Table des utilisateurs
-CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  nom VARCHAR(100) NOT NULL,
-  prenom VARCHAR(100) NOT NULL,
-  date_naissance DATE,
-  telephone VARCHAR(20),
-  role role_utilisateur_enum NOT NULL DEFAULT 'participant',
-  statut_compte_enum VARCHAR(50) DEFAULT 'actif',
-  photo_profil_url VARCHAR(255),
-  date_creation TIMESTAMP DEFAULT NOW(),
-  date_dernier_login TIMESTAMP,
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_users_email UNIQUE (email)
+CREATE TABLE public.categories (
+  id integer NOT NULL DEFAULT nextval('categories_id_seq'::regclass),
+  nom character varying NOT NULL UNIQUE,
+  description text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT categories_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.communaute_utilisateurs (
+  id integer NOT NULL DEFAULT nextval('communaute_utilisateurs_id_seq'::regclass),
+  user_id uuid NOT NULL,
+  communaute_id integer NOT NULL,
+  role USER-DEFINED DEFAULT 'participant'::role_utilisateur_enum,
+  statut USER-DEFINED DEFAULT 'en_attente'::statut_invitation_enum,
+  invited_by uuid,
+  message_invitation text,
+  date_invitation timestamp without time zone DEFAULT now(),
+  date_reponse timestamp without time zone,
+  CONSTRAINT communaute_utilisateurs_pkey PRIMARY KEY (id),
+  CONSTRAINT communaute_utilisateurs_communaute_id_fkey FOREIGN KEY (communaute_id) REFERENCES public.communautes(id),
+  CONSTRAINT communaute_utilisateurs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT communaute_utilisateurs_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.communautes (
+  id integer NOT NULL DEFAULT nextval('communautes_id_seq'::regclass),
+  nom character varying NOT NULL,
+  description text,
+  slug character varying UNIQUE,
+  owner_id uuid NOT NULL,
+  type USER-DEFINED NOT NULL,
+  est_publique boolean DEFAULT false,
+  image_couverture character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT communautes_pkey PRIMARY KEY (id),
+  CONSTRAINT communautes_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.event_audiences (
+  id integer NOT NULL DEFAULT nextval('event_audiences_id_seq'::regclass),
+  event_id integer NOT NULL,
+  audience USER-DEFINED NOT NULL,
+  CONSTRAINT event_audiences_pkey PRIMARY KEY (id),
+  CONSTRAINT event_audiences_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.event_canaux_diffusion (
+  id integer NOT NULL DEFAULT nextval('event_canaux_diffusion_id_seq'::regclass),
+  event_id integer NOT NULL,
+  canal USER-DEFINED NOT NULL,
+  CONSTRAINT event_canaux_diffusion_pkey PRIMARY KEY (id),
+  CONSTRAINT event_canaux_diffusion_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.event_intervenants (
+  id integer NOT NULL DEFAULT nextval('event_intervenants_id_seq'::regclass),
+  event_id integer NOT NULL,
+  nom character varying NOT NULL,
+  description text,
+  email character varying,
+  photo_url character varying,
+  role_fonction character varying,
+  autres_infos jsonb,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT event_intervenants_pkey PRIMARY KEY (id),
+  CONSTRAINT event_intervenants_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.event_mots_cles (
+  id integer NOT NULL DEFAULT nextval('event_mots_cles_id_seq'::regclass),
+  event_id integer NOT NULL,
+  mot_cle character varying NOT NULL,
+  CONSTRAINT event_mots_cles_pkey PRIMARY KEY (id),
+  CONSTRAINT event_mots_cles_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.event_sessions (
+  id integer NOT NULL DEFAULT nextval('event_sessions_id_seq'::regclass),
+  event_id integer NOT NULL,
+  titre character varying NOT NULL,
+  description text,
+  date_debut timestamp without time zone NOT NULL,
+  date_fin timestamp without time zone NOT NULL,
+  type_session USER-DEFINED NOT NULL,
+  intervenant_id integer,
+  salle character varying,
+  ordre integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT event_sessions_pkey PRIMARY KEY (id),
+  CONSTRAINT event_sessions_intervenant_id_fkey FOREIGN KEY (intervenant_id) REFERENCES public.event_intervenants(id),
+  CONSTRAINT event_sessions_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.events (
+  id integer NOT NULL DEFAULT nextval('events_id_seq'::regclass),
+  titre character varying NOT NULL,
+  slug character varying NOT NULL UNIQUE,
+  description text,
+  programme text,
+  sous_categorie_id integer NOT NULL,
+  format USER-DEFINED NOT NULL,
+  frequence USER-DEFINED NOT NULL DEFAULT 'ponctuel'::frequence_enum,
+  statut USER-DEFINED NOT NULL DEFAULT 'brouillon'::statut_evenement_enum,
+  type_lieu USER-DEFINED,
+  lieu character varying,
+  adresse text,
+  date_debut timestamp without time zone NOT NULL,
+  date_fin timestamp without time zone,
+  niveau_privacy USER-DEFINED NOT NULL DEFAULT 'public'::niveau_privacy_enum,
+  groupe_prive_id integer,
+  tarification USER-DEFINED NOT NULL,
+  organisateur_id uuid NOT NULL,
+  image_couverture character varying,
+  capacite_max integer,
+  est_accessible boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  programme_mode character varying DEFAULT 'simple'::character varying CHECK (programme_mode::text = ANY (ARRAY['simple'::character varying, 'structured'::character varying]::text[])),
+  CONSTRAINT events_pkey PRIMARY KEY (id),
+  CONSTRAINT events_sous_categorie_id_fkey FOREIGN KEY (sous_categorie_id) REFERENCES public.sous_categories(id),
+  CONSTRAINT events_organisateur_id_fkey FOREIGN KEY (organisateur_id) REFERENCES public.users(id),
+  CONSTRAINT events_groupe_prive_id_fkey FOREIGN KEY (groupe_prive_id) REFERENCES public.communautes(id)
+);
+CREATE TABLE public.sous_categories (
+  id integer NOT NULL DEFAULT nextval('sous_categories_id_seq'::regclass),
+  categorie_id integer NOT NULL,
+  nom character varying NOT NULL,
+  description text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT sous_categories_pkey PRIMARY KEY (id),
+  CONSTRAINT sous_categories_categorie_id_fkey FOREIGN KEY (categorie_id) REFERENCES public.categories(id)
+);
+CREATE TABLE public.tickets (
+  id integer NOT NULL DEFAULT nextval('tickets_id_seq'::regclass),
+  event_id integer NOT NULL,
+  category_id integer,
+  nom character varying NOT NULL,
+  description text,
+  prix numeric NOT NULL DEFAULT 0,
+  quantite integer,
+  date_debut_vente timestamp without time zone,
+  date_fin_vente timestamp without time zone,
+  type_billet character varying,
+  conditions text,
+  is_visible boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  image_url character varying,
+  CONSTRAINT tickets_pkey PRIMARY KEY (id),
+  CONSTRAINT tickets_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.tickets_categories(id),
+  CONSTRAINT tickets_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.tickets_categories (
+  id integer NOT NULL DEFAULT nextval('tickets_categories_id_seq'::regclass),
+  event_id integer NOT NULL,
+  nom character varying NOT NULL,
+  description text,
+  ordre integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT tickets_categories_pkey PRIMARY KEY (id),
+  CONSTRAINT tickets_categories_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.users (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  email character varying NOT NULL UNIQUE,
+  password_hash character varying NOT NULL,
+  nom character varying NOT NULL,
+  prenom character varying NOT NULL,
+  date_naissance date,
+  telephone character varying,
+  role USER-DEFINED NOT NULL DEFAULT 'participant'::role_utilisateur_enum,
+  statut_compte_enum character varying DEFAULT 'actif'::character varying,
+  photo_profil_url character varying,
+  date_creation timestamp without time zone DEFAULT now(),
+  date_dernier_login timestamp without time zone,
+  localisation character varying,
+  mission USER-DEFINED,
+  mission_autre character varying,
+  preferences_categories ARRAY,
+  preferences_audiences ARRAY,
+  preferences_format ARRAY,
+  preferences_frequence ARRAY,
+  preferences_tarification ARRAY,
+  types_evenements_crees ARRAY,
+  latitude numeric CHECK (latitude IS NULL OR latitude >= '-90'::integer::numeric AND latitude <= 90::numeric),
+  longitude numeric CHECK (longitude IS NULL OR longitude >= '-180'::integer::numeric AND longitude <= 180::numeric),
+  genre USER-DEFINED,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
--- Table des catégories
-CREATE TABLE IF NOT EXISTS categories (
-  id SERIAL PRIMARY KEY,
-  nom VARCHAR(100) UNIQUE NOT NULL,
-  description TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
-);
 
--- Table des sous-catégories
-CREATE TABLE IF NOT EXISTS sous_categories (
-  id SERIAL PRIMARY KEY,
-  categorie_id INT NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
-  nom VARCHAR(100) NOT NULL,
-  description TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_sous_categories_categorie UNIQUE (categorie_id, nom)
-);
 
--- Table des communautés
-CREATE TABLE IF NOT EXISTS communautes (
-  id SERIAL PRIMARY KEY,
-  nom VARCHAR(100) NOT NULL,
-  description TEXT,
-  slug VARCHAR(150) UNIQUE,
-  owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  type type_communauté_enum NOT NULL,
-  est_publique BOOLEAN DEFAULT FALSE,
-  image_couverture VARCHAR(255),
-  created_at TIMESTAMP DEFAULT NOW(),
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_communautes_slug UNIQUE (slug)
-);
 
--- Table des événements (table centrale)
-CREATE TABLE IF NOT EXISTS events (
-  id SERIAL PRIMARY KEY,
-  titre VARCHAR(255) NOT NULL,
-  slug VARCHAR(255) UNIQUE NOT NULL,
-  description TEXT,
-  programme TEXT,
-  sous_categorie_id INT NOT NULL REFERENCES sous_categories(id) ON DELETE RESTRICT,
-  format format_enum NOT NULL,
-  frequence frequence_enum NOT NULL DEFAULT 'ponctuel',
-  langue langue_enum NOT NULL DEFAULT 'fr',
-  niveau_difficulte niveau_difficulte_enum,
-  statut statut_evenement_enum NOT NULL DEFAULT 'brouillon',
-  type_lieu type_lieu_enum,
-  lieu VARCHAR(255),
-  adresse TEXT,
-  date_debut TIMESTAMP NOT NULL,
-  date_fin TIMESTAMP,
-  niveau_privacy niveau_privacy_enum NOT NULL DEFAULT 'public',
-  groupe_prive_id INT REFERENCES communautes(id) ON DELETE SET NULL,
-  tarification tarification_enum NOT NULL,
-  organisateur_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  image_couverture VARCHAR(255),
-  capacite_max INT,
-  est_accessible BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW(),
-  
-  -- Contrainte d'unicité pour le slug
-  CONSTRAINT idx_events_slug UNIQUE (slug)
-);
+SCHEMA	NAME	VALUES	
+public
+audience_enum	familles, jeunes, serviteurs de Dieu, etudiants, seniors, enfants, couples, ministères, tout_public, femmes, hommes	
 
--- =====================================================
--- 3. TABLES ASSOCIATIVES
--- =====================================================
+public
+canal_diffusion_enum	youtube, zoom, instagram_live, facebook_live, site_web, teams, meet	
 
--- Table associative communauté-utilisateurs
-CREATE TABLE IF NOT EXISTS communaute_utilisateurs (
-  id SERIAL PRIMARY KEY,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  communaute_id INT NOT NULL REFERENCES communautes(id) ON DELETE CASCADE,
-  role role_utilisateur_enum DEFAULT 'participant',
-  date_adhésion TIMESTAMP DEFAULT NOW(),
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_communaute_utilisateurs_unique UNIQUE (user_id, communaute_id)
-);
+public
+format_enum	en_presentiel, en_ligne, hybride	
 
--- Table des audiences cibles
-CREATE TABLE IF NOT EXISTS event_audiences (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  audience audience_enum NOT NULL,
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_event_audiences_unique UNIQUE (event_id, audience)
-);
+public
+frequence_enum	ponctuel, quotidien, hebdomadaire, bi_hebdomadaire, mensuel, trimestriel, annuel	
 
--- Table des canaux de diffusion
-CREATE TABLE IF NOT EXISTS event_canaux_diffusion (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  canal canal_diffusion_enum NOT NULL,
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_event_canaux_unique UNIQUE (event_id, canal)
-);
+public
+genre_enum	homme, femme, prefere_ne_pas_preciser	
 
--- Table des mots-clés
-CREATE TABLE IF NOT EXISTS event_mots_cles (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  mot_cle VARCHAR(100) NOT NULL,
-  
-  -- Contrainte d'unicité
-  CONSTRAINT idx_event_mots_cles_unique UNIQUE (event_id, mot_cle)
-);
+public
+niveau_privacy_enum	public, prive, sur_invitation	
 
--- =====================================================
--- 4. SYSTÈME DE BILLETTERIE
--- =====================================================
+public
+role_mission_enum	eglise_locale, reseau_eglises, ministere_individuel, association_chretienne, ong_chretienne, groupe_jeunesse, pasteur, evangeliste, missionnaire, formateur, conference_orateur, artiste_gospel, label_musical_chretien, compagnie_artistique, maison_dedition, organisateur_festival, organisateur_concert, ecole_biblique, autre	
 
--- Catégories de billets
-CREATE TABLE IF NOT EXISTS tickets_categories (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  nom VARCHAR(100) NOT NULL,
-  description TEXT,
-  ordre INT DEFAULT 0,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
+public
+role_utilisateur_enum	participant, organisateur, moderateur, admin	
 
--- Billets individuels
-CREATE TABLE IF NOT EXISTS tickets (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  category_id INT REFERENCES tickets_categories(id) ON DELETE SET NULL,
-  nom VARCHAR(255) NOT NULL,
-  description TEXT,
-  prix NUMERIC(10,2) NOT NULL DEFAULT 0,
-  quantite INT,
-  date_debut_vente TIMESTAMP,
-  date_fin_vente TIMESTAMP,
-  type_billet VARCHAR(100),
-  conditions TEXT,
-  is_visible BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
+public
+statut_evenement_enum	brouillon, en_attente_validation, valide, publie, archive, refuse	
 
--- =====================================================
--- 5. SESSIONS ET INTERVENANTS
--- =====================================================
+public
+statut_invitation_enum	en_attente, invite, accepte, refuse	
 
--- Intervenants des événements
-CREATE TABLE IF NOT EXISTS event_intervenants (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  nom VARCHAR(255) NOT NULL,
-  description TEXT,
-  email VARCHAR(255),
-  photo_url VARCHAR(255),
-  role_fonction VARCHAR(100),
-  autres_infos JSONB,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
+public
+tarification_enum	gratuit, payant, don_libre, mixte	
 
--- Sessions des événements
-CREATE TABLE IF NOT EXISTS event_sessions (
-  id SERIAL PRIMARY KEY,
-  event_id INT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  titre VARCHAR(255) NOT NULL,
-  description TEXT,
-  date_debut TIMESTAMP NOT NULL,
-  date_fin TIMESTAMP NOT NULL,
-  type_session type_session_enum NOT NULL,
-  intervenant_id INT REFERENCES event_intervenants(id) ON DELETE SET NULL,
-  salle VARCHAR(255),
-  ordre INT DEFAULT 0,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
+public
+type_communauté_enum	eglise, cellule, groupe_jeunes, groupe_femmes, groupe_hommes, ministere, association, reseau, autre	
 
--- =====================================================
--- 6. FONCTIONS ET TRIGGERS
--- =====================================================
+public
+type_evenement_specifique_enum	seminaire, conference, atelier, culte, concert, retreat, formation, webinar	
 
--- Fonction pour générer un slug à partir d'un titre
-CREATE OR REPLACE FUNCTION generate_slug(input_text TEXT)
-RETURNS TEXT AS $$
-BEGIN
-  RETURN lower(
-    regexp_replace(
-      regexp_replace(
-        regexp_replace(input_text, '[^a-zA-Z0-9\s-]', '', 'g'),
-        '\s+', '-', 'g'
-      ),
-      '-+', '-', 'g'
-    )
-  );
-END;
-$$ LANGUAGE plpgsql;
+public
+type_lieu_enum	en_salle, en_plein_air, virtuel	
 
--- Fonction pour générer un slug unique
-CREATE OR REPLACE FUNCTION generate_unique_slug(base_slug TEXT, table_name TEXT, id_column TEXT, current_id INT DEFAULT NULL)
-RETURNS TEXT AS $$
-DECLARE
-  new_slug TEXT;
-  counter INT := 0;
-  exists_count INT;
-BEGIN
-  new_slug := base_slug;
-  
-  LOOP
-    -- Vérifier si le slug existe déjà
-    EXECUTE format('SELECT COUNT(*) FROM %I WHERE %I = $1', table_name, id_column) 
-    INTO exists_count 
-    USING new_slug;
-    
-    -- Si l'ID actuel est fourni, exclure cet enregistrement du comptage
-    IF current_id IS NOT NULL THEN
-      EXECUTE format('SELECT COUNT(*) FROM %I WHERE %I = $1 AND id != $2', table_name, id_column) 
-      INTO exists_count 
-      USING new_slug, current_id;
-    END IF;
-    
-    -- Si le slug n'existe pas, on peut l'utiliser
-    IF exists_count = 0 THEN
-      RETURN new_slug;
-    END IF;
-    
-    -- Sinon, ajouter un suffixe numérique
-    counter := counter + 1;
-    new_slug := base_slug || '-' || counter;
-  END LOOP;
-END;
-$$ LANGUAGE plpgsql;
+public
+type_session_enum	pleniere, atelier, table_ronde, priere, louange, pause, conference, networking, debat, autre	
 
--- Trigger pour générer automatiquement le slug des événements
-CREATE OR REPLACE FUNCTION trigger_generate_event_slug()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF NEW.slug IS NULL OR NEW.slug = '' THEN
-    NEW.slug := generate_unique_slug(
-      generate_slug(NEW.titre), 
-      'events', 
-      'slug', 
-      NEW.id
-    );
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
-DO $$ BEGIN
-    CREATE TRIGGER generate_event_slug_trigger
-      BEFORE INSERT OR UPDATE ON events
-      FOR EACH ROW
-      EXECUTE FUNCTION trigger_generate_event_slug();
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+schema
+public
 
--- Trigger pour mettre à jour automatiquement updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
--- Application du trigger updated_at sur les tables concernées
-DO $$ BEGIN
-    CREATE TRIGGER update_events_updated_at
-      BEFORE UPDATE ON events
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+Create a new function
 
-DO $$ BEGIN
-    CREATE TRIGGER update_tickets_categories_updated_at
-      BEFORE UPDATE ON tickets_categories
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+NAME	ARGUMENTS	RETURN TYPE	SECURITY	
 
-DO $$ BEGIN
-    CREATE TRIGGER update_tickets_updated_at
-      BEFORE UPDATE ON tickets
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+can_access_event
+event_id_param integer
+boolean
+Definer	
 
-DO $$ BEGIN
-    CREATE TRIGGER update_event_intervenants_updated_at
-      BEFORE UPDATE ON event_intervenants
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
 
-DO $$ BEGIN
-    CREATE TRIGGER update_event_sessions_updated_at
-      BEFORE UPDATE ON event_sessions
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+can_edit_event
+event_id_param integer
+boolean
+Definer	
 
--- =====================================================
--- 7. CONTRAINTES MÉTIER
--- =====================================================
 
--- Contrainte : Un événement privé doit avoir un groupe privé
-DO $$ BEGIN
-    ALTER TABLE events 
-    ADD CONSTRAINT check_private_event_has_group 
-    CHECK (
-      (niveau_privacy = 'prive' AND groupe_prive_id IS NOT NULL) OR 
-      (niveau_privacy != 'prive')
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+cleanup_orphaned_profile_photos
+-
+integer
+Invoker	
 
--- Contrainte : Une communauté publique ne peut avoir que des événements publics
--- (Cette contrainte sera vérifiée au niveau application ou avec un trigger)
--- Note: PostgreSQL ne permet pas les sous-requêtes dans les contraintes CHECK
 
--- Contrainte : Seuls les organisateurs/admins peuvent créer des événements
--- (Cette contrainte sera vérifiée au niveau application)
+generate_slug
+input_text text
+text
+Invoker	
 
--- Contrainte : Une communauté publique ne peut avoir que des événements publics
--- (Cette contrainte sera vérifiée au niveau application)
 
--- =====================================================
--- 8. INDEX DE PERFORMANCE
--- =====================================================
+generate_unique_slug
+base_slug text, table_name text, id_column text, current_id integer DEFAULT NULL::integer
+text
+Invoker	
 
--- Index pour les recherches rapides d'événements
-DO $$ BEGIN
-    CREATE INDEX idx_events_date_debut ON events(date_debut);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_events_statut ON events(statut);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_events_organisateur ON events(organisateur_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_events_date_debut_statut ON events(date_debut, statut);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_events_organisateur_statut ON events(organisateur_id, statut);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_events_sous_categorie ON events(sous_categorie_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
 
--- Index pour les recherches de communautés
-DO $$ BEGIN
-    CREATE INDEX idx_communautes_owner ON communautes(owner_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_communautes_type ON communautes(type);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
+get_all_enum_values
+-
+json
+Definer	
 
--- Index pour les tables associatives
-DO $$ BEGIN
-    CREATE INDEX idx_communaute_utilisateurs_user ON communaute_utilisateurs(user_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_communaute_utilisateurs_communaute ON communaute_utilisateurs(communaute_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
 
--- Index pour les audiences et canaux
-DO $$ BEGIN
-    CREATE INDEX idx_event_audiences_event ON event_audiences(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_event_canaux_event ON event_canaux_diffusion(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_event_mots_cles_event ON event_mots_cles(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
+get_audience_enum_values
+-
+text[]
+Invoker	
 
--- Index pour la billetterie
-DO $$ BEGIN
-    CREATE INDEX idx_tickets_categories_event ON tickets_categories(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_tickets_event ON tickets(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_tickets_category ON tickets(category_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
 
--- Index pour les sessions et intervenants
-DO $$ BEGIN
-    CREATE INDEX idx_event_intervenants_event ON event_intervenants(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_event_sessions_event ON event_sessions(event_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
-DO $$ BEGIN
-    CREATE INDEX idx_event_sessions_intervenant ON event_sessions(intervenant_id);
-EXCEPTION WHEN duplicate_object THEN null; END $$;
+get_audience_enum_values_rpc
+-
+json
+Definer	
 
--- =====================================================
--- 9. DONNÉES DE BASE (OPTIONNEL)
--- =====================================================
 
--- Insertion de catégories de base
-INSERT INTO categories (nom, description) 
-SELECT * FROM (VALUES
-  ('Culte & Adoration', 'Cérémonies de culte, temps d''adoration et de louange'),
-  ('Enseignement & Formation', 'Cours, séminaires, formations bibliques'),
-  ('Évangélisation & Mission', 'Événements d''évangélisation et mission'),
-  ('Communion & Fraternité', 'Temps de partage, repas communautaires'),
-  ('Prière & Intercession', 'Temps de prière, veillées, intercession'),
-  ('Jeunesse & Enfants', 'Activités spécifiques aux jeunes et enfants'),
-  ('Social & Entraide', 'Actions sociales, aide humanitaire'),
-  ('Arts & Culture', 'Concerts, expositions, événements culturels')
-) AS v(nom, description)
-WHERE NOT EXISTS (SELECT 1 FROM categories WHERE categories.nom = v.nom);
+get_canal_diffusion_enum_values
+-
+text[]
+Invoker	
 
--- Insertion de sous-catégories de base
-INSERT INTO sous_categories (categorie_id, nom, description) 
-SELECT * FROM (VALUES
-  (1, 'Culte dominical', 'Culte principal du dimanche'),
-  (1, 'Culte de prière', 'Culte centré sur la prière'),
-  (1, 'Temps d''adoration', 'Sessions d''adoration et de louange'),
-  (2, 'École biblique', 'Formation biblique approfondie'),
-  (2, 'Séminaire théologique', 'Formation théologique'),
-  (2, 'Atelier pratique', 'Ateliers pratiques et formations'),
-  (3, 'Évangélisation de rue', 'Évangélisation en extérieur'),
-  (3, 'Conférence missionnaire', 'Conférences sur la mission'),
-  (4, 'Repas communautaire', 'Repas partagés en communauté'),
-  (4, 'Café fraternel', 'Temps de convivialité'),
-  (5, 'Veillée de prière', 'Veillées de prière nocturnes'),
-  (5, 'Intercession', 'Temps d''intercession'),
-  (6, 'Groupe de jeunes', 'Activités pour les jeunes'),
-  (6, 'École du dimanche', 'Activités pour les enfants'),
-  (7, 'Distribution alimentaire', 'Aide alimentaire'),
-  (7, 'Soutien scolaire', 'Aide aux devoirs'),
-  (8, 'Concert chrétien', 'Concerts de musique chrétienne'),
-  (8, 'Exposition artistique', 'Expositions d''art chrétien')
-) AS v(categorie_id, nom, description)
-WHERE NOT EXISTS (
-  SELECT 1 FROM sous_categories 
-  WHERE sous_categories.categorie_id = v.categorie_id 
-  AND sous_categories.nom = v.nom
-);
 
--- =====================================================
--- FIN DU SCHÉMA
--- =====================================================
+get_enum_values
+enum_name text
+text[]
+Invoker	
 
--- Commentaire de fin
-COMMENT ON SCHEMA public IS 'Base de données pour la plateforme "L''Agenda du Royaume" - Gestion d''événements chrétiens'; 
+
+get_format_enum_values
+-
+text[]
+Invoker	
+
+
+get_format_enum_values_rpc
+-
+json
+Definer	
+
+
+get_frequence_enum_values
+-
+text[]
+Invoker	
+
+
+get_frequence_enum_values_rpc
+-
+json
+Definer	
+
+
+get_genre_enum_values
+-
+text[]
+Definer	
+
+
+get_genre_enum_values_rpc
+-
+json
+Definer	
+
+
+get_langue_enum_values
+-
+text[]
+Invoker	
+
+
+get_langue_enum_values_rpc
+-
+json
+Definer	
+
+
+get_niveau_difficulte_enum_values
+-
+text[]
+Invoker	
+
+
+get_niveau_difficulte_enum_values_rpc
+-
+json
+Definer	
+
+
+get_niveau_privacy_enum_values
+-
+text[]
+Invoker	
+
+
+get_niveau_privacy_enum_values_rpc
+-
+json
+Definer	
+
+
+get_optimized_profile_photo_url
+user_id uuid
+text
+Invoker	
+
+
+get_role_mission_enum_values
+-
+text[]
+Invoker	
+
+
+get_role_mission_enum_values_rpc
+-
+json
+Definer	
+
+
+get_role_utilisateur_enum_values
+-
+text[]
+Invoker	
+
+
+get_role_utilisateur_enum_values_rpc
+-
+json
+Definer	
+
+
+get_statut_evenement_enum_values
+-
+text[]
+Invoker	
+
+
+get_statut_evenement_enum_values_rpc
+-
+json
+Definer	
+
+
+get_tarification_enum_values
+-
+text[]
+Invoker	
+
+
+get_tarification_enum_values_rpc
+-
+json
+Definer	
+
+
+get_type_communauté_enum_values
+-
+text[]
+Invoker	
+
+
+get_type_communauté_enum_values_rpc
+-
+json
+Definer	
+
+
+get_type_evenement_specifique_enum_values
+-
+text[]
+Invoker	
+
+
+get_type_evenement_specifique_enum_values_rpc
+-
+json
+Definer	
+
+
+get_type_lieu_enum_values
+-
+text[]
+Invoker	
+
+
+get_type_lieu_enum_values_rpc
+-
+json
+Definer	
+
+
+get_type_session_enum_values
+-
+text[]
+Invoker	
+
+
+handle_user_photo_deletion
+-
+trigger
+Invoker	
+
+
+test_profile_photo_setup
+-
+text
+Invoker	
+
+
+trigger_generate_event_slug
+-
+trigger
+Invoker	
+
+
+update_updated_at_column
+-
+trigger
+Invoker	
+
+
+validate_profile_photo_url
+photo_url text
+boolean
+Invoker	
+
+
+
+NAME	TABLE	FUNCTION	EVENTS	ORIENTATION	ENABLED	
+generate_event_slug_trigger	
+events
+trigger_generate_event_slug
+BEFORE UPDATE
+BEFORE INSERT
+ROW
+
+update_event_intervenants_updated_at	
+event_intervenants
+update_updated_at_column
+BEFORE UPDATE
+ROW
+
+update_event_sessions_updated_at	
+event_sessions
+update_updated_at_column
+BEFORE UPDATE
+ROW
+
+update_events_updated_at	
+events
+update_updated_at_column
+BEFORE UPDATE
+ROW
+
+update_tickets_categories_updated_at	
+tickets_categories
+update_updated_at_column
+BEFORE UPDATE
+ROW
+
+update_tickets_updated_at	
+tickets
+update_updated_at_column
+BEFORE UPDATE
+ROW
+
+user_photo_deletion_trigger	
+users
+handle_user_photo_deletion
+AFTER UPDATE
+ROW
+
+Database Indexes
+Improve query performance against your database
+Docs
+Index Advisor
+
+schema
+public
+
+
+Create index
+SCHEMA	TABLE	NAME	
+public
+categories
+categories_nom_key
+
+View definition
+
+public
+categories
+categories_pkey
+
+View definition
+
+public
+communaute_utilisateurs
+communaute_utilisateurs_pkey
+
+View definition
+
+public
+communautes
+communautes_pkey
+
+View definition
+
+public
+event_audiences
+event_audiences_pkey
+
+View definition
+
+public
+event_canaux_diffusion
+event_canaux_diffusion_pkey
+
+View definition
+
+public
+event_intervenants
+event_intervenants_pkey
+
+View definition
+
+public
+event_mots_cles
+event_mots_cles_pkey
+
+View definition
+
+public
+event_sessions
+event_sessions_pkey
+
+View definition
+
+public
+events
+events_pkey
+
+View definition
+
+public
+communaute_utilisateurs
+idx_communaute_utilisateurs_communaute
+
+View definition
+
+public
+communaute_utilisateurs
+idx_communaute_utilisateurs_unique
+
+View definition
+
+public
+communaute_utilisateurs
+idx_communaute_utilisateurs_user
+
+View definition
+
+public
+communautes
+idx_communautes_owner
+
+View definition
+
+public
+communautes
+idx_communautes_slug
+
+View definition
+
+public
+communautes
+idx_communautes_type
+
+View definition
+
+public
+event_audiences
+idx_event_audiences_event
+
+View definition
+
+public
+event_audiences
+idx_event_audiences_unique
+
+View definition
+
+public
+event_canaux_diffusion
+idx_event_canaux_event
+
+View definition
+
+public
+event_canaux_diffusion
+idx_event_canaux_unique
+
+View definition
+
+public
+event_intervenants
+idx_event_intervenants_event
+
+View definition
+
+public
+event_mots_cles
+idx_event_mots_cles_event
+
+View definition
+
+public
+event_mots_cles
+idx_event_mots_cles_unique
+
+View definition
+
+public
+event_sessions
+idx_event_sessions_event
+
+View definition
+
+public
+event_sessions
+idx_event_sessions_intervenant
+
+View definition
+
+public
+events
+idx_events_date_debut
+
+View definition
+
+public
+events
+idx_events_date_debut_statut
+
+View definition
+
+public
+events
+idx_events_organisateur
+
+View definition
+
+public
+events
+idx_events_organisateur_statut
+
+View definition
+
+public
+events
+idx_events_slug
+
+View definition
+
+public
+events
+idx_events_sous_categorie
+
+View definition
+
+public
+events
+idx_events_statut
+
+View definition
+
+public
+sous_categories
+idx_sous_categories_categorie
+
+View definition
+
+public
+tickets_categories
+idx_tickets_categories_event
+
+View definition
+
+public
+tickets
+idx_tickets_category
+
+View definition
+
+public
+tickets
+idx_tickets_event
+
+View definition
+
+public
+users
+idx_users_email
+
+View definition
+
+public
+users
+idx_users_genre
+
+View definition
+
+public
+users
+idx_users_localisation
+
+View definition
+
+public
+users
+idx_users_location
+
+View definition
+
+public
+users
+idx_users_photo_profil_url
+
+View definition
+
+public
+users
+idx_users_preferences_audiences
+
+View definition
+
+public
+users
+idx_users_preferences_categories
+
+View definition
+
+public
+users
+idx_users_role_mission
+
+View definition
+
+public
+sous_categories
+sous_categories_pkey
+
+View definition
+
+public
+tickets_categories
+tickets_categories_pkey
+
+View definition
+
+public
+tickets
+tickets_pkey
+
+View definition
+
+public
+users
+users_pkey
+
+View definition
+
+
+
+Database Roles
+Manage access control to your database through users, groups, and permissions
+
+All roles
+Active roles
+
+Active connections
+10/60
+
+Add role
+Roles managed by Supabase
+Protected
+
+anon
+(ID: 16480)
+0 connections
+
+authenticated
+(ID: 16481)
+0 connections
+
+authenticator
+(ID: 16483)
+1 connections
+
+dashboard_user
+(ID: 16601)
+0 connections
+
+pgbouncer
+(ID: 16385)
+1 connections
+
+service_role
+(ID: 16482)
+0 connections
+
+supabase_admin
+(ID: 10)
+5 connections
+
+supabase_auth_admin
+(ID: 16541)
+0 connections
+
+supabase_read_only_user
+(ID: 16430)
+0 connections
+
+supabase_realtime_admin
+(ID: 17232)
+0 connections
+
+supabase_replication_admin
+(ID: 16427)
+0 connections
+
+supabase_storage_admin
+(ID: 16596)
+1 connections
+Other database roles
+
+postgres
+(ID: 16384)
+2 connections
+
+
+supabase_etl_admin
+(ID: 16428)
+0 connections

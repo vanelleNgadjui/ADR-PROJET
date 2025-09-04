@@ -2,19 +2,22 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { useAuth } from '../../hooks/useAuth';
-import { useAllEnums, formatEnumLabel } from '../../hooks/useEnums';
+import { useEnums } from '../../hooks/useEnums';
+import { useGeolocation } from '../../hooks/useGeolocation';
+import { useOnboarding } from '../../hooks/useOnboarding';
+import { useUserSync } from '../../hooks/useUserSync';
 import { supabase } from '../../lib/supabaseClient';
-import { User, Calendar, Phone, MapPinned, Camera, ChevronLeft, ChevronRight, PartyPopper, UserCircle } from 'lucide-react';
+import { User, Calendar, Phone, MapPinned, Camera, ChevronLeft, ChevronRight, PartyPopper, UserCircle, LocateFixed } from 'lucide-react';
 import { LocationAutocomplete } from '../../components/ui/LocationAutocomplete';
 import CustomCalendar from '../../components/ui/CustomCalendar';
+import Select from '../../components/form/Select';
 import adrBg from '../../assets/ADR-BG.png';
 import { 
   uploadProfilePhoto, 
   deleteProfilePhoto, 
   createPreviewUrl, 
   cleanupPreviewUrl, 
-  isTemporaryUrl,
-  getDefaultAvatarUrl 
+  isTemporaryUrl
 } from '../../utils/imageOptimization';
 
 export default function Onboarding() {
@@ -24,6 +27,7 @@ export default function Onboarding() {
   
   // TOUS LES HOOKS DOIVENT ÊTRE AU DÉBUT
   const [currentStep, setCurrentStep] = useState(1);
+  const [locationMode, setLocationMode] = useState<'manual' | 'gps' | null>(null);
   
   // Pré-remplir les données depuis Google OAuth
   const getInitialFormData = () => {
@@ -99,19 +103,41 @@ export default function Onboarding() {
   const [sousCategories, setSousCategories] = useState<Array<{id: number, categorie_id: number, nom: string, description: string}>>([]);
   
   // Utiliser le hook optimisé pour tous les enums
-  const { enums, loading: loadingEnums, error: enumsError } = useAllEnums();
+  const { enums, loading: loadingEnums, error: enumsError } = useEnums();
+  
+  // Hook de géolocalisation
+  const { 
+    latitude, 
+    longitude, 
+    error: geoError, 
+    loading: geoLoading, 
+    getCurrentPosition
+  } = useGeolocation();
+
+  // Hook de sauvegarde d'onboarding
+  const { saveOnboardingData, loading: saveLoading } = useOnboarding();
+  
+  // Hook de synchronisation utilisateur
+  const { isUserSynced, loading: syncLoading, error: syncError, syncUser } = useUserSync();
 
   // Classes de focus selon le rôle
   const focusClasses = role === 'participant' 
     ? 'focus:ring-primary-orange focus:border-primary-orange' 
     : 'focus:ring-primary-blue focus:border-primary-blue';
+
+  // Fonction pour formater les labels des enums
+  const formatEnumLabel = (value: string) => {
+    return value
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
   
   // Extraire les enums spécifiques
   const audiences = enums.audience_enum || [];
   const formats = enums.format_enum || [];
   const frequences = enums.frequence_enum || [];
   const tarifications = enums.tarification_enum || [];
-  const typesEvenements = enums.type_evenement_specifique_enum || [];
   
   // État de chargement global
   const loadingData = loadingEnums;
@@ -124,6 +150,40 @@ export default function Onboarding() {
       }
     };
   }, [formData.photo_profil_url]);
+
+  // Mettre à jour automatiquement les coordonnées quand la géolocalisation est détectée
+  React.useEffect(() => {
+    if (latitude && longitude && locationMode === 'gps') {
+      // Récupérer le nom de la localisation via une API de géocodage inverse
+      const fetchLocationName = async () => {
+        try {
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`
+          );
+          const data = await response.json();
+          
+          if (data.city && data.countryName) {
+            setFormData(prev => ({
+              ...prev,
+              localisation: `${data.city}, ${data.countryName}`,
+              latitude: latitude,
+              longitude: longitude
+            }));
+          }
+        } catch (error) {
+          console.error('Erreur lors de la récupération du nom de localisation:', error);
+          // En cas d'erreur, on garde quand même les coordonnées
+          setFormData(prev => ({
+            ...prev,
+            latitude: latitude,
+            longitude: longitude
+          }));
+        }
+      };
+
+      fetchLocationName();
+    }
+  }, [latitude, longitude, locationMode]);
 
     // Récupérer les données dynamiques depuis la base
   React.useEffect(() => {
@@ -196,7 +256,7 @@ export default function Onboarding() {
     return null; // La redirection se fait dans le useEffect
   }
 
-  const totalSteps = role === 'participant' ? 6 : 6; // À ajuster selon le parcours final
+  const totalSteps = role === 'participant' ? 6 : 6; // Même nombre d'étapes, tarification ajoutée à la dernière étape
 
   const roleConfig = {
     participant: {
@@ -274,11 +334,20 @@ export default function Onboarding() {
 
     try {
       // Debug pour voir ce qui est sauvegardé
-              console.log('Onboarding Debug:', {
-          role_from_url: role,
-          mission_from_form: formData.mission,
-          what_will_be_saved: role
-        });
+      console.log('Onboarding Debug:', {
+        role_from_url: role,
+        mission_from_form: formData.mission,
+        what_will_be_saved: role
+      });
+
+      // 0. S'assurer que l'utilisateur est synchronisé dans la table users
+      if (!isUserSynced) {
+        await syncUser();
+        if (!isUserSynced) {
+          setError('Erreur lors de la synchronisation de l\'utilisateur');
+          return;
+        }
+      }
 
       // 1. Mettre à jour les user_metadata avec le rôle
       const { error: metadataError } = await supabase.auth.updateUser({
@@ -295,38 +364,43 @@ export default function Onboarding() {
         return;
       }
 
-      // 2. Mettre à jour le profil utilisateur dans la table users
-      const { error } = await supabase
-        .from('users')
-        .update({
-          nom: formData.nom,
-          prenom: formData.prenom,
-          date_naissance: formData.dateNaissance || null,
-          telephone: formData.telephone || null,
-          genre: formData.genre || null,
-          localisation: formData.localisation,
-          latitude: formData.latitude,
-          longitude: formData.longitude,
-          photo_profil_url: formData.photo_profil_url || null,
-          role: role, // Mettre à jour le rôle principal (enum)
-          mission: formData.mission || null,
-          mission_autre: formData.mission_autre || null,
-          preferences_categories: formData.preferences_categories.length > 0 ? formData.preferences_categories : null,
-          preferences_audiences: formData.preferences_audiences.length > 0 ? formData.preferences_audiences : null,
-          preferences_format: formData.preferences_format.length > 0 ? formData.preferences_format : null,
-          preferences_frequence: formData.preferences_frequence.length > 0 ? formData.preferences_frequence : null,
-          preferences_tarification: formData.preferences_tarification.length > 0 ? formData.preferences_tarification : null,
-          types_evenements_crees: formData.types_evenements_crees.length > 0 ? formData.types_evenements_crees : null,
-        })
-        .eq('id', user.id);
+      // 2. Sauvegarder les données d'onboarding avec le nouveau hook
+      const result = await saveOnboardingData({
+        nom: formData.nom,
+        prenom: formData.prenom,
+        date_naissance: formData.dateNaissance || undefined,
+        telephone: formData.telephone || undefined,
+        genre: formData.genre as any || undefined,
+        localisation: formData.localisation || undefined,
+        latitude: formData.latitude || undefined,
+        longitude: formData.longitude || undefined,
+        mission: formData.mission as any || undefined,
+        mission_autre: formData.mission_autre || undefined,
+        preferences_categories: formData.preferences_categories.length > 0 ? formData.preferences_categories : undefined,
+        preferences_audiences: formData.preferences_audiences.length > 0 ? formData.preferences_audiences as any : undefined,
+        preferences_format: formData.preferences_format.length > 0 ? formData.preferences_format as any : undefined,
+        preferences_frequence: formData.preferences_frequence.length > 0 ? formData.preferences_frequence as any : undefined,
+        preferences_tarification: formData.preferences_tarification.length > 0 ? formData.preferences_tarification as any : undefined,
+        types_evenements_crees: formData.types_evenements_crees.length > 0 ? formData.types_evenements_crees as any : undefined,
+        // Préférences de notification par défaut
+        notifications_email: true,
+        notifications_push: true,
+        notifications_sms: false,
+        notification_frequency: 'immediate' as const,
+      });
 
-      if (error) {
-        console.error('Erreur mise à jour profil:', error);
-        setError('Erreur lors de la mise à jour du profil');
-      } else {
+      if (result.success) {
         console.log('Profil mis à jour avec succès');
-        // Rediriger vers la page d'accueil
-        navigate('/');
+        // Rediriger vers la page appropriée selon le rôle
+        if (role === 'participant') {
+          navigate('/home');
+        } else if (role === 'organisateur') {
+          navigate('/homeOrg');
+        } else {
+          navigate('/');
+        }
+      } else {
+        setError(result.error || 'Erreur lors de la sauvegarde du profil');
       }
     } catch (err) {
       console.error('Erreur inattendue:', err);
@@ -431,31 +505,20 @@ export default function Onboarding() {
                 Genre
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
-                <select
-                  value={formData.genre}
-                  onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white transition-colors appearance-none ${
-                    !formData.genre ? 'text-gray-400' : 'text-gray-900'
-                  } ${
-                    role === 'participant' 
-                      ? 'focus:ring-primary-orange focus:border-primary-orange' 
-                      : 'focus:ring-primary-blue focus:border-primary-blue'
-                  }`}
-                >
-                  <option value="" disabled className="text-gray-400">Sélectionnez votre genre</option>
-                  {enums.genre_enum?.map((genre) => (
-                    <option key={genre} value={genre} className="text-gray-900">
-                      {formatEnumLabel(genre)}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                <div className="pl-10">
+                  <Select
+                    options={enums.genre_enum?.map((genre: string) => ({
+                      value: genre,
+                      label: formatEnumLabel(genre)
+                    })) || []}
+                    placeholder="Sélectionnez votre genre"
+                    defaultValue={formData.genre}
+                    onChange={(value) => setFormData({ ...formData, genre: value })}
+                    className={role === 'participant' ? 'focus:ring-primary-orange focus:border-primary-orange' : 'focus:ring-primary-blue focus:border-primary-blue'}
+                  />
                 </div>
               </div>
               {loadingEnums && (
@@ -517,25 +580,97 @@ export default function Onboarding() {
             <div className="max-w-lg mx-auto">
               <div className="space-y-4">
                 <label className="block text-sm font-semibold text-gray-700">
-                  Ville ou région *
+                  Votre localisation *
                 </label>
                 
-                <div className="relative">
-                  <LocationAutocomplete
-                    value={formData.localisation}
-                    onChange={(location) => setFormData({ ...formData, localisation: location })}
-                    onLocationSelect={(location) => {
-                      setFormData({
-                        ...formData,
-                        localisation: location.display_name,
-                        latitude: parseFloat(location.lat),
-                        longitude: parseFloat(location.lon)
-                      });
-                    }}
-                    placeholder="Ex: Paris, France ou New York, USA..."
-                    required
-                    role={role}
-                  />
+                <div className="space-y-3">
+                  <div className="relative">
+                    <LocationAutocomplete
+                      value={formData.localisation}
+                      onChange={(location) => {
+                        setFormData({ ...formData, localisation: location });
+                        setLocationMode('manual');
+                        // Vider les coordonnées GPS si on tape manuellement
+                        if (location && location.trim() !== '') {
+                          setFormData(prev => ({
+                            ...prev,
+                            localisation: location,
+                            latitude: null,
+                            longitude: null
+                          }));
+                        }
+                      }}
+                      onLocationSelect={(location) => {
+                        setLocationMode('manual');
+                        setFormData({
+                          ...formData,
+                          localisation: location.display_name,
+                          latitude: parseFloat(location.lat),
+                          longitude: parseFloat(location.lon)
+                        });
+                      }}
+                      placeholder="Ex: Paris, France ou New York, USA..."
+                      required
+                      role={role}
+                    />
+                  </div>
+
+                  {/* Bouton "Utiliser l'emplacement actuel" - Style identique au champ de localisation */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLocationMode('gps');
+                        // Vider le champ manuel si on utilise GPS
+                        setFormData(prev => ({
+                          ...prev,
+                          localisation: '',
+                          latitude: null,
+                          longitude: null
+                        }));
+                        getCurrentPosition();
+                      }}
+                      disabled={geoLoading}
+                      className={`w-full pl-10 pr-4 py-3 border-2 border-dashed rounded-lg transition-all duration-200 font-medium text-sm text-left ${
+                        geoLoading
+                          ? 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
+                          : locationMode === 'gps'
+                            ? 'border-green-500 text-green-700 bg-green-50'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:ring-2 focus:ring-gray-200'
+                      }`}
+                    >
+                      {geoLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          Localisation en cours...
+                        </>
+                      ) : (
+                        'Utiliser l\'emplacement actuel'
+                      )}
+                    </button>
+                    {/* Icône GPS à gauche */}
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <LocateFixed className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+
+
+                  {/* Affichage des erreurs de géolocalisation */}
+                  {geoError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-medium text-red-800">
+                          Erreur de géolocalisation
+                        </span>
+                      </div>
+                      <p className="text-xs text-red-600 mt-1">
+                        {geoError}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Informations contextuelles */}
@@ -981,7 +1116,7 @@ export default function Onboarding() {
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {formats.map((format) => (
+                      {formats.map((format: string) => (
                         <button
                           key={format}
                           type="button"
@@ -1021,7 +1156,7 @@ export default function Onboarding() {
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {frequences.map((freq) => (
+                      {frequences.map((freq: string) => (
                         <button
                           key={freq}
                           type="button"
@@ -1117,7 +1252,7 @@ export default function Onboarding() {
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {formats.map((format) => (
+                      {formats.map((format: string) => (
                         <button
                           key={format}
                           type="button"
@@ -1157,7 +1292,7 @@ export default function Onboarding() {
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {frequences.map((freq) => (
+                      {frequences.map((freq: string) => (
                         <button
                           key={freq}
                           type="button"
@@ -1197,7 +1332,7 @@ export default function Onboarding() {
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {tarifications.map((tarif) => (
+                      {tarifications.map((tarif: string) => (
                         <button
                           key={tarif}
                           type="button"
@@ -1462,7 +1597,7 @@ export default function Onboarding() {
         }
       case 5:
         if (role === 'participant') {
-          return formData.preferences_audiences.length > 0; // Au moins un public intéressé
+          return formData.preferences_audiences.length > 0 && formData.preferences_tarification.length > 0; // Au moins un public et une tarification
         } else {
           return formData.types_evenements_crees.length > 0; // Au moins un type d'événement
         }
@@ -1556,12 +1691,12 @@ export default function Onboarding() {
           </div>
 
                       {/* Error Message - Simple et clair */}
-            {error && (
+            {(error || syncError) && (
               <div className="text-[#EE6239] text-sm bg-[#EE6239]/10 border border-[#EE6239]/20 p-4 rounded-lg flex items-center gap-2">
                 <svg className="w-5 h-5 text-[#EE6239]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
-                {error}
+                {error || syncError}
               </div>
             )}
 
@@ -1585,16 +1720,16 @@ export default function Onboarding() {
             {currentStep === totalSteps ? (
               <button
                 onClick={handleSubmit}
-                disabled={loading || !canProceed()}
+                disabled={loading || saveLoading || syncLoading || !canProceed()}
                 className={`flex items-center gap-1 sm:gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg text-white font-medium transition-all duration-200 text-sm sm:text-base ${
-                  loading || !canProceed()
+                  loading || saveLoading || syncLoading || !canProceed()
                     ? 'bg-gray-400 cursor-not-allowed'
                     : role === 'participant' 
                       ? 'bg-[#FFA500] hover:bg-[#FFA500]'
                       : 'bg-[#00008B] hover:bg-[#0000CD]'
                 } w-auto justify-center`}
               >
-                {loading ? (
+                {loading || saveLoading || syncLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Enregistrement...
