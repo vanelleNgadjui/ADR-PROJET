@@ -44,17 +44,38 @@ const HomePage: React.FC = () => {
                 {
                   id: 1,
                   titre: 'Lève-toi France 2023, 4ème édition',
-                  image_couverture: 'https://picsum.photos/1200/300?random=1'
+                  image_couverture: 'https://picsum.photos/1200/300?random=1',
+                  categorie: 'CONFÉRENCE',
+                  organisateur: {
+                    nom: 'Team',
+                    prenom: 'Zoe'
+                  },
+                  lieu: 'Palais des Congrès de Versailles',
+                  date_debut: '2024-01-21T09:00:00Z'
                 },
                 {
                   id: 2,
                   titre: 'Séminaire Business Cameroun',
-                  image_couverture: 'https://picsum.photos/1200/300?random=2'
+                  image_couverture: 'https://picsum.photos/1200/300?random=2',
+                  categorie: 'FORMATION',
+                  organisateur: {
+                    nom: 'Business',
+                    prenom: 'Cameroun'
+                  },
+                  lieu: 'Douala - Yaoundé',
+                  date_debut: '2024-03-19T09:00:00Z'
                 },
                 {
                   id: 3,
                   titre: 'Conférence des jeunes église ICC',
-                  image_couverture: 'https://picsum.photos/1200/300?random=3'
+                  image_couverture: 'https://picsum.photos/1200/300?random=3',
+                  categorie: 'JEUNES',
+                  organisateur: {
+                    nom: 'Church',
+                    prenom: 'ICC'
+                  },
+                  lieu: 'San Francisco',
+                  date_debut: '2024-03-10T09:00:00Z'
                 }
               ]}
             />

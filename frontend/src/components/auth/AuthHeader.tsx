@@ -12,7 +12,7 @@ export const AuthHeader: React.FC<AuthHeaderProps> = ({
   backTo = '/' 
 }) => {
   return (
-    <header className="w-full bg-white/90 backdrop-blur-md shadow-sm px-4 md:px-8 h-16 flex items-center justify-between sticky top-0 z-40 border-b border-neutral-200 transition-all duration-300">
+    <header className="w-full bg-white/90 backdrop-blur-md shadow-sm px-4 md:px-8 h-16 flex items-center justify-between fixed top-0 z-40 border-b border-neutral-200 transition-all duration-300">
       {/* Logo */}
       <div className="flex items-center h-full">
         <Link to="/">

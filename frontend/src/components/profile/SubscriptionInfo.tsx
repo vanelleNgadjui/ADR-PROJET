@@ -100,10 +100,10 @@ export default function SubscriptionInfo({ userId, role }: SubscriptionInfoProps
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center justify-between p-4 bg-secondary-mint/10 rounded-lg border border-secondary-mint/20">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <UserCheck className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-secondary-mint/20 rounded-full flex items-center justify-center">
+                <UserCheck className="w-5 h-5 text-secondary-mint" />
               </div>
               <div>
                 <h4 className="font-medium text-gray-900">Abonnés</h4>
@@ -111,15 +111,15 @@ export default function SubscriptionInfo({ userId, role }: SubscriptionInfoProps
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-green-600">{stats.followersCount}</div>
+              <div className="text-2xl font-bold text-secondary-mint">{stats.followersCount}</div>
               <div className="text-xs text-gray-500">abonnés</div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div className="flex items-center justify-between p-4 bg-primary-blue/5 rounded-lg border border-primary-blue/20">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <Users className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 bg-primary-blue/10 rounded-full flex items-center justify-center">
+                <Users className="w-5 h-5 text-primary-blue" />
               </div>
               <div>
                 <h4 className="font-medium text-gray-900">Événements créés</h4>
@@ -127,7 +127,7 @@ export default function SubscriptionInfo({ userId, role }: SubscriptionInfoProps
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-purple-600">{stats.eventsCount}</div>
+              <div className="text-2xl font-bold text-primary-blue">{stats.eventsCount}</div>
               <div className="text-xs text-gray-500">événements</div>
             </div>
           </div>

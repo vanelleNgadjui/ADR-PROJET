@@ -112,9 +112,9 @@ button:disabled {
   }
 }
 
-/* Améliorations pour le header sticky */
+/* Améliorations pour le header */
 header {
-  position: sticky !important;
+  position: fixed !important;
   top: 0 !important;
   z-index: 9999 !important;
   will-change: transform;
@@ -124,7 +124,7 @@ header {
 
 /* S'assurer que le header reste au-dessus de tout */
 .header-full-width {
-  position: relative;
+  position: static;
   z-index: 9999;
 }
 

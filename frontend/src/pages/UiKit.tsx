@@ -25,7 +25,7 @@ export default function UiKit() {
       <div className="header-full-width">
         <Header />
       </div>
-      <div className="flex-1 p-8 space-y-8">
+      <div className="flex-1 p-8 space-y-8 pt-12 lg:pt-16">
       {/* Section Hero avec CardSwap aligné à droite */}
       <section className="relative flex flex-col md:flex-row items-center justify-between pt-16 pb-4 bg-gradient-to-br from-primary-blue/5 to-primary-orange/5 rounded-3xl mb-12 overflow-hidden">
         {/* Texte à gauche */}

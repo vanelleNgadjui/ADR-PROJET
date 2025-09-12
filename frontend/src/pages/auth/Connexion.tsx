@@ -179,14 +179,14 @@ export default function Connexion() {
 
         {/* Success message for reset */}
         {resetEmailSent && (
-          <div className="text-[#62BF92] text-sm bg-[#62BF92]/10 p-3 rounded-md">
+          <div className="text-secondary-mint text-sm bg-secondary-mint/10 p-3 rounded-md">
             Un email de réinitialisation a été envoyé à {formData.email}
           </div>
         )}
 
         {/* Error message */}
         {error && (
-          <div className="text-[#EE6239] text-sm bg-[#EE6239]/10 p-3 rounded-md">
+          <div className="text-secondary-coral text-sm bg-secondary-coral/10 p-3 rounded-md">
             {error}
           </div>
         )}

@@ -35,17 +35,25 @@ export const useUserSync = (): UseUserSyncReturn => {
 
       // Si l'utilisateur n'existe pas, le créer
       if (!existingUser) {
+        // Extraire les informations depuis les métadonnées Google
+        const fullName = user.user_metadata?.full_name || '';
+        const firstName = user.user_metadata?.prenom || (fullName ? fullName.split(' ')[0] : '');
+        const lastName = user.user_metadata?.nom || (fullName && fullName.split(' ').length > 1 ? fullName.split(' ').slice(1).join(' ') : '');
+        const role = user.user_metadata?.role || 'participant';
+        const avatarUrl = user.user_metadata?.avatar_url || null;
+        
+
         const { error: insertError } = await supabase
           .from('users')
           .insert({
             id: user.id,
             email: user.email || '',
             password_hash: null, // Pas de mot de passe pour OAuth
-            nom: user.user_metadata?.nom || '',
-            prenom: user.user_metadata?.prenom || '',
-            role: user.user_metadata?.role || 'participant',
+            nom: lastName,
+            prenom: firstName,
+            role: role,
             statut_compte_enum: 'actif',
-            photo_profil_url: user.user_metadata?.avatar_url || null,
+            photo_profil_url: avatarUrl,
             date_creation: new Date().toISOString(),
             date_dernier_login: new Date().toISOString(),
           });

@@ -17,11 +17,7 @@ import {
   Shield,
   BarChart3,
   Heart,
-  Users,
-  Clock,
-  Globe,
-  UserPlus,
-  UserCheck
+  UserPlus
 } from 'lucide-react';
 import { 
   uploadProfilePhoto, 
@@ -34,7 +30,6 @@ import { LocationAutocomplete } from '../components/ui/LocationAutocomplete';
 import CustomCalendar from '../components/ui/CustomCalendar';
 import Select from '../components/form/Select';
 import PreferencesManager from '../components/profile/PreferencesManager';
-import SubscriptionInfo from '../components/profile/SubscriptionInfo';
 
 interface UserProfile {
   id: string;
@@ -151,18 +146,22 @@ export default function ProfilePage() {
       }
 
       // Uploader la nouvelle photo
-      const photoUrl = await uploadProfilePhoto(newPhoto, user.id);
+      const result = await uploadProfilePhoto(newPhoto, user.id);
+      
+      if (!result.success || !result.url) {
+        throw new Error(result.error || 'Erreur lors de l\'upload');
+      }
       
       // Mettre à jour le profil
       const { error } = await supabase
         .from('users')
-        .update({ photo_profil_url: photoUrl })
+        .update({ photo_profil_url: result.url })
         .eq('id', user.id);
 
       if (error) throw error;
 
-      setProfile(prev => prev ? { ...prev, photo_profil_url: photoUrl } : null);
-      setEditData(prev => ({ ...prev, photo_profil_url: photoUrl }));
+      setProfile(prev => prev ? { ...prev, photo_profil_url: result.url } : null);
+      setEditData(prev => ({ ...prev, photo_profil_url: result.url }));
       setNewPhoto(null);
       setPhotoPreview('');
       setSuccess('Photo de profil mise à jour');
@@ -193,16 +192,35 @@ export default function ProfilePage() {
       const { error } = await supabase
         .from('users')
         .update(editData)
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur lors de la sauvegarde:', error);
+        throw error;
+      }
 
-      setProfile(prev => prev ? { ...prev, ...editData } : null);
+      // Recharger les données depuis la base pour s'assurer de la cohérence
+      const { data: updatedProfile, error: reloadError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (reloadError) {
+        console.error('Erreur lors du rechargement:', reloadError);
+        // Fallback: utiliser les données locales
+        setProfile(prev => prev ? { ...prev, ...editData } : null);
+      } else {
+        setProfile(updatedProfile);
+        setEditData(updatedProfile);
+      }
+
       setEditing(false);
       setSuccess('Profil mis à jour avec succès');
     } catch (err) {
       console.error('Erreur lors de la sauvegarde:', err);
-      setError('Erreur lors de la sauvegarde');
+      setError(`Erreur lors de la sauvegarde: ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
     } finally {
       setSaving(false);
     }
@@ -439,15 +457,16 @@ export default function ProfilePage() {
 
             {/* Messages de statut */}
             {error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="mt-4 p-3 bg-secondary-coral/10 border border-secondary-coral/20 rounded-lg">
+                <p className="text-sm text-secondary-coral">{error}</p>
               </div>
             )}
             {success && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-600">{success}</p>
+              <div className="mt-4 p-3 bg-secondary-mint/10 border border-secondary-mint/20 rounded-lg">
+                <p className="text-sm text-secondary-mint">{success}</p>
               </div>
             )}
+
 
             {/* Actions pour la photo */}
             {newPhoto && (
@@ -455,7 +474,7 @@ export default function ProfilePage() {
                 <button
                   onClick={handleSavePhoto}
                   disabled={saving}
-                  className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+                  className="px-3 py-1.5 bg-secondary-mint text-white text-sm rounded-md hover:bg-secondary-mint/80 transition-colors disabled:opacity-50"
                 >
                   Confirmer la photo
                 </button>
@@ -539,17 +558,16 @@ export default function ProfilePage() {
           )}
           {activeTab === 'notifications' && (
             <NotificationsTab 
-              profile={profile} 
               editData={editData} 
               setEditData={setEditData} 
               editing={editing} 
             />
           )}
           {activeTab === 'security' && (
-            <SecurityTab profile={profile} />
+            <SecurityTab />
           )}
           {activeTab === 'stats' && profile.role === 'organisateur' && (
-            <StatsTab profile={profile} />
+            <StatsTab />
           )}
         </div>
       </div>
@@ -646,7 +664,7 @@ function PersonalInfoTab({
               <CustomCalendar
                 value={editData.date_naissance || ''}
                 onChange={(date) => setEditData({ ...editData, date_naissance: date })}
-                role={profile.role}
+                role={profile.role as 'participant' | 'organisateur'}
                 placeholder="Sélectionnez votre date de naissance"
               />
             ) : (
@@ -785,12 +803,10 @@ function PreferencesTab({
 
 // Composant pour les notifications
 function NotificationsTab({ 
-  profile, 
   editData, 
   setEditData, 
   editing 
 }: { 
-  profile: UserProfile; 
   editData: Partial<UserProfile>; 
   setEditData: (data: Partial<UserProfile>) => void; 
   editing: boolean; 
@@ -861,7 +877,7 @@ function NotificationsTab({
 }
 
 // Composant pour la sécurité
-function SecurityTab({ profile }: { profile: UserProfile }) {
+function SecurityTab() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -894,7 +910,7 @@ function SecurityTab({ profile }: { profile: UserProfile }) {
 }
 
 // Composant pour les statistiques (organisateurs)
-function StatsTab({ profile }: { profile: UserProfile }) {
+function StatsTab() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg border border-gray-200 p-6">

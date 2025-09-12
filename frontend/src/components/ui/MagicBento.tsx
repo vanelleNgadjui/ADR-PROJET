@@ -49,8 +49,8 @@ const isTouchDevice = () => {
 const PRIMARY_COLORS = [
   '#1e3a8a', // Bleu marine
   '#f97316', // Orange
-  '#EE6239', // Corail
-  '#62BF92', // Menthe
+  '#EE6239', // Corail (secondary-coral)
+  '#62BF92', // Menthe (secondary-mint)
 ];
 
 // Palette de couleurs pour le glow par carte (et bordure RGB)
@@ -105,7 +105,7 @@ const cardData: BentoCardProps[] = [
     title: "Donne à ton événement la visibilité qu'il mérite",
     description: "Touche une audience ciblée, engagée et en quête d'expériences comme la tienne.",
     icon: (
-                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-[#62BF92]/10 text-[#62BF92] shadow-sm">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-md bg-secondary-mint/10 text-secondary-mint shadow-sm">
         <Megaphone size={24} />
       </span>
     ),

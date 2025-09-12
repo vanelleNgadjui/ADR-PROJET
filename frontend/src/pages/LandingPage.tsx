@@ -233,7 +233,7 @@ export default function LandingPage() {
 
       {/* 2. Hero */}
     
-      <section className="relative flex flex-col md:flex-row items-center justify-between pt-6 pb-4 bg-gradient-to-br from-primary-blue/5 to-primary-orange/5 rounded-b-3xl mx-4 overflow-hidden">        {/* Texte à gauche */}
+      <section className="relative flex flex-col md:flex-row items-center justify-between pt-12 pb-4 bg-gradient-to-br from-primary-blue/5 to-primary-orange/5 rounded-b-3xl mx-4 overflow-hidden lg:pt-16">        {/* Texte à gauche */}
         <div className="w-full md:w-[65%] flex flex-col items-center md:items-start justify-center text-center md:text-left px-6 md:pl-12">
                       <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Tous les événements chrétiens.<br />Au même endroit.</h1>
           <p className="text-lg md:text-xl text-neutral-700 mb-8 max-w-sm md:max-w-none">Créez. Découvrez. Vivez les événements qui nourrissent votre foi.</p>
@@ -302,7 +302,7 @@ export default function LandingPage() {
               Découvrir les événements
             </button>
             <Link to="/auth/choix-role">
-              <Button variant="secondary">Organiser un événement</Button>
+            <Button variant="secondary">Organiser un événement</Button>
             </Link>
           </div>
         </div>
@@ -340,7 +340,7 @@ export default function LandingPage() {
        
       
   
-</section>
+      </section>
       {/* 3. Section Mission & Valeurs */}
       <section className="relative flex flex-col items-center justify-center pt-10 pb-0 rounded-3xl mx-4 overflow-hidden min-h-[200px]">
       <div className="w-full max-w-3xl mx-auto h-[150px] md:h-[200px] overflow-hidden mx-4 my-8">
@@ -414,8 +414,8 @@ export default function LandingPage() {
           ) : events.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">Aucun événement trouvé pour la landing page.</p>
-            </div>
-          ) : (
+                </div>
+              ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {events.map((event) => (
                 <div key={event.id}>

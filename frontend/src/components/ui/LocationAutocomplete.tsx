@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MapPin, Search, X } from 'lucide-react';
+import { MapPin, Search, X, AlertTriangle } from 'lucide-react';
 import { useLocationAutocomplete } from '../../hooks/useLocationAutocomplete';
 import type { LocationSuggestion } from '../../hooks/useLocationAutocomplete';
+import { cleanAndShortenAddress, formatAddressForDisplay, isAddressValid } from '../../utils/locationUtils';
 
 interface LocationAutocompleteProps {
   value: string;
@@ -60,9 +61,19 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
   // Gérer la sélection d'une localisation
   const handleLocationSelect = (location: LocationSuggestion) => {
     setSelectedLocation(location);
-    setSearchTerm(location.display_name);
-    onChange(location.display_name);
-    onLocationSelect?.(location);
+    
+    // Nettoyer et raccourcir l'adresse pour la base de données
+    const cleanedAddress = cleanAndShortenAddress(location.display_name);
+    
+    setSearchTerm(cleanedAddress);
+    onChange(cleanedAddress);
+    
+    // Passer l'objet location avec l'adresse nettoyée
+    onLocationSelect?.({
+      ...location,
+      display_name: cleanedAddress
+    });
+    
     setIsOpen(false);
     clearSuggestions();
   };
@@ -75,6 +86,10 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
     setSelectedLocation(null);
     setIsOpen(true);
   };
+
+  // Vérifier si l'adresse actuelle est trop longue
+  const isCurrentAddressTooLong = searchTerm.length > 100;
+  const hasAddressWarning = isCurrentAddressTooLong && !selectedLocation;
 
   // Gérer la suppression
   const handleClear = () => {
@@ -102,10 +117,12 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
           required={required}
-          className={`w-full pl-10 pr-10 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 bg-white text-gray-900 text-sm sm:text-base ${
-            role === 'participant' 
-              ? 'focus:ring-primary-orange focus:border-primary-orange' 
-              : 'focus:ring-primary-blue focus:border-primary-blue'
+          className={`w-full pl-10 pr-10 py-2 sm:py-3 border rounded-lg focus:ring-2 bg-white text-gray-900 text-sm sm:text-base ${
+            hasAddressWarning 
+              ? 'border-secondary-coral focus:ring-secondary-coral focus:border-secondary-coral'
+              : role === 'participant' 
+                ? 'border-gray-300 focus:ring-primary-orange focus:border-primary-orange' 
+                : 'border-gray-300 focus:ring-primary-blue focus:border-primary-blue'
           }`}
         />
         
@@ -120,6 +137,17 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           </button>
         )}
       </div>
+
+      {/* Avertissement pour adresse trop longue */}
+      {hasAddressWarning && (
+        <div className="mt-2 flex items-center gap-2 text-secondary-coral text-sm">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+          <span>
+            Adresse trop longue ({searchTerm.length}/100 caractères). 
+            Veuillez sélectionner une suggestion ou raccourcir l'adresse.
+          </span>
+        </div>
+      )}
 
       {/* Dropdown des suggestions */}
       {isOpen && (suggestions.length > 0 || loading || error) && (
@@ -140,7 +168,7 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           {/* Erreur */}
           {error && (
             <div className="p-2 sm:p-3 text-center">
-              <p className="text-xs sm:text-sm text-[#EE6239]">{error}</p>
+              <p className="text-xs sm:text-sm text-secondary-coral">{error}</p>
             </div>
           )}
 
@@ -161,8 +189,13 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
                         {suggestion.name}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
-                        {suggestion.country ? `${suggestion.display_name.split(',').slice(-2).join(', ')}` : suggestion.display_name}
+                        {cleanAndShortenAddress(suggestion.display_name)}
                       </p>
+                      {suggestion.display_name.length > 100 && (
+                        <p className="text-xs text-secondary-coral mt-1">
+                          Sera raccourcie pour la sauvegarde
+                        </p>
+                      )}
                     </div>
                   </div>
                 </button>

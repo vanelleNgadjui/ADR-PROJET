@@ -52,7 +52,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className="w-full bg-white/95 backdrop-blur-md shadow-sm px-4 md:px-8 h-16 flex items-center justify-between sticky top-0 z-[9999] border-b border-neutral-200 transition-all duration-300 mx-auto md:mx-0 -mx-3 md:mx-0"
+      className="w-full bg-white/95 backdrop-blur-md shadow-sm px-4 md:px-8 h-16 flex items-center justify-between fixed top-0 z-[9999] border-b border-neutral-200 transition-all duration-300 mx-auto md:mx-0 -mx-3 md:mx-0"
     >
       {/* Logo à gauche (mobile : caché si menuOpen) */}
       <div className={`flex items-center h-full ${menuOpen ? 'hidden' : ''} md:flex`}>

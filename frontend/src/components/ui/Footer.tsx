@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Footer: React.FC = () => (
-  <footer className="w-full py-8 px-8 bg-neutral-100 text-neutral-600 text-sm flex flex-col md:flex-row md:justify-between gap-4 mt-16 rounded-md">
+  <footer className="w-full py-8 px-8 bg-white text-neutral-600 text-sm flex flex-col md:flex-row md:justify-between gap-4 mt-16 rounded-md">
     <div>
       © {new Date().getFullYear()} AGENDA DU ROYAUME. Tous droits réservés.
     </div>

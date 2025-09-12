@@ -98,17 +98,19 @@ export default function HomeSidebar() {
       {/* Overlay for mobile */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          className="fixed top-12 left-0 right-0 bottom-0 z-30 bg-black bg-opacity-50 lg:hidden"
           onClick={toggleMobileSidebar}
         />
       )}
       
       {/* Sidebar */}
       <div 
-        className={`fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 z-40 transition-all duration-300 ease-in-out ${
           isExpanded ? 'w-64' : 'w-16'
-        } bg-white border-r border-gray-200 dark:bg-gray-900 dark:border-gray-700 lg:translate-x-0 lg:top-0 lg:h-screen ${
+        } bg-white border-r border-gray-200 dark:bg-gray-900 dark:border-gray-700 ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }         ${
+          isMobileOpen ? 'top-12 h-[calc(100vh-3rem)]' : 'top-0 h-screen'
         }`}
         onClick={() => {
           // Si la sidebar est rétrécie et qu'on clique dessus, l'étendre

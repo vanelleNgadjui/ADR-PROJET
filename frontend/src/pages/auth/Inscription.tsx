@@ -275,7 +275,7 @@ export default function Inscription() {
 
         {/* Error message */}
         {error && (
-          <div className="text-[#EE6239] text-sm bg-[#EE6239]/10 p-3 rounded-md">
+          <div className="text-secondary-coral text-sm bg-secondary-coral/10 p-3 rounded-md">
             {error}
           </div>
         )}

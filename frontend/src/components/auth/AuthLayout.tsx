@@ -34,18 +34,21 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
+    <div 
+      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: 'url(/src/assets/ADR-BG.png)' }}
+    >
             {/* Header - Full width sur mobile */}
       <div className="header-full-width">
         <AuthHeader showBackButton={showBackButton} backTo={backTo} />
       </div>
 
       {/* Main content */}
-      <main className="flex-1 flex items-center justify-center p-2 sm:p-4">
+      <main className="flex-1 flex items-center justify-center p-2 sm:p-4 pt-24 lg:pt-28">
         <div className={`w-full ${getContainerClass()}`}>
           {/* Card */}
           <div 
-            className={`rounded-lg shadow-lg p-4 sm:p-6 lg:p-8 relative ${backgroundImage ? '' : 'bg-white'}`}
+            className={`rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.12)] p-4 sm:p-6 lg:p-8 relative ${backgroundImage ? '' : 'bg-white'}`}
             style={backgroundImage ? {
               backgroundImage: `url(${backgroundImage})`,
               backgroundSize: 'cover',

@@ -243,7 +243,7 @@ export default function PreferencesManager({
                   <button
                     onClick={() => setEditData({ ...editData, [section.field]: [] })}
                     disabled={!editing}
-                    className="text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-secondary-coral hover:text-secondary-coral/80 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Tout désélectionner
                   </button>

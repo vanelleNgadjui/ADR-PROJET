@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { ChevronDownIcon } from "lucide-react";
 
 interface Option {
@@ -15,6 +15,7 @@ interface SelectProps {
   disabled?: boolean;
   error?: boolean;
   success?: boolean;
+  icon?: ReactNode; // Icône optionnelle à gauche
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -26,6 +27,7 @@ const Select: React.FC<SelectProps> = ({
   disabled = false,
   error = false,
   success = false,
+  icon,
 }) => {
   // Manage the selected value
   const [selectedValue, setSelectedValue] = useState<string>(defaultValue);
@@ -36,7 +38,9 @@ const Select: React.FC<SelectProps> = ({
     onChange(value); // Trigger parent handler
   };
 
-  let selectClasses = `h-11 w-full appearance-none rounded-lg border px-4 py-2.5 pr-11 text-base shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
+  // Ajuster le padding selon la présence d'une icône
+  const paddingLeft = icon ? 'pl-10' : 'px-4';
+  let selectClasses = `h-11 w-full appearance-none rounded-lg border ${paddingLeft} py-2.5 pr-11 text-base shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
 
   if (disabled) {
     selectClasses += ` text-gray-500 border-gray-300 opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700`;
@@ -56,6 +60,15 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className="relative">
+      {/* Icône optionnelle à gauche */}
+      {icon && (
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+          <div className="h-5 w-5 text-gray-400">
+            {icon}
+          </div>
+        </div>
+      )}
+      
       <select
         className={selectClasses}
         value={selectedValue}

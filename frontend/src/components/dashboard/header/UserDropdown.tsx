@@ -3,7 +3,7 @@ import { DropdownItem } from "../../ui/DropdownItem";
 import { Dropdown } from "../../ui/Dropdown";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
-import { useProfilePhoto } from "../../../hooks/useProfilePhoto";
+import { useUserProfilePhoto } from "../../../hooks/useUserProfilePhoto";
 import Avatar from "../../ui/Avatar";
 import { 
   UserIcon, 
@@ -17,12 +17,8 @@ export default function UserDropdown() {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Utiliser le hook de gestion des photos de profil
-  const { getOptimizedUrl } = useProfilePhoto({
-    userId: user?.id || '',
-    userName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Utilisateur',
-    initialPhotoUrl: '' // La photo sera récupérée depuis la DB par le hook
-  });
+  // Récupérer la photo de profil depuis la base de données
+  const { photoUrl: userPhotoUrl, loading: photoLoading } = useUserProfilePhoto();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -49,7 +45,7 @@ export default function UserDropdown() {
   };
 
   // Si l'auth est en cours de chargement
-  if (loading) {
+  if (loading || photoLoading) {
     return (
       <div className="flex items-center text-gray-700 dark:text-gray-400">
         <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse mr-3"></div>
@@ -82,7 +78,7 @@ export default function UserDropdown() {
                   'Utilisateur';
   const userEmail = user?.email || '';
   const userRole = user?.user_metadata?.role || 'participant';
-  const userAvatar = getOptimizedUrl();
+  const userAvatar = userPhotoUrl;
 
   return (
     <div className="relative">

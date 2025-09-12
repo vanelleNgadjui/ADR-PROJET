@@ -504,28 +504,22 @@ export default function Onboarding() {
               <label className="block text-sm font-medium text-gray-700">
                 Genre
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <div className="pl-10">
-                  <Select
-                    options={enums.genre_enum?.map((genre: string) => ({
-                      value: genre,
-                      label: formatEnumLabel(genre)
-                    })) || []}
-                    placeholder="Sélectionnez votre genre"
-                    defaultValue={formData.genre}
-                    onChange={(value) => setFormData({ ...formData, genre: value })}
-                    className={role === 'participant' ? 'focus:ring-primary-orange focus:border-primary-orange' : 'focus:ring-primary-blue focus:border-primary-blue'}
-                  />
-                </div>
-              </div>
+              <Select
+                options={enums.genre_enum?.map((genre: string) => ({
+                  value: genre,
+                  label: formatEnumLabel(genre)
+                })) || []}
+                placeholder="Sélectionnez votre genre"
+                defaultValue={formData.genre}
+                onChange={(value) => setFormData({ ...formData, genre: value })}
+                className={role === 'participant' ? 'focus:ring-primary-orange focus:border-primary-orange' : 'focus:ring-primary-blue focus:border-primary-blue'}
+                icon={<User className="h-5 w-5" />}
+              />
               {loadingEnums && (
                 <p className="text-xs text-gray-500">Chargement des options...</p>
               )}
               {enumsError && (
-                <p className="text-xs text-[#EE6239]">Erreur de chargement des options</p>
+                <p className="text-xs text-secondary-coral">Erreur de chargement des options</p>
               )}
             </div>
 
@@ -771,7 +765,7 @@ export default function Onboarding() {
                           
                           setFormData({ ...formData, photo_profil_url: '' });
                         }}
-                        className="absolute -top-2 -right-2 bg-[#EE6239] text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center hover:bg-[#EE6239]/80 transition-all duration-200 shadow-lg hover:scale-110"
+                        className="absolute -top-2 -right-2 bg-secondary-coral text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center hover:bg-secondary-coral/80 transition-all duration-200 shadow-lg hover:scale-110"
                         title="Supprimer la photo"
                       >
                         <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -813,12 +807,12 @@ export default function Onboarding() {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-[#62BF92]/10 border border-[#62BF92]/20 rounded-lg p-3">
+                        <div className="bg-secondary-mint/10 border border-secondary-mint/20 rounded-lg p-3">
                           <div className="flex items-center justify-center gap-2">
-                            <svg className="w-4 h-4 text-[#62BF92]" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-4 h-4 text-secondary-mint" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span className="text-sm font-medium text-[#62BF92]">
+                            <span className="text-sm font-medium text-secondary-mint">
                               Photo de profil configurée
                             </span>
                           </div>
@@ -883,8 +877,8 @@ export default function Onboarding() {
                 
                 {/* Message d'erreur pour la photo */}
                 {error && (
-                  <div className="text-[#EE6239] text-xs sm:text-sm bg-[#EE6239]/10 border border-[#EE6239]/20 p-3 rounded-lg flex items-center gap-2">
-                    <svg className="w-4 h-4 text-[#EE6239]" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="text-secondary-coral text-xs sm:text-sm bg-secondary-coral/10 border border-secondary-coral/20 p-3 rounded-lg flex items-center gap-2">
+                    <svg className="w-4 h-4 text-secondary-coral" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                     </svg>
                     {error}
@@ -1369,197 +1363,288 @@ export default function Onboarding() {
       case 6:
         return (
           <div className="space-y-8">
-            {/* Header avec célébration */}
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#62BF92]/10 rounded-full mb-4">
-                <PartyPopper className="w-8 h-8 text-[#62BF92]" />
+            {/* Header premium avec animation */}
+            <div className="text-center relative">
+              {/* Cercle de fond animé */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className={`w-32 h-32 rounded-full opacity-10 animate-pulse ${
+                  role === 'participant' ? 'bg-[#FFA500]' : 'bg-[#00008B]'
+                }`}></div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              
+              {/* Icône principale */}
+              <div className={`relative inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-lg ${
+                role === 'participant' 
+                  ? 'bg-gradient-to-br from-[#FFA500] to-[#FF8C00]' 
+                  : 'bg-gradient-to-br from-[#00008B] to-[#0000CD]'
+              }`}>
+                <PartyPopper className="w-10 h-10 text-white" />
+              </div>
+              
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">
                 Félicitations !
               </h2>
-              <p className="text-gray-600 max-w-md mx-auto">
+              <p className="text-lg text-gray-600 max-w-lg mx-auto leading-relaxed">
                 Votre profil est maintenant complet et prêt à vous connecter avec la communauté chrétienne
               </p>
             </div>
 
-            {/* Récapitulatif moderne et interactif */}
-            <div className="space-y-6">
+            {/* Récapitulatif premium */}
+            <div className="space-y-8">
               {/* Header du récapitulatif */}
               <div className="text-center">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Votre profil en un coup d'œil</h3>
-                <p className="text-gray-600">Voici ce que nous avons configuré ensemble</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Votre profil en un coup d'œil</h3>
+                <p className="text-gray-600 text-lg">Voici ce que nous avons configuré ensemble</p>
               </div>
 
-              {/* Grille de cartes modernes */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Grille de cartes premium */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Carte Informations personnelles */}
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-white" />
+                <div className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                  {/* Gradient de fond */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
+                        <User className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Identité</h4>
                     </div>
-                    <h4 className="font-semibold text-gray-900">Identité</h4>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-lg font-bold text-gray-900">{formData.prenom} {formData.nom}</p>
-                    {formData.genre && (
-                      <p className="text-sm text-gray-600 flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        {formatEnumLabel(formData.genre)}
-                      </p>
-                    )}
-                    {formData.dateNaissance && (
-                      <p className="text-sm text-gray-600 flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        Né(e) le {new Date(formData.dateNaissance).toLocaleDateString('fr-FR')}
-                      </p>
-                    )}
-                    {formData.telephone && (
-                      <p className="text-sm text-gray-600 flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        {formData.telephone}
-                      </p>
-                    )}
+                    <div className="space-y-3">
+                      <p className="text-2xl font-bold text-gray-900">{formData.prenom} {formData.nom}</p>
+                      {formData.genre && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <span className="text-gray-700 font-medium">{formatEnumLabel(formData.genre)}</span>
+                        </div>
+                      )}
+                      {formData.dateNaissance && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <span className="text-gray-700 font-medium">
+                            Né(e) le {new Date(formData.dateNaissance).toLocaleDateString('fr-FR')}
+                          </span>
+                        </div>
+                      )}
+                      {formData.telephone && (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <Phone className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <span className="text-gray-700 font-medium">{formData.telephone}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Carte Localisation */}
-                <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                      <MapPinned className="w-5 h-5 text-white" />
+                <div className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                  {/* Gradient de fond */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
+                        <MapPinned className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Localisation</h4>
                     </div>
-                    <h4 className="font-semibold text-gray-900">Localisation</h4>
+                    <div className="space-y-3">
+                      <p className="text-2xl font-bold text-gray-900">{formData.localisation}</p>
+                      <p className="text-gray-600 font-medium">Votre zone géographique</p>
+                    </div>
                   </div>
-                  <p className="text-lg font-medium text-gray-900">{formData.localisation}</p>
-                  <p className="text-sm text-gray-600 mt-1">Votre zone géographique</p>
                 </div>
 
                 {/* Carte Rôle/Mission (Organisateur) */}
                 {role === 'organisateur' && formData.mission && (
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                  <div className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                    {/* Gradient de fond */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div className="relative">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-bold text-gray-900">Rôle & Mission</h4>
                       </div>
-                      <h4 className="font-semibold text-gray-900">Rôle & Mission</h4>
+                      <div className="space-y-3">
+                        <p className="text-2xl font-bold text-gray-900">
+                          {formData.mission === 'autre' ? formData.mission_autre : formData.mission.replace('_', ' ')}
+                        </p>
+                        <p className="text-gray-600 font-medium">Votre mission dans la communauté</p>
+                      </div>
                     </div>
-                    <p className="text-lg font-medium text-gray-900">
-                                              {formData.mission === 'autre' ? formData.mission_autre : formData.mission.replace('_', ' ')}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">Votre mission dans la communauté</p>
                   </div>
                 )}
 
                 {/* Carte Centres d'intérêt (Participant) */}
                 {role === 'participant' && (
-                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-[#FFA500] rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
+                  <div className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                    {/* Gradient de fond */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div className="relative">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#FFA500] to-[#FF8C00] rounded-xl flex items-center justify-center shadow-lg">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-bold text-gray-900">Centres d'intérêt</h4>
                       </div>
-                      <h4 className="font-semibold text-gray-900">Centres d'intérêt</h4>
-                    </div>
-                    <div className="space-y-2">
-                      {formData.preferences_categories.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center px-3 py-1 bg-[#FFA500]/20 text-[#FFA500] text-sm font-medium rounded-full">
-                            {formData.preferences_categories.length} type(s) d'événements
-                          </span>
-                        </div>
-                      )}
-                      {formData.preferences_audiences.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center px-3 py-1 bg-[#FFA500]/20 text-[#FFA500] text-sm font-medium rounded-full">
-                            {formData.preferences_audiences.length} public(s) cible(s)
-                          </span>
-                        </div>
-                      )}
+                      <div className="space-y-4">
+                        {formData.preferences_categories.length > 0 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-[#FFA500]/10 rounded-lg flex items-center justify-center">
+                              <span className="text-[#FFA500] font-bold text-sm">
+                                {formData.preferences_categories.length}
+                              </span>
+                            </div>
+                            <span className="text-gray-700 font-medium">
+                              Type{formData.preferences_categories.length > 1 ? 's' : ''} d'événements sélectionné{formData.preferences_categories.length > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
+                        {formData.preferences_audiences.length > 0 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-[#FFA500]/10 rounded-lg flex items-center justify-center">
+                              <span className="text-[#FFA500] font-bold text-sm">
+                                {formData.preferences_audiences.length}
+                              </span>
+                            </div>
+                            <span className="text-gray-700 font-medium">
+                              Public{formData.preferences_audiences.length > 1 ? 's' : ''} cible{formData.preferences_audiences.length > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Carte Spécialisation (Organisateur) */}
                 {role === 'organisateur' && (
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-[#00008B] rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
+                  <div className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
+                    {/* Gradient de fond */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div className="relative">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#00008B] to-[#0000CD] rounded-xl flex items-center justify-center shadow-lg">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-bold text-gray-900">Spécialisation</h4>
                       </div>
-                      <h4 className="font-semibold text-gray-900">Spécialisation</h4>
-                    </div>
-                    <div className="space-y-2">
-                      {formData.types_evenements_crees.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center px-3 py-1 bg-[#00008B]/20 text-[#00008B] text-sm font-medium rounded-full">
-                            {formData.types_evenements_crees.length} type(s) d'événements créés
-                          </span>
-                        </div>
-                      )}
-                      {formData.preferences_format.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center px-3 py-1 bg-[#00008B]/20 text-[#00008B] text-sm font-medium rounded-full">
-                            {formData.preferences_format.length} format(s) d'événements
-                          </span>
-                        </div>
-                      )}
+                      <div className="space-y-4">
+                        {formData.types_evenements_crees.length > 0 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-[#00008B]/10 rounded-lg flex items-center justify-center">
+                              <span className="text-[#00008B] font-bold text-sm">
+                                {formData.types_evenements_crees.length}
+                              </span>
+                            </div>
+                            <span className="text-gray-700 font-medium">
+                              Type{formData.types_evenements_crees.length > 1 ? 's' : ''} d'événements créé{formData.types_evenements_crees.length > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        )}
+                        {formData.preferences_format.length > 0 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-[#00008B]/10 rounded-lg flex items-center justify-center">
+                              <span className="text-[#00008B] font-bold text-sm">
+                                {formData.preferences_format.length}
+                              </span>
+                            </div>
+                            <span className="text-gray-700 font-medium">
+                              Format{formData.preferences_format.length > 1 ? 's' : ''} d'événements
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Statistiques du profil */}
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h4 className="font-semibold text-gray-900 mb-4 text-center">Votre profil en chiffres</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#62BF92]">6</div>
-                    <div className="text-sm text-gray-600">Étapes complétées</div>
+              {/* Statistiques premium */}
+              <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
+                <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center">Votre profil en chiffres</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="text-center group">
+                    <div className={`text-4xl font-bold mb-2 transition-colors duration-300 ${
+                      role === 'participant' ? 'text-[#FFA500]' : 'text-[#00008B]'
+                    }`}>6</div>
+                    <div className="text-gray-600 font-medium">Étapes complétées</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#FFA500]">
+                  <div className="text-center group">
+                    <div className={`text-4xl font-bold mb-2 transition-colors duration-300 ${
+                      role === 'participant' ? 'text-[#FFA500]' : 'text-[#00008B]'
+                    }`}>
                       {role === 'participant' ? formData.preferences_categories.length : formData.types_evenements_crees.length}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-gray-600 font-medium">
                       {role === 'participant' ? 'Types d\'événements' : 'Types créés'}
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#00008B]">
+                  <div className="text-center group">
+                    <div className={`text-4xl font-bold mb-2 transition-colors duration-300 ${
+                      role === 'participant' ? 'text-[#FFA500]' : 'text-[#00008B]'
+                    }`}>
                       {role === 'participant' ? formData.preferences_audiences.length : formData.preferences_format.length}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-gray-600 font-medium">
                       {role === 'participant' ? 'Publics cibles' : 'Formats d\'événements'}
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#62BF92]">100%</div>
-                    <div className="text-sm text-gray-600">Profil complet</div>
+                  <div className="text-center group">
+                    <div className={`text-4xl font-bold mb-2 transition-colors duration-300 ${
+                      role === 'participant' ? 'text-[#FFA500]' : 'text-[#00008B]'
+                    }`}>100%</div>
+                    <div className="text-gray-600 font-medium">Profil complet</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Message de fin avec actions */}
-            <div className="text-center space-y-4">
-              <div className="bg-[#62BF92]/5 border border-[#62BF92]/20 rounded-lg p-4">
-                <p className="text-sm text-[#62BF92] font-medium flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Votre profil est maintenant configuré ! Vous pouvez le modifier à tout moment depuis votre tableau de bord.
+            {/* Message de fin premium */}
+            <div className="text-center space-y-6">
+              <div className={`bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-2xl p-6 shadow-lg ${
+                role === 'participant' ? 'border-[#FFA500]/20' : 'border-[#00008B]/20'
+              }`}>
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    role === 'participant' ? 'bg-[#FFA500]' : 'bg-[#00008B]'
+                  }`}>
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className={`text-lg font-bold ${
+                    role === 'participant' ? 'text-[#FFA500]' : 'text-[#00008B]'
+                  }`}>
+                    Profil configuré avec succès !
+                  </span>
+                </div>
+                <p className="text-gray-700 font-medium">
+                  Vous pouvez modifier vos informations à tout moment depuis votre tableau de bord.
                 </p>
               </div>
               
-              <div className="text-xs text-gray-500">
+              <div className="text-sm text-gray-500">
                 <p>En cliquant sur "Terminer", vous acceptez nos conditions d'utilisation</p>
               </div>
             </div>
@@ -1650,7 +1735,7 @@ export default function Onboarding() {
                 >
                   <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7px] sm:text-[9px] font-medium transition-all duration-300 ${
                     step < currentStep 
-                      ? 'bg-[#62BF92] text-white' 
+                      ? 'bg-secondary-mint text-white' 
                       : step === currentStep 
                         ? (role === 'participant' ? 'bg-[#FFA500] text-white' : 'bg-[#00008B] text-white')
                         : 'bg-gray-200 text-gray-500'
@@ -1692,8 +1777,8 @@ export default function Onboarding() {
 
                       {/* Error Message - Simple et clair */}
             {(error || syncError) && (
-              <div className="text-[#EE6239] text-sm bg-[#EE6239]/10 border border-[#EE6239]/20 p-4 rounded-lg flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#EE6239]" fill="currentColor" viewBox="0 0 20 20">
+              <div className="text-secondary-coral text-sm bg-secondary-coral/10 border border-secondary-coral/20 p-4 rounded-lg flex items-center gap-2">
+                <svg className="w-5 h-5 text-secondary-coral" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 {error || syncError}
