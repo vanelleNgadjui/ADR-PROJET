@@ -115,5 +115,8 @@ temp/
 test-*.js
 test-*.html
 
+# Migration files with secrets
+migrate-*.js
+
 # Template files
 free-react-tailwind-admin-dashboard-main/
