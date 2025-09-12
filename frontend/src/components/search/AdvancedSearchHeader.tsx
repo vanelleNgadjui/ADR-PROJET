@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SearchIcon, XIcon, ChevronDownIcon } from 'lucide-react';
 import calendarIcon from '../../assets/calendar.svg';
 import locationIcon from '../../assets/location.svg';
@@ -23,6 +24,7 @@ const AdvancedSearchHeader: React.FC<AdvancedSearchHeaderProps> = ({
   onFiltersChange, 
   className = '' 
 }) => {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     location: '',
@@ -79,6 +81,20 @@ const AdvancedSearchHeader: React.FC<AdvancedSearchHeaderProps> = ({
     handleFilterChange('search', '');
   };
 
+  const handleInputClick = () => {
+    // Rediriger vers la page de recherche
+    navigate('/search');
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (filters.search.trim()) {
+      navigate(`/search?q=${encodeURIComponent(filters.search.trim())}`);
+    } else {
+      navigate('/search');
+    }
+  };
+
   const categories = [
     'Toutes les catégories',
     'Conférences',
@@ -111,19 +127,21 @@ const AdvancedSearchHeader: React.FC<AdvancedSearchHeaderProps> = ({
   return (
     <div className={`${className}`}>
       {/* Barre de recherche et filtres */}
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-          {/* Barre de recherche - responsive */}
-          <div className="flex-1 min-w-0">
-            <div className="relative">
-              <SearchIcon className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
-              <input
-                type="text"
-                placeholder="Rechercher un événement"
-                value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="h-10 sm:h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2 sm:py-2.5 pl-10 sm:pl-12 pr-12 sm:pr-14 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-blue dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-primary-blue"
-              />
+      <div className="w-full">
+        <form onSubmit={handleSearchSubmit} className="w-full">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            {/* Barre de recherche - responsive */}
+            <div className="flex-1 min-w-0">
+              <div className="relative">
+                <SearchIcon className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un événement"
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange('search', e.target.value)}
+                  onClick={handleInputClick}
+                  className="h-10 sm:h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2 sm:py-2.5 pl-10 sm:pl-12 pr-12 sm:pr-14 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-blue dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-primary-blue"
+                />
               {filters.search ? (
                 <button 
                   onClick={clearSearch}
@@ -138,11 +156,13 @@ const AdvancedSearchHeader: React.FC<AdvancedSearchHeaderProps> = ({
                   <span className="sm:hidden">⌘K</span>
                 </button>
               )}
+              </div>
             </div>
           </div>
-        </div>
+        </form>
+      </div>
 
-        {/* Filtres actifs */}
+      {/* Filtres actifs */}
         {activeFilters.length > 0 && (
           <div className="mt-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-3">
@@ -175,7 +195,6 @@ const AdvancedSearchHeader: React.FC<AdvancedSearchHeaderProps> = ({
             </div>
           </div>
         )}
-      </div>
 
       {/* Modal de filtres */}
       <FilterModal

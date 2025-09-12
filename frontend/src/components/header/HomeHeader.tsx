@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import NotificationDropdown from "../dashboard/header/NotificationDropdown";
 import UserDropdown from "../dashboard/header/UserDropdown";
 import LocationDisplay from "./LocationDisplay";
+import AdvancedSearchHeader from "../search/AdvancedSearchHeader";
 import { MenuIcon, XIcon, MoreHorizontalIcon } from "lucide-react";
 import calendarIcon from "../../assets/calendar.svg";
 import { ThemeToggleButton } from "../dashboard/common/ThemeToggleButton";
@@ -80,6 +81,11 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({ onClick, onToggle }) => {
 
             {/* Localisation */}
             <LocationDisplay />
+          </div>
+
+          {/* Barre de recherche centrée - Desktop seulement */}
+          <div className="hidden lg:flex justify-center absolute left-1/2 transform -translate-x-1/2">
+            <AdvancedSearchHeader onFiltersChange={() => {}} className="border-0 bg-transparent" />
           </div>
         </div>
         

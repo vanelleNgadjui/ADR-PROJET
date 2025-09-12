@@ -61,7 +61,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       <div className="space-y-6">
         {/* En-tête */}
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-base font-medium text-gray-900">
             {category ? 'Modifier la catégorie' : 'Créer une nouvelle catégorie'}
           </h3>
           <p className="text-sm text-gray-600 mt-1">

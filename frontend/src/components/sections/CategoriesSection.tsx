@@ -22,7 +22,7 @@ const CategoriesSection: React.FC = () => {
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('categories')
           .select('id, nom, description')
-          .order('nom');
+          .order('id');
           
         if (categoriesError) {
           console.error('Erreur récupération catégories:', categoriesError);
@@ -48,9 +48,9 @@ const CategoriesSection: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="mb-4 sm:mb-6">
+      <section className="mb-0">
         <div className="mb-2 sm:mb-4">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-medium text-gray-900">
             Catégories
           </h2>
         </div>
@@ -64,10 +64,10 @@ const CategoriesSection: React.FC = () => {
   }
 
   return (
-    <section className="mb-4 sm:mb-6">
+    <section className="mb-0">
       {/* Titre de la section */}
       <div className="mb-2 sm:mb-4">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+        <h2 className="text-lg sm:text-xl font-medium text-gray-900">
           Catégories
         </h2>
       </div>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useEvents, useEventsByCategory, useUpcomingEvents } from '../hooks/useEvents';
 import { Navigate } from 'react-router-dom';
@@ -24,13 +24,22 @@ const DynamicEventsPage: React.FC<DynamicEventsPageProps> = ({ context }) => {
   // Tous les hooks doivent être appelés en premier, avant toute logique conditionnelle
   const { user, loading } = useAuth();
   const { id: categoryId } = useParams<{ id: string }>();
-  // searchParams non utilisé pour le moment
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
   // États locaux
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'vertical2' | 'list'>('vertical2');
   const [activeFilters, setActiveFilters] = useState<any>({});
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Récupérer le paramètre de recherche depuis l'URL
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [searchParams]);
 
   // Hooks pour récupérer les données selon le contexte
   const eventsByCategory = useEventsByCategory(parseInt(categoryId || '0'), {});

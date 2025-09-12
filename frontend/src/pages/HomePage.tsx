@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
         {/* Contenu principal */}
         <main className="pb-2 sm:px-4 sm:pb-4 lg:pt-2 lg:pb-8 lg:px-8">
           {/* Section Carousel des événements phares */}
-          <section className="mb-6">
+          <section className="mb-3">
             <FeaturedEventsCarousel
               events={[
                 {
@@ -81,20 +81,18 @@ const HomePage: React.FC = () => {
             />
           </section>
 
-          {/* Section Catégories */}
-          <CategoriesSection />
-
-          {/* Section AdvancedSearchHeader */}
-          <section className="mb-6">
+          {/* Section Barre de recherche - Mobile seulement */}
+          <section className="mb-3 lg:hidden">
             <AdvancedSearchHeader onFiltersChange={handleFiltersChange} className="border-0 bg-transparent" />
           </section>
 
-
+          {/* Section Catégories */}
+          <CategoriesSection />
 
           {/* Section Événements à venir */}
-          <section className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+          <section className="mb-1 mt-0">
+            <div className="flex justify-between items-center mb-2 sm:mb-4">
+              <h2 className="text-lg sm:text-xl font-medium text-gray-900">
                 Événements à venir
               </h2>
               <Link to="/upcoming" className="text-gray-900 hover:text-gray-700 font-normal text-sm">
@@ -239,9 +237,9 @@ const HomePage: React.FC = () => {
           </section>
 
           {/* Section Suggestions pour vous */}
-          <section className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+          <section className="mb-6 mt-0">
+            <div className="flex justify-between items-center mb-2 sm:mb-4">
+              <h2 className="text-lg sm:text-xl font-medium text-gray-900">
                 Suggestions pour vous
               </h2>
               <Link to="/suggestions" className="text-gray-900 hover:text-gray-700 font-normal text-sm">
