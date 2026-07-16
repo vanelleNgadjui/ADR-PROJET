@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '../../../ui/Modal';
-import type { EventSession, EventIntervenant, EventSessionTypeEnum } from '../../../../types/database';
+import type { EventSession, EventIntervenant, TypeSessionEnum } from '../../../../types/database';
 import SimpleInput from '../../../form/input/SimpleInput';
 import TextArea from '../../../form/input/TextArea';
 import Select from '../../../form/Select';
@@ -157,7 +157,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
               <Select
                 options={sessionTypeOptions}
                 defaultValue={formData.type_session || 'conference'}
-                onChange={(value) => setFormData({ ...formData, type_session: value as EventSessionTypeEnum })}
+                onChange={(value) => setFormData({ ...formData, type_session: value as TypeSessionEnum })}
                 placeholder="Sélectionner un type"
               />
             </div>

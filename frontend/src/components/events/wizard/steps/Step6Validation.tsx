@@ -55,10 +55,10 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
 
     // Étape 3: Lieu et format
     if (!formData.format) errors.push('Le format est obligatoire');
-    if (formData.format === 'presentiel' && !formData.adresse?.trim()) {
+    if (formData.format === 'en_presentiel' && !formData.adresse?.trim()) {
       errors.push('L\'adresse est obligatoire pour un événement présentiel');
     }
-    if (formData.format === 'virtuel' && !formData.lieu?.trim()) {
+    if (formData.format === 'en_ligne' && !formData.lieu?.trim()) {
       errors.push('Le lien vidéo est obligatoire pour un événement virtuel');
     }
 
@@ -209,10 +209,10 @@ const Step6Validation: React.FC<Step6ValidationProps> = ({
             <h5 className="font-medium text-gray-700">Lieu et format</h5>
             <div className="space-y-2 text-sm">
               <p><strong>Format :</strong> {formData.format || 'Non renseigné'}</p>
-              {formData.format === 'presentiel' && (
+              {formData.format === 'en_presentiel' && (
                 <p><strong>Adresse :</strong> {formData.adresse || 'Non renseignée'}</p>
               )}
-              {formData.format === 'virtuel' && (
+              {formData.format === 'en_ligne' && (
                 <p><strong>Lien :</strong> {formData.lieu || 'Non renseigné'}</p>
               )}
             </div>

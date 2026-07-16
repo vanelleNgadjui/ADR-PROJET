@@ -19,14 +19,14 @@ const Step3Location: React.FC<Step3LocationProps> = ({
   setError,
 }) => {
   const formatOptions = [
-    { value: 'presentiel', label: 'Présentiel' },
-    { value: 'virtuel', label: 'Virtuel' },
+    { value: 'en_presentiel', label: 'Présentiel' },
+    { value: 'en_ligne', label: 'Virtuel' },
     { value: 'hybride', label: 'Hybride' },
   ];
 
   const handleFormatChange = (format: string) => {
     onFormDataChange({ 
-      format: format as 'presentiel' | 'virtuel' | 'hybride',
+      format: format as 'en_presentiel' | 'en_ligne' | 'hybride',
       lieu: '',
       adresse: ''
     });
@@ -63,7 +63,7 @@ const Step3Location: React.FC<Step3LocationProps> = ({
       </div>
 
       {/* Champs spécifiques selon le format */}
-      {formData.format === 'presentiel' && (
+      {formData.format === 'en_presentiel' && (
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -97,7 +97,7 @@ const Step3Location: React.FC<Step3LocationProps> = ({
         </div>
       )}
 
-      {formData.format === 'virtuel' && (
+      {formData.format === 'en_ligne' && (
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

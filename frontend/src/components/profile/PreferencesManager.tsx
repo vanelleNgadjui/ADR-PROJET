@@ -63,7 +63,7 @@ export default function PreferencesManager({
   const handleMultiSelect = (field: string, value: string | number) => {
     if (!editing) return;
     
-    const currentValues = editData[field as keyof typeof editData] || [];
+    const currentValues = (editData[field as keyof typeof editData] || []) as (string | number)[];
     const newValues = currentValues.includes(value)
       ? currentValues.filter((v: any) => v !== value)
       : [...currentValues, value];
@@ -156,7 +156,7 @@ export default function PreferencesManager({
         {sections.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.id;
-          const currentValues = editData[section.field as keyof typeof editData] || [];
+          const currentValues = (editData[section.field as keyof typeof editData] || []) as (string | number)[];
           
           return (
             <button
@@ -184,7 +184,7 @@ export default function PreferencesManager({
       {sections.map((section) => {
         if (activeSection !== section.id) return null;
         
-        const currentValues = editData[section.field as keyof typeof editData] || [];
+        const currentValues = (editData[section.field as keyof typeof editData] || []) as (string | number)[];
         
         return (
           <div key={section.id} className="bg-white rounded-lg border border-gray-200 p-6">
